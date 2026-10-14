@@ -1,0 +1,16 @@
+/* JSI typography: decisions, measurements, then supporting context. */
+:root { font-size:var(--type-body-size); line-height:var(--type-body-leading); }
+h1 { font-size:var(--type-title-size); }
+h2 { font-size:var(--type-section-size); }
+h1,h2,h3 { line-height:var(--type-heading-leading); letter-spacing:var(--type-heading-tracking); font-weight:var(--weight-bold); }
+p { line-height:var(--type-body-leading); }
+button,input,textarea { line-height:var(--type-control-leading); }
+.primary,.secondary,.small-button,.choice-chip span,.visible-task-tabs button { font-size:var(--type-control-size); }
+.choice-label,label,small,.console-source,.console-footer,.console-scene-caption { font-size:var(--type-caption-size); }
+.choice-chip span,.visible-task-tabs button { letter-spacing:var(--type-data-tracking); }
+.console-number { font-size:var(--type-metric-size); line-height:var(--type-heading-leading); font-weight:var(--weight-bold); }
+.numeric,td,input[type=number],.console-number,.console-stage-buttons strong,.stat-value,.spread-grid strong,.twin-summary strong,.outcome-comparison strong {
+ font-family:var(--font-numeric); font-variant-numeric:lining-nums tabular-nums; letter-spacing:var(--type-data-tracking);
+}
+.mono,code,.research-hash { font-family:var(--font-code); font-variant-numeric:tabular-nums slashed-zero; letter-spacing:var(--type-data-tracking); }
+@media(max-height:540px) { .console-number { font-size:var(--type-title-size); } }

@@ -1,5 +1,11 @@
 @import './design-tokens.css';
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap');
+@font-face {
+  font-family:'Pretendard Variable';
+  src:url('/fonts/PretendardVariable.woff2') format('woff2');
+  font-style:normal;
+  font-weight:45 920;
+  font-display:swap;
+}
 :root {
   font-family:var(--font-body);
   color:var(--color-ink);

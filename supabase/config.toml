@@ -1,0 +1,15 @@
+project_id = "batt"
+
+[auth]
+site_url = "https://mobibi76.github.io/batt/"
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+# Membership approval is the company's access gate; no email delivery is required.
+enable_confirmations = false
+
+[functions.match-cells]
+# Handler verifies the JWT with auth.getUser and enforces approved membership.
+# This supports projects using asymmetric JWT signing keys.
+verify_jwt = false

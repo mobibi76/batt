@@ -1,0 +1,27 @@
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import { matchCells } from '../_shared/matching.ts';
+const cors={'Access-Control-Allow-Origin':'https://mobibi76.github.io','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin'};
+Deno.serve(async (req: Request)=>{
+  const headers={...cors,'Content-Type':'application/json'};
+  const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers});
+  if(req.method==='OPTIONS') return new Response(null,{headers:cors});
+  if(req.method!=='POST') return reply({error:'Method not allowed'},405);
+  const authorization=req.headers.get('Authorization');
+  if(!authorization?.startsWith('Bearer ')) return reply({error:'로그인이 필요합니다.'},401);
+  const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!,{global:{headers:{Authorization:authorization}},auth:{persistSession:false}});
+  const {data:{user},error:authError}=await db.auth.getUser(authorization.slice(7));
+  if(authError||!user) return reply({error:'로그인이 필요합니다.'},401);
+  const {data:profile}=await db.from('profiles').select('role,status').eq('id',user.id).single();
+  if(profile?.status!=='approved'||!['admin','operator'].includes(profile.role)) return reply({error:'승인된 작업자만 사용할 수 있습니다.'},403);
+  try {
+    if(Number(req.headers.get('content-length')||0)>2048) return reply({error:'요청이 너무 큽니다.'},413);
+    const body=await req.json();
+    if(body.lot && (typeof body.lot!=='string'||body.lot.length>80)) return reply({error:'잘못된 LOT'},400);
+    let query=db.from('cells').select('*').eq('status','available').order('id').limit(501);
+    if(body.lot) query=query.eq('lot',body.lot);
+    const {data,error}=await query;
+    if(error) throw error;
+    const result=matchCells(data||[],body.count??3);
+    return reply(result);
+  } catch(e) { return reply({error:e instanceof Error?e.message:'매칭 요청을 처리할 수 없습니다.'},400); }
+});

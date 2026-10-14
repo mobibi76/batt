@@ -1,0 +1,30 @@
+import {test,expect} from '@playwright/test';
+test('demo process map follows approval and inspection records',async({page})=>{
+ await page.goto('/batt/');
+ await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await expect(page.getByRole('heading',{name:'한눈에 보는 공정 흐름'})).toBeVisible();
+ await page.getByRole('button',{name:'셀 매칭 시작'}).click();
+ await page.getByRole('button',{name:'조합 추천',exact:true}).click();
+ await expect(page.getByRole('button',{name:'조합 검토 · 승인'})).toHaveCount(3);
+ await page.getByRole('button',{name:'조합 검토 · 승인'}).first().click();
+ await page.getByRole('textbox',{name:'팩 일련번호'}).fill('TEST-PACK-001');
+ await page.getByRole('button',{name:'확인 및 승인',exact:true}).click();
+ await page.getByRole('navigation').getByRole('button',{name:'팩 · 검사이력'}).click();
+ await page.getByRole('button',{name:'상세 조회'}).click();
+ await page.getByRole('button',{name:'검사 결과 저장'}).click();
+ await page.getByLabel('검사 구분').selectOption('final');
+ await page.getByRole('button',{name:'검사 결과 저장'}).click();
+ await expect(page.locator('.inspection-list .badge').filter({hasText:'합격'})).toHaveCount(2);
+});
+test('imports XLSX and rejects malformed CSV before upload',async({page})=>{
+ await page.goto('/batt/');
+ await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('navigation').getByRole('button',{name:'셀 데이터'}).click();
+ await page.locator('input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');
+ await expect(page.getByRole('dialog').getByText('형식 검증 완료')).toBeVisible();
+ await page.getByRole('button',{name:'전체 1개 등록'}).click();
+ await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');
+ await expect(page.getByRole('cell',{name:'XLSX-QA-001',exact:true})).toBeVisible();
+ await page.locator('input[type=file]').setInputFiles({name:'bad.csv',mimeType:'text/csv',buffer:Buffer.from('id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\nBAD,LOT,nope,0.42,30000,2026-10-14')});
+ await expect(page.getByRole('dialog').getByRole('button',{name:'전체 1개 등록'})).toBeDisabled();
+});

@@ -12,7 +12,7 @@ JSI의 브라우저 기반 공정 조립·관제 샌드박스다. 장비 블록�
 | 셀 측정기 | [HIOKI BT3562A](https://www.hioki.com/global/products/resistance-meters/battery/id_6826) | OCV·AC 내부저항 측정, LAN 인터페이스 제공. AC-IR과 연구 데이터의 DC 펄스 저항은 같은 측정량으로 취급하지 않는다. |
 | 접합 장비 | [AMADA WELD TECH 배터리 접합 자료](https://amadaweldtech.com/technical-whitepaper/battery-welding-using-laser-resistance-and-micro-tig-technologies/) | 배터리 접합에 레이저·저항·Micro-TIG 방식이 사용될 수 있다는 기술 자료. 현장의 채택 방식은 미정이며 특정 기종을 구현하지 않았다. |
 | 충방전·에이징 랙 | [Chroma 17020](https://www.chromaate.com/en/product/regenerative_battery_pack_test_system_17020_221) | 독립 채널의 충방전 시험, 전압·전류·온도 관측 기능을 참고. 채널 수·샘플링 속도·실제 시험 레시피를 재현하지 않는다. |
-| 매칭·조립대 / 최종검사대 | JSI 공정의 가상 작업대 | 작업자 승인·검사라는 논리 공정의 표현이며 실제 승인이나 검사 결과를 생성하지 않는다. |
+| 매칭·조립대 / 최종검사대 | JSI 공정의 가상 작업대 | 공정 담당자 확인·검사라는 논리 공정의 표현이며 실제 승인이나 검사 결과를 생성하지 않는다. |
 
 ## 데이터와 실행 규칙
 

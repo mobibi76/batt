@@ -11,9 +11,9 @@ test('quality-first overview updates queues, traceability and latest-result defe
   expect(sections).toEqual(['quality-priorities', 'panel work-queues', 'panel process-panel', 'panel throughput-panel']);
   await page.getByRole('button', { name: '셀 매칭 시작' }).click();
   await page.getByRole('button', { name: '조합 추천', exact: true }).click();
-  await page.getByRole('button', { name: '조합 검토 · 승인' }).first().click();
+  await page.getByRole('button', { name: '조합 검토 · 확정' }).first().click();
   await page.getByRole('textbox', { name: '팩 일련번호' }).fill('QUALITY-OVERVIEW');
-  await page.getByRole('button', { name: '확인 및 승인', exact: true }).click();
+  await page.getByRole('button', { name: '확인 및 팩 구성', exact: true }).click();
   await overview();
   await expect(page.locator('.queue-value')).toHaveText(['2조합', '1팩', '0팩']);
   await expect(outcomes.locator('.outcome-value')).toHaveText(['—', '0%']);

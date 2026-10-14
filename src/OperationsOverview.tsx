@@ -33,8 +33,8 @@ export function WorkQueues({ packs, tests, recommendations, onNavigate }: Props 
   return <section className="panel work-queues" aria-label="공정별 대기량">
     <div className="section-head"><div><div className="eyebrow">03 · 다음 작업</div><h2>공정별 대기량</h2><p>등록 기록 기준 · 승인 대기 조합은 현재 실행 결과입니다.</p></div></div>
     <div className="queue-grid">{[
-      { label: '조합 승인 대기', value: recommendations, unit: '조합', detail: '현재 실행의 미승인 추천', tab: 'matching' as const },
-      { label: '에이징 기록 대기', value: queues.aging, unit: '팩', detail: '에이징 기록이 없는 승인 팩', tab: 'packs' as const },
+      { label: '조합 확인 대기', value: recommendations, unit: '조합', detail: '현재 실행의 미확정 추천', tab: 'matching' as const },
+      { label: '에이징 기록 대기', value: queues.aging, unit: '팩', detail: '에이징 기록이 없는 구성 팩', tab: 'packs' as const },
       { label: '최종검사 기록 대기', value: queues.final, unit: '팩', detail: '에이징 기록 있음 · 최종검사 없음', tab: 'packs' as const },
     ].map(item => <button className={`queue-card ${item.value ? 'waiting' : ''}`} key={item.label} onClick={() => onNavigate(item.tab)}>
       <strong>{item.label}</strong><span className="queue-value">{number(item.value)}<small>{item.unit}</small></span><span>{item.detail}</span><span className="queue-link">작업 화면 보기 <ArrowRight className="icon-14"/></span>
@@ -47,7 +47,7 @@ export function Throughput({ cells, available, packs, tested }: { cells: number;
   return <section className="panel throughput-panel" aria-label="누적 처리량">
     <div className="section-head"><div><div className="eyebrow">04 · 업무량</div><h2>누적 처리량</h2><p>전체 등록 기간 기준 · 당일 생산량이나 출하량이 아닙니다.</p></div></div>
     <dl className="throughput-grid">{[
-      ['등록 셀', cells, '셀'], ['승인 팩', packs, '팩'], ['최종검사 기록 팩', tested, '팩'],
+      ['등록 셀', cells, '셀'], ['구성 팩', packs, '팩'], ['최종검사 기록 팩', tested, '팩'],
     ].map(([label, value, unit]) => <div key={label}><dt>{label}</dt><dd>{number(Number(value))}<small>{unit}</small></dd></div>)}</dl>
     <p className="throughput-note">현재 매칭 가능 재고 {number(available)}셀 · 처리량은 불량률 개선 성과와 별도로 집계합니다.</p>
   </section>;

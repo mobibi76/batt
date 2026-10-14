@@ -11,8 +11,8 @@ Deno.serve(async (req: Request)=>{
   const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!,{global:{headers:{Authorization:authorization}},auth:{persistSession:false}});
   const {data:{user},error:authError}=await db.auth.getUser(authorization.slice(7));
   if(authError||!user) return reply({error:'로그인이 필요합니다.'},401);
-  const {data:profile}=await db.from('profiles').select('role,status').eq('id',user.id).single();
-  if(profile?.status!=='approved'||!['admin','operator'].includes(profile.role)) return reply({error:'승인된 작업자만 사용할 수 있습니다.'},403);
+  const {data:allowed,error:permissionError}=await db.rpc('can_confirm_stage',{stage:'assembly'});
+  if(permissionError||!allowed) return reply({error:'셀 등록·매칭 담당 권한이 필요합니다.'},403);
   try {
     if(Number(req.headers.get('content-length')||0)>2048) return reply({error:'요청이 너무 큽니다.'},413);
     const body=await req.json();

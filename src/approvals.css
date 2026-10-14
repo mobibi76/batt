@@ -1,4 +1,8 @@
 .approval-workspace { display:grid; gap:var(--space-22); }
+.confirmation-summary { display:grid; grid-template-columns:max-content minmax(0,1fr); gap:var(--space-12) var(--space-16); align-items:center; margin:var(--space-16) 0 0; }
+.confirmation-summary > div { display:contents; }
+.confirmation-summary dt { font-weight:var(--weight-semibold); }
+.confirmation-summary dd { margin:0; overflow-wrap:anywhere; }
 .approval-workspace .notice { margin:0; }
 .approval-intro { align-items:flex-start; }
 .approval-intro > svg { flex-shrink:0; }
@@ -36,4 +40,4 @@
 .approval-history p { margin:var(--space-7) 0; }
 .approval-workspace .section-head { flex-wrap:wrap; gap:var(--space-12); }
 .approval-workspace .section-head > button { white-space:normal; max-width:100%; }
-@media(max-width:800px) { .approval-evidence { grid-template-columns:1fr; } .approval-filters { flex-direction:column; align-items:stretch; } }
+@media(max-width:800px) { .confirmation-summary { grid-template-columns:minmax(0,1fr); } .approval-evidence { grid-template-columns:1fr; } .approval-filters { flex-direction:column; align-items:stretch; } }

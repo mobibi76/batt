@@ -5,10 +5,10 @@ test('demo process map follows approval and inspection records',async({page})=>{
  await expect(page.getByRole('heading',{name:'한눈에 보는 공정 흐름'})).toBeVisible();
  await page.getByRole('button',{name:'셀 매칭 시작'}).click();
  await page.getByRole('button',{name:'조합 추천',exact:true}).click();
- await expect(page.getByRole('button',{name:'조합 검토 · 승인'})).toHaveCount(3);
- await page.getByRole('button',{name:'조합 검토 · 승인'}).first().click();
+ await expect(page.getByRole('button',{name:'조합 검토 · 확정'})).toHaveCount(3);
+ await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();
  await page.getByRole('textbox',{name:'팩 일련번호'}).fill('TEST-PACK-001');
- await page.getByRole('button',{name:'확인 및 승인',exact:true}).click();
+ await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await page.getByRole('navigation').getByRole('button',{name:'팩 · 검사이력'}).click();
  await page.getByRole('button',{name:'상세 조회'}).click();
  await page.getByRole('button',{name:'검사 결과 저장'}).click();

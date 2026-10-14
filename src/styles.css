@@ -1836,6 +1836,12 @@ td,th {
 .attention-list { padding-left: var(--space-20); }
 .metric-context { margin: var(--space-12) 0; font-size: var(--font-size-12); color: var(--color-ink-secondary); }
 .metric-context summary { cursor: pointer; }
+.member-permissions summary { cursor: pointer; font-weight: var(--weight-semibold); }
+.member-permission-fields { display: grid; gap: var(--space-12); padding: var(--space-12) 0; }
+.member-permission-fields fieldset { border: 1px solid var(--color-border); border-radius: var(--radius-7); padding: var(--space-12); }
+.member-permission-fields label { display: flex; align-items: center; gap: var(--space-9); }
+.member-permission-fields input { width: auto; min-height: 0; margin: 0; accent-color: var(--color-brand); }
+.member-permission-fields small { color: var(--color-ink-secondary); }
 .search input { min-height: 0; margin: 0; line-height: var(--control-line-height); }
 .primary svg, .secondary svg, .small-button svg, .text-button svg, .search > svg { flex-shrink: 0; }
 @media (max-width: 800px) {

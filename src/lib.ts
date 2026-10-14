@@ -2,9 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import Papa from 'papaparse';
 import type { Cell } from '../supabase/functions/_shared/matching';
 export const supabase=createClient('https://asfrsorbzmqhnwnxlxar.supabase.co','sb_publishable_LrFnxngIgK3b6vGzBd469Q_n-DSu3dy');
-export type Profile={id:string;email:string;display_name:string;role:'admin'|'operator'|'viewer';status:'pending'|'approved'|'rejected'|'suspended';created_at:string;quality_reviewer?:boolean};
-export type Pack={id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
-export type Inspection={id:string;pack_id:string;kind:'aging'|'final';result:'pass'|'fail';note:string;created_at:string};
+export type Profile={id:string;email:string;display_name:string;role:'admin'|'operator'|'viewer';status:'pending'|'approved'|'rejected'|'suspended';created_at:string;quality_reviewer?:boolean;process_stages?:('assembly'|'aging'|'final')[]};
+export type Pack={created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
+export type Inspection={created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'final';result:'pass'|'fail';note:string;created_at:string};
 export const number=(v:number,d=0)=>v.toLocaleString('ko-KR',{maximumFractionDigits:d});
 export const date=(v:string)=>new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 export function sampleCells():Cell[] {

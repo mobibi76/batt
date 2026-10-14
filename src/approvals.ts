@@ -7,6 +7,11 @@ export type PackSnapshot={pack:Pack;cells:Cell[];aging:Inspection;final:Inspecti
 export type ApprovalEvent={id:number;request_id:string;actor:string;actor_name:string;action:ApprovalStatus|'submitted';note:string;created_at:string};
 export type Approval={id:string;kind:'pack'|'twin';pack_id:string|null;title:string;snapshot:PackSnapshot|Layout;request_note:string;status:ApprovalStatus;submitted_by:string;submitted_name:string;submitted_at:string;reviewed_by:string|null;reviewed_name:string|null;reviewed_at:string|null;decision_note:string|null;events?:ApprovalEvent[]};
 export const requestColumns='id,kind,pack_id,title,request_note,status,submitted_by,submitted_name,submitted_at,reviewed_by,reviewed_name,reviewed_at,decision_note';
+export function participatedInPack(request:Approval,actor:string){
+ if(request.kind!=='pack')return false;
+ const evidence=request.snapshot as PackSnapshot;
+ return [evidence.pack.created_by,evidence.aging.created_by,evidence.final.created_by].includes(actor);
+}
 export function latestInspection(tests:Inspection[],packId:string,kind:Inspection['kind']){return tests.filter(t=>t.pack_id===packId&&t.kind===kind).sort((a,b)=>b.created_at.localeCompare(a.created_at)||b.id.localeCompare(a.id))[0];}
 export function packEvidence(pack:Pack,cells:Cell[],tests:Inspection[]):PackSnapshot {
  const aging=latestInspection(tests,pack.id,'aging'),final=latestInspection(tests,pack.id,'final');
@@ -25,6 +30,7 @@ export function demoDecision(r:Approval,actor:string,decision:'approved'|'reject
  if(actor!=='demo-reviewer')throw Error('품질 승인 권한이 필요합니다.');
  if(r.status!=='pending')throw Error('이미 처리되었거나 변경된 요청입니다.');
  if(r.submitted_by===actor)throw Error('자신이 제출한 요청은 다른 승인자가 검토해야 합니다.');
+ if(participatedInPack(r,actor))throw Error('본인이 공정 확인한 팩은 다른 품질 승인권자가 검토해야 합니다.');
  if(!note.trim())throw Error('검토 의견을 입력하세요.');
  if(decision==='approved'&&r.kind==='pack'&&((r.snapshot as PackSnapshot).aging.result!=='pass'||(r.snapshot as PackSnapshot).final.result!=='pass'))throw Error('에이징·최종검사가 모두 합격이어야 품질 승인할 수 있습니다.');
  const now=new Date().toISOString();return {...r,status:decision,reviewed_by:actor,reviewed_name:'체험 승인자',reviewed_at:now,decision_note:note,events:[...(r.events||[]),{id:(r.events?.length||0)+1,request_id:r.id,actor,actor_name:'체험 승인자',action:decision,note,created_at:now}]};

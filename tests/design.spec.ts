@@ -8,7 +8,7 @@ for (const width of [1440, 900, 768, 390, 320]) {
     await page.getByRole('button', { name: '사용 권한 신청', exact: true }).click();
     await expect(page.getByLabel('이름', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: '샘플 데이터로 체험하기' }).click();
-    for (const name of ['운영 현황', '셀 데이터', '셀 매칭', '팩 · 검사이력', '품질 리포트', '알고리즘 검증', '가상 디지털 트윈', '사용자 관리']) {
+    for (const name of ['운영 현황', '셀 데이터', '셀 매칭', '팩 · 검사이력', '품질 리포트', '알고리즘 검증', '가상 디지털 트윈', '품질·공정 승인함', '사용자 관리']) {
       await page.getByRole('navigation').getByRole('button', { name, exact: true }).click();
       await expect(page.locator('.page-heading h1')).toHaveText(name);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

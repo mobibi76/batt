@@ -2,6 +2,7 @@ import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
  await page.goto('/batt/');
  await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByText('공정 흐름·트윈 관제 보기',{exact:true}).click();
  await expect(page.getByRole('heading',{name:'한눈에 보는 공정 흐름'})).toBeVisible();
  await page.getByRole('button',{name:'셀 매칭 시작'}).click();
  await page.getByRole('button',{name:'조합 추천',exact:true}).click();
@@ -19,7 +20,7 @@ test('demo process map follows approval and inspection records',async({page})=>{
 test('imports XLSX and rejects malformed CSV before upload',async({page})=>{
  await page.goto('/batt/');
  await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- await page.getByRole('navigation').getByRole('button',{name:'셀 데이터'}).click();
+ await page.getByRole('navigation',{name:'주요 업무'}).getByRole('button',{name:'셀 매칭',exact:true}).click();await page.getByRole('navigation').getByRole('button',{name:'셀 데이터'}).click();
  await page.locator('input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');
  await expect(page.getByRole('dialog').getByText('형식 검증 완료')).toBeVisible();
  await page.getByRole('button',{name:'전체 1개 등록'}).click();

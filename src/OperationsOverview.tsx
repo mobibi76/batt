@@ -1,4 +1,4 @@
-﻿import { ArrowRight, Activity, Link2 } from 'lucide-react';
+import { ArrowRight, Activity, Link2 } from 'lucide-react';
 import type {PackFilter} from './workflow';
 import { number, qualitySummary, inspectionQueues, type Pack, type Inspection } from './lib';
 
@@ -8,7 +8,6 @@ export function QualityPriorities({ packs, tests, onNavigate }: Props) {
   const q = qualitySummary(packs, tests);
   return <section className="quality-priorities" aria-label="핵심 품질 지표">
     <article className={`panel outcome-card ${q.failed ? 'needs-attention' : ''}`}>
-      <div className="outcome-title"><span className="eyebrow">01 · 품질 성과</span><Activity className="icon-20"/></div>
       <h2>최종검사 불량률</h2>
       <div className="outcome-value">{q.rate === null ? '—' : number(q.rate, 2)}{q.rate !== null && <span>%</span>}</div>
       <p className="outcome-basis">{q.tested ? `불합격 ${number(q.failed)}팩 / 최종검사 ${number(q.tested)}팩` : '최종검사 기록이 없어 아직 집계할 수 없습니다.'}</p>
@@ -17,7 +16,6 @@ export function QualityPriorities({ packs, tests, onNavigate }: Props) {
       <button className="text-button" onClick={() => onNavigate('quality')}>집계 기준·품질 리포트 <ArrowRight className="icon-15"/></button>
     </article>
     <article className="panel outcome-card">
-      <div className="outcome-title"><span className="eyebrow">02 · 검사 추적성</span><Link2 className="icon-20"/></div>
       <h2>검사 이력 연결률</h2>
       <div className="outcome-value">{q.linkRate === null ? '—' : number(q.linkRate, 1)}{q.linkRate !== null && <span>%</span>}</div>
       <p className="outcome-basis">{packs.length ? `완전 연결 ${number(q.linked)}팩 / 전체 ${number(packs.length)}팩 · 미연결 ${number(packs.length - q.linked)}팩` : '등록된 팩이 없어 아직 집계할 수 없습니다.'}</p>

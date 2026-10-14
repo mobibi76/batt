@@ -1,0 +1,12 @@
+import {BatteryCharging,LayoutDashboard,Sparkles,Boxes,ClipboardCheck,ShieldCheck,Users,LogOut} from 'lucide-react';
+import type {Profile} from './lib';
+export type Tab='overview'|'cells'|'matching'|'packs'|'quality'|'members'|'research'|'twin'|'approvals';
+const items=[{id:'overview',label:'운영 현황',icon:LayoutDashboard},{id:'matching',label:'셀 매칭',icon:Sparkles},{id:'packs',label:'팩 · 검사이력',icon:Boxes},{id:'approvals',label:'품질·공정 승인함',icon:ShieldCheck},{id:'quality',label:'품질 분석',icon:ClipboardCheck},{id:'twin',label:'공정 관리',icon:Boxes}] as const;
+export const parentTab=(tab:Tab)=>tab==='cells'?'matching':tab==='research'?'quality':tab;
+export default function WorkspaceNavigation({tab,profile,demo,pending,onNavigate,onLeave}:{tab:Tab;profile:Profile;demo:boolean;pending:number;onNavigate:(tab:Tab)=>void;onLeave:()=>void}){
+ return <aside className="sidebar decision-sidebar"><div className="brand"><span className="brand-icon"><BatteryCharging/></span><span>JSI<small className="brand-sub">주성산업 · 품질관리</small></span></div><nav aria-label="주요 업무">{items.map(item=><button key={item.id} title={item.label} aria-label={item.label} aria-current={parentTab(tab)===item.id?'page':undefined} className={parentTab(tab)===item.id?'active':''} onClick={()=>onNavigate(item.id)}><item.icon className="icon-19"/>{item.label}</button>)}</nav><div className="sidebar-bottom">{profile.role==='admin'&&<nav aria-label="관리자 설정"><button title="사용자 관리" aria-label="사용자 관리" className={tab==='members'?'active':''} onClick={()=>onNavigate('members')}><Users className="icon-19"/>사용자 관리{pending>0&&<span className="nav-count">{pending}</span>}</button></nav>}<button className="user-card" title="로그아웃" aria-label="로그아웃" onClick={onLeave}><span className="user-avatar">{profile.display_name[0]}</span><span>{profile.display_name}<small>{demo?'체험 모드':profile.role==='admin'?'관리자':profile.role==='viewer'?'조회자':'공정 구성원'}</small></span><LogOut className="icon-17"/></button></div></aside>;
+}
+export function WorkspaceSections({tab,onNavigate}:{tab:Tab;onNavigate:(tab:Tab)=>void}){
+ const options=parentTab(tab)==='matching'?[{id:'matching',label:'셀 매칭'},{id:'cells',label:'셀 데이터'}]:parentTab(tab)==='quality'?[{id:'quality',label:'품질 리포트'},{id:'research',label:'알고리즘 검증'}]:[];
+ return options.length?<nav className="workspace-sections" aria-label="업무 단계">{options.map(item=><button key={item.id} className={tab===item.id?'primary':'secondary'} aria-current={tab===item.id?'page':undefined} onClick={()=>onNavigate(item.id as Tab)}>{item.label}</button>)}</nav>:null;
+}

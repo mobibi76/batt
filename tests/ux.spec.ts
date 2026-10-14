@@ -5,7 +5,7 @@ test('monitoring never presents a simulation as live equipment and leaving simul
  await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
  await expect(page.locator('.throughput-grid')).not.toBeVisible();
  await expect(page.locator('.quality-priorities')).toBeVisible();
- await page.getByRole('navigation').getByRole('button',{name:'가상 디지털 트윈',exact:true}).click();
+ await page.getByRole('navigation').getByRole('button',{name:'공정 관리',exact:true}).click();
  await expect(page.getByRole('heading',{name:'실제 장비 미연결'})).toBeVisible();
  await expect(page.getByRole('button',{name:'가상 실행',exact:true})).toHaveCount(0);
  await expect(page.locator('.twin-readings')).toHaveCount(0);

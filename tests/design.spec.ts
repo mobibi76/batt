@@ -8,12 +8,16 @@ for (const width of [1440, 900, 768, 390, 320]) {
     await page.getByRole('button', { name: '사용 권한 신청', exact: true }).click();
     await expect(page.getByLabel('이름', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: '샘플 데이터로 체험하기' }).click();
-    for (const name of ['운영 현황', '셀 데이터', '셀 매칭', '팩 · 검사이력', '품질 리포트', '알고리즘 검증', '가상 디지털 트윈', '품질·공정 승인함', '사용자 관리']) {
+    for (const name of ['운영 현황', '셀 데이터', '셀 매칭', '팩 · 검사이력', '품질 리포트', '알고리즘 검증', '공정 관리', '품질·공정 승인함', '사용자 관리']) {
+      if(name==='셀 데이터'||name==='셀 매칭')await page.getByRole('navigation',{name:'주요 업무'}).getByRole('button',{name:'셀 매칭',exact:true}).click();
+      if(name==='품질 리포트'||name==='알고리즘 검증')await page.getByRole('navigation',{name:'주요 업무'}).getByRole('button',{name:'품질 분석',exact:true}).click();
+      if(name!=='셀 매칭')
       await page.getByRole('navigation').getByRole('button', { name, exact: true }).click();
       await expect(page.locator('.page-heading h1')).toHaveText(name);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       const account = await page.locator('.user-card').boundingBox();
       expect(account!.y + account!.height).toBeLessThanOrEqual(720);
+      expect(await page.locator('.sidebar > nav').evaluate(el=>el.scrollHeight<=el.clientHeight)).toBe(true);
       if (name === '셀 데이터') {
         const boxes = await page.locator('.upload-actions > *').evaluateAll(elements => elements.map(element => {
           const box = element.getBoundingClientRect();
@@ -24,7 +28,7 @@ for (const width of [1440, 900, 768, 390, 320]) {
         expect(searchBox!.height).toBe(42);
         expect(boxes[0]).toEqual(boxes[1]);
         if (width < 800) {
-          const heading = await page.locator('.panel .section-head h2').boundingBox();
+          const heading = await page.getByRole('heading',{name:/셀 재고/}).boundingBox();
           const search = await page.locator('.search').boundingBox();
           expect(search!.y).toBeGreaterThan(heading!.y + heading!.height);
         }

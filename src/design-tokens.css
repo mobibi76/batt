@@ -225,4 +225,8 @@
   --chart-area-opacity: 0.24;
   --control-line-height: 20px;
   --panel-padding-inline: var(--space-23);
+  --twin-library-width: 232px;
+  --twin-viewport-height: 490px;
+  --twin-viewport-mobile-height: 360px;
+  --twin-card-min-width: 155px;
 }

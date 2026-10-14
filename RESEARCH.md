@@ -1,0 +1,49 @@
+﻿# 공개 데이터 알고리즘 검증 모드
+
+운영 셀·팩·검사 DB에 쓰지 않는 브라우저 연구 공간이다. 승인된 사용자(관리자/작업자/조회자)와 합성 데이터 체험 사용자가 접근할 수 있다. 사용자는 자료를 고르고 연구용 허용 편차와 시드를 정한 뒤 알고리즘을 비교한다. 최근 10개 보고서는 사용자 ID별 브라우저 localStorage에 보관한다. 다른 PC와 동기화하지 않으며 브라우저 저장소를 지우면 사라진다. JSON 내려받기로 원본 표본과 결과를 보존할 수 있다.
+
+## 탑재한 실측 자료
+
+- 원본: Li, Tingkai et al. (2025), **UConn-MathWorks LFP/Gr Second-Life Battery Aging Dataset**, https://digitalcommons.lib.uconn.edu/reil_datasets/3/ — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+- 전처리 자료: Navidi, Sina et al. (2026), **SOC-agnostic rapid state-of-health estimation of lithium-ion batteries**, DOI https://doi.org/10.1016/j.apenergy.2026.128451.
+- 공식 연구진 저장소: https://github.com/REIL-UConn/SOC-Agnostic-Rapid-State-of-Health-Estimation-of-Lithium-Ion-Batteries — MIT; 저작권 및 허가문은 `public/research/UCONN-PROCESSED-LICENSE.txt`에 보존.
+- 원본 대학 다운로드가 403을 반환하여 연구진의 공개 `data/ecm_stat_features.zip` 수치 CSV를 사용했다. 원본 논문의 모델 코드는 실행하거나 복제하지 않았다.
+- 제공 자료 전체 108셀과 이번 표본을 구분한다. 이번 버전은 Batch 1–3, RPT=0, SOC 45–55%에서 배치/셀당 SOC 50%에 가장 가까운 펄스 하나만 선택한 **55셀(23/24/8)**이다. Batch 4–5는 전처리 조건 차이가 있어 포함하지 않는다.
+- 전압: `V_meas_str`의 첫 샘플 ×1000 (mV). 원본 전처리상 펄스 직전 전압.
+- 저항: `R0_manual` ×1000 (mΩ). 펄스 단계의 ΔV/ΔI로 추정한 값이다. 원본의 추가 배율이 적용된 `R0_used`나 생산 ACIR로 취급하지 않는다.
+- 용량: `soh_Ah` ×1000 (mAh). 30Ah로 확대하거나 합성하지 않는다.
+- 원본 행 번호, 셀 ID, 시험 그룹, SOC, RPT, 배치별 CSV SHA-256, ZIP SHA-256, 고정 소스 commit을 `public/research/uconn-lfp.json`에 기록한다.
+- 온도는 전처리 CSV에 없으며 SOC도 정확히 같지 않다. 시험 그룹별 이력 차이가 있을 수 있다. 따라서 초기 조건에서의 탐색용 비교이며 현장 성능이나 불량 예측의 증거가 아니다.
+
+재현:
+
+```powershell
+node scripts/fetch_uconn.mjs
+# 위 명령이 출력하는 python scripts/prepare_uconn.py 명령 실행
+```
+
+추출기는 Python 표준 라이브러리만 사용하고, 숫자 CSV만 읽는다. 대용량 원본은 `.local/`에 보관하여 Git에 배포하지 않는다. 웹에는 55개 수치와 출처만 배포한다.
+
+## 비교 엔진
+
+`src/research/engine.ts`, 버전 `research-matching-1.0.0`.
+
+1. `sequence-v1`: 고정 시드 Fisher–Yates 순열을 8개씩 묶는 대조군.
+2. `capacity-sort-v1`: 같은 셀을 용량 오름차순으로 묶는다. 동점은 ID로 처리한다.
+3. `multi-start-nearest-v1`: 각 셀을 시작점으로 허용 편차로 정규화한 세 변수 거리의 근접 셀을 탐색한다. 그룹에 추가할 때마다 세 편차의 상한을 확인한다. 가능한 8셀 그룹 중 평균 정규화 편차가 가장 낮은 그룹을 확정하고 사용 셀을 제거한다. 전역 최적 팩 수나 최적 비용을 보장하지 않는다.
+
+동일 입력·허용 편차에서 각 알고리즘을 시드 s..s+4로 반복한다. 이것은 동일 셀의 순서 민감도를 보는 것이며 독립 표본 5배, 교차검증, 신뢰구간 또는 확정 시험 성능이 아니다. 모든 그룹은 배치/조건 cohort 내부에서 생성한다. 8셀 미만 그룹은 제외 사실을 표시한다. 8셀만 있는 그룹은 조합 선택의 여지가 없다.
+
+기본 연구 상한 10mV / 5mΩ / 60mAh는 탐색을 위한 설정이며 생산 SOP(10mV / 0.01mΩ / 500mAh)와 다르다. 운영 기준으로 자동 승격하지 않는다.
+
+적합 팩 비율은 적합 팩 수 / floor(입력 셀 수 / 8). 미배정 셀은 입력 셀 수 - 적합 팩 수 ×8. 평균 편차는 적합 그룹만의 평균이므로 반드시 확보 팩 수와 같이 비교해야 한다. 미배정 셀을 감춰 좋은 편차만 주장하지 않는다. 실행시간은 클라이언트 하드웨어와 워커 실행 환경에 의존한다.
+
+## 추가 자료 및 운영 이관
+
+검증 CSV: `id,cohort,voltage_mv,resistance_mohm,capacity_mah,soc_pct` (SOC 선택). 8–300개 독립 셀, 2MB 이하. 출처·라이선스·측정 조건을 입력해야 한다. 단위·물리 셀의 동일성·cohort 비교 가능성은 원자료와 대조해야 한다. 사용자 CSV는 출처가 독립 검증된 데이터로 표시하지 않는다.
+
+Severson은 동일 측정 시점과 조건의 셀별 요약을 전처리하여 이 스키마로 가져올 수 있다. 아직 원본을 탑재한 것은 아니다. 24V 8직렬 실사용 데이터와 AI Hub 결함 이미지는 다른 연구 과제(시계열 이상탐지·영상 검사)이며 이 조합 엔진에는 연결하지 않았다.
+
+보고서는 입력 전체와 데이터 SHA-256, 소스 버전, 엔진 버전, 조건, 시드, 반복별 조합·편차·판정·시간을 포함한다. 운영 적용은 현장 독립 LOT 비교, 실제 팩 검사 라벨, 측정법과 제품 규격의 적합성, 운영 서버 SOP 재검증을 거쳐 별도 변경으로 진행한다. 검증 모드의 버튼으로 운영 알고리즘을 바꾸지 않는다.
+
+검증: `npm test` 및 `npm run test:e2e`. 재현성, 셀 중복 방지, 조건 상한, 다른 배치의 혼합 차단, 잘못된 입력 차단, 파일 내보내기와 이력 복구, 운영 지표 격리를 포함한다.

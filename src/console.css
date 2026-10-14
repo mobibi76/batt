@@ -1,0 +1,35 @@
+.console-shell .sidebar, .console-shell .topbar, .console-shell .demo-banner, .console-shell .page-heading, .console-shell .data-freshness, .console-shell .workspace-sections, .console-shell .footer { display:none; }
+.console-shell .main-column { margin:0; width:100%; }
+.console-shell .content { max-width:none; padding:0; }
+.operations-console { height:100dvh; display:grid; grid-template-rows:auto auto auto minmax(0,1fr) auto; gap:var(--space-8); padding:var(--space-12); background:var(--color-surface-subtle); }
+.console-header, .console-mode, .console-tabs, .console-footer, .console-pager, .console-section-title { display:flex; align-items:center; justify-content:space-between; gap:var(--space-8); }
+.console-tabs { justify-content:flex-start; }
+.console-tabs button { flex:1; }
+.console-source, .console-footer { font-size:var(--font-size-12); color:var(--color-ink-secondary); }
+.console-source.stale { color:var(--color-danger-ink); }
+.console-content { min-height:0; background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-8); }
+.console-space { height:100%; display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); }
+.console-scene { position:relative; min-height:0; min-width:0; }
+.console-scene .twin-viewport { height:100%; min-height:0; border-radius:var(--radius-8); }
+.console-scene-caption { position:absolute; bottom:var(--space-8); left:var(--space-8); right:var(--space-8); background:var(--color-surface); padding:var(--space-7); font-size:var(--font-size-12); }
+.console-space-info, .console-focus, .console-decision { padding:var(--space-16); display:flex; flex-direction:column; justify-content:center; gap:var(--space-12); height:100%; min-height:0; }
+.console-space-info p, .console-focus p, .console-decision p { margin:0; }
+.console-stage-buttons { display:grid; gap:var(--space-8); }
+.console-decision { justify-content:space-between; }
+.console-section-title h2, .console-focus h2 { margin:0; }
+.console-target { padding:var(--space-16); border-left:var(--space-4) solid var(--color-brand); background:var(--color-surface-subtle); }
+.console-target.attention { border-color:var(--color-danger-ink); }
+.console-target h3 { margin:0 0 var(--space-8); overflow-wrap:anywhere; }
+.console-target-action { display:flex; justify-content:flex-end; }
+.console-prompt { display:flex; flex-direction:column; align-items:flex-start; gap:var(--space-12); }
+.console-number { font-size:var(--font-size-43); }
+.console-focus { max-width:800px; margin:auto; }
+.console-focus button { align-self:flex-start; }
+.console-footer button { min-height:var(--control-height); }
+.console-return { margin-bottom:var(--space-12); }
+@media(max-width:700px) { .console-space { grid-template-columns:1fr; grid-template-rows:minmax(0,1fr) auto; } .console-space-info { padding:var(--space-8); gap:var(--space-7); } .console-stage-buttons { grid-template-columns:repeat(3,minmax(0,1fr)); } .console-stage-buttons button { padding:var(--space-8); white-space:normal; } .console-tabs { gap:var(--space-4); } .console-tabs button { padding:var(--space-8) var(--space-4); white-space:normal; } .console-header>strong { font-size:var(--font-size-12); } .console-footer { font-size:var(--font-size-10); } .console-focus, .console-decision { padding:var(--space-12); gap:var(--space-8); } }
+@media(max-height:540px) { .operations-console { gap:var(--space-4); padding:var(--space-8); } .console-space { grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:1fr; } .console-space-info { font-size:var(--font-size-12); gap:var(--space-4); padding:var(--space-8); } .console-space-info p, .console-space-info small { display:none; } .console-stage-buttons { grid-template-columns:1fr; gap:var(--space-4); } .console-focus, .console-decision { gap:var(--space-4); padding:var(--space-8); } .console-target { padding:var(--space-8); } .console-number { font-size:var(--font-size-30); } }
+.console-confirmation { height:100%; display:flex; flex-direction:column; justify-content:space-evenly; padding:var(--space-12); gap:var(--space-8); max-width:800px; margin:auto; }
+.console-confirmation h2, .console-confirmation p, .console-confirmation label { margin:0; }
+.console-confirmation textarea { min-height:0; resize:none; }
+.console-confirmation > button { align-self:flex-start; }

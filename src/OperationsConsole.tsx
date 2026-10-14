@@ -1,0 +1,43 @@
+import FieldConfirmation from './FieldConfirmation';
+import {lazy,Suspense,useMemo,useState} from 'react';
+import {qualitySummary,inspectionQueues,number,type Pack,type Inspection,type Profile} from './lib';
+import {prioritizedWork,independentReview,type ApprovalIndex,type PackSignal} from './workflow';
+import {canConfirm,canReview} from './permissions';
+import {defaultLayout,initialSimulation,validateLayout} from './twin/model';
+import type {Tab} from './WorkspaceNavigation';
+import './console.css';
+import './twin.css';
+const TwinScene=lazy(()=>import('./twin/TwinScene'));
+export type WorkMode='field'|'control';
+type View='space'|'decision'|'intake'|'analysis'|'improve';
+type Props={active:boolean;mode:WorkMode;onMode:(mode:WorkMode)=>void;profile:Profile;demo:boolean;packs:Pack[];tests:Inspection[];requests:ApprovalIndex[]|null;cells:number;available:number;lastSync:string;syncError:boolean;approvalError:string;onOpen:(tab:Tab)=>void;onWork:(s:PackSignal)=>void;onLegacy:()=>void;onRecord:(pack:Pack,kind:Inspection['kind'],result:Inspection['result'],note:string)=>Promise<void>};
+export default function OperationsConsole(p:Props){
+ const [recordPack,setRecordPack]=useState<Pack|null>(null);
+ const [view,setView]=useState<View>('space'),[stage,setStage]=useState<'all'|'assembly'|'aging'|'final'>('all'),[chosenId,setChosenId]=useState(''),[deviceId,setDeviceId]=useState('');
+ const [loaded]=useState(()=>{try{const raw=localStorage.getItem(`jsi-twin-v1-${p.profile.id}`);return {layout:raw?validateLayout(JSON.parse(raw)):defaultLayout(),error:false};}catch{return {layout:defaultLayout(),error:true};}});
+ const simulation=useMemo(()=>{const sim=initialSimulation(loaded.layout);for(const machine of Object.values(sim.machines))machine.status='offline';return sim;},[loaded.layout]);
+ const q=qualitySummary(p.packs,p.tests),queues=inspectionQueues(p.packs,p.tests);
+ const all=prioritizedWork(p.packs,p.tests,p.requests,p.profile,p.demo);
+ const work=all.filter(s=>p.mode==='control'?independentReview(s,p.profile,p.demo):independentReview(s,p.profile,false)?false:stage==='all'?true:stage==='assembly'?s.state==='ready'||s.state==='unlinked':stage==='aging'?!s.aging||s.aging.result==='fail':!!s.aging&&(!s.final||s.final.result==='fail'));
+ const index=work.findIndex(s=>s.pack.id===chosenId),current=index<0?null:work[index];
+ const device=loaded.layout.devices.find(d=>d.id===deviceId);
+ const menu=p.mode==='field'?[['space','공정 공간'],['decision','확인·조치']]:[['space','전체 공정'],['decision','최종 품질'],['intake','데이터 인입'],['analysis','분석·보고'],['improve','공정 개선']];
+ function switchMode(mode:WorkMode){p.onMode(mode);setView('space');setChosenId('');}
+ const activeView=p.mode==='field'&&!['space','decision'].includes(view)?'space':view;
+ return <section className="operations-console" aria-label="현장·관제 통합 작업대">
+  <header className="console-header"><strong>주성산업 · 품질 작업대</strong><div className="console-mode" aria-label="업무 모드">{(['field','control'] as const).map(mode=><button key={mode} disabled={!!recordPack} aria-pressed={p.mode===mode} className={p.mode===mode?'primary':'secondary'} onClick={()=>switchMode(mode)}>{mode==='field'?'현장':'관제'}</button>)}</div></header>
+  <div className={`console-source ${p.syncError?'stale':''}`} role="status">{p.demo?'합성 기록 체험':p.syncError?'갱신 실패 · 이전 조회본':p.lastSync?`기록 조회 ${p.lastSync}`:'기록 조회 중'} · 장비 신호 미연결</div>
+  <nav className="console-tabs" aria-label="작업 선택">{menu.map(([id,label])=><button key={id} disabled={!!recordPack} aria-pressed={activeView===id} className={activeView===id?'primary':'secondary'} onClick={()=>setView(id as View)}>{label}</button>)}</nav>
+  <div className="console-content">
+   {recordPack?<FieldConfirmation key={recordPack.id} pack={recordPack} profile={p.profile} demo={p.demo} onRecord={p.onRecord} onClose={()=>setRecordPack(null)}/>:activeView==='space'&&<div className="console-space"><div className="console-scene"><Suspense fallback={<p>공정 공간 준비 중</p>}>{p.active&&<TwinScene layout={loaded.layout} simulation={simulation} selected={deviceId} editing={false} running={false} view="iso" onSelect={setDeviceId} onMove={()=>{}}/>}</Suspense><div className="console-scene-caption">{loaded.error?'저장본 읽기 실패 · 기본 예시 배치':'개인 설계 배치'} · 실측 상태 아님</div></div><div className="console-space-info"><label className="console-device-label">장비 위치<select aria-label="공정 장비 선택" value={deviceId} onChange={e=>setDeviceId(e.target.value)}><option value="">공정 위치 선택</option>{loaded.layout.devices.map(d=><option key={d.id} value={d.id}>{d.name}</option>)}</select></label><p>{device?'장비·팩 매핑 미설정 · 실측 판단 보류':'공간은 위치 파악에, 검사 기록은 품질 판단에 사용합니다.'}</p>{p.mode==='field'?<div className="console-stage-buttons">{([['assembly','셀·조합',p.available],['aging','에이징 대기',queues.aging],['final','최종검사 대기',queues.final]] as const).map(([id,label,count])=><button className="secondary" key={id} onClick={()=>{setStage(id);setView('decision');setChosenId('');}}>{label} <strong>{count}</strong></button>)}</div>:<div className="console-stage-buttons"><button className="secondary" onClick={()=>setView('decision')}>담당 품질 검토 {work.length}건</button><button className="secondary" onClick={()=>setView('intake')}>검사 이력 미연결 {p.packs.length-q.linked}팩</button><button className="secondary" onClick={()=>setView('analysis')}>최종검사 불합격 {q.failed}팩</button></div>}<small>등록 기록 기준 · 장비별 상태와 자동 대응하지 않습니다.</small></div></div>}
+   {!recordPack&&activeView==='decision'&&<div className="console-decision"><div className="console-section-title"><h2>{p.mode==='field'?'담당 확인·조치':'독립 품질 승인'}</h2><button className="text-button" onClick={()=>setStage('all')}>{work.length}건 · 전체 담당 보기</button></div>{p.approvalError&&<p role="status">승인 상태 조회 실패 · 최종 판단 보류</p>}{p.requests===null&&!p.approvalError&&<p>승인 상태 조회 중</p>}
+    {!current?<div className="console-prompt"><strong>{chosenId?'선택한 대상의 상태가 변경되었습니다.':work.length?'다음 판단 대상을 선택하세요.':'현재 담당 범위의 판단 대상이 없습니다.'}</strong>{work.length>0&&<button className="primary" onClick={()=>setChosenId(work[0].pack.id)}>첫 대상 확인</button>}{p.mode==='field'&&(p.demo||canConfirm(p.profile,'assembly'))&&<button className="secondary" onClick={()=>p.onOpen('matching')}>셀 매칭 시작</button>}{p.mode==='control'&&!p.demo&&!canReview(p.profile)&&<p>최종 승인은 별도로 지정된 승인권자가 수행합니다.</p>}</div>:<><div className={`console-target ${current.failed?'attention':''}`}><h3>{current.pack.serial_no}</h3><strong>{current.reason}</strong><p>에이징 {current.aging?(current.aging.result==='pass'?'합격':'불합격'):'기록 없음'} · 최종검사 {current.final?(current.final.result==='pass'?'합격':'불합격'):'기록 없음'}</p></div><div className="console-target-action"><button className="primary" onClick={()=>p.mode==='field'?setRecordPack(current.pack):p.onWork(current)}>{p.mode==='field'?'검사 확인·기록':'제출본 검토'}</button></div></>}
+    <div className="console-pager"><button className="secondary" disabled={index<=0} onClick={()=>setChosenId(work[index-1].pack.id)}>이전 대상</button><span>{index<0?'선택 전':`${index+1} / ${work.length}`}</span><button className="secondary" disabled={!work.length||index===work.length-1} onClick={()=>setChosenId(work[index+1].pack.id)}>다음 대상</button></div>
+   </div>}
+   {!recordPack&&activeView==='intake'&&<div className="console-focus"><h2>판단에 쓸 수 있는 기록인가?</h2><strong className="console-number">{q.linkRate===null?'—':number(q.linkRate,1)+'%'}</strong><p>셀 8개·두 검사 연결 {q.linked}/{p.packs.length}팩</p><p>등록 셀 {p.cells}개 · 장비 자동 수신 미연결</p><button className="primary" onClick={()=>p.onOpen('cells')}>측정 파일·등록 데이터 확인</button><button className="secondary" onClick={()=>p.onOpen('packs')}>누락 검사 확인</button></div>}
+   {!recordPack&&activeView==='analysis'&&<div className="console-focus"><h2>불량이 실제로 줄었는가?</h2><strong className="console-number">{q.rate===null?'—':number(q.rate,2)+'%'}</strong><p>최신 최종검사 불합격 {q.failed}/{q.tested}팩</p><p>재검사 반영값 · 초도 결과와 구분해서 비교합니다.</p><button className="primary" onClick={()=>p.onOpen('quality')}>분석·보고서</button><button className="secondary" onClick={()=>p.onOpen('research')}>알고리즘 검증</button></div>}
+   {!recordPack&&activeView==='improve'&&<div className="console-focus"><h2>변경할 공정을 검증하세요</h2><p>가상 배치 → 시뮬레이션 → 검토 요청</p><p>개인 설계본과 운영 공정은 다릅니다. 가상 결과가 실제 품질을 보증하지 않습니다.</p><button className="primary" onClick={()=>p.onOpen('twin')}>공정 설계·시뮬레이션</button><button className="secondary" onClick={()=>p.onOpen('approvals')}>공정 제출본 검토</button></div>}
+  </div>
+  <footer className="console-footer"><span>{p.mode==='field'?'현장 확인 ≠ 최종 품질 승인':'시스템 관리 ≠ 품질 승인 권한'}</span><button className="text-button" onClick={p.onLegacy}>상세 업무 열기</button></footer>
+ </section>;
+}

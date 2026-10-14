@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 test('monitoring never presents a simulation as live equipment and leaving simulation pauses it',async({page})=>{
  await page.goto('/batt/');
- await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'상세 업무 열기'}).click();
  await expect(page.locator('.throughput-grid')).not.toBeVisible();
  await expect(page.locator('.quality-priorities')).toBeVisible();
  await page.getByRole('navigation').getByRole('button',{name:'공정 관리',exact:true}).click();

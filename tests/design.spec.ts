@@ -7,7 +7,7 @@ for (const width of [1440, 900, 768, 390, 320]) {
     await expect(page.getByRole('heading', { name: '작업 공간에 로그인' })).toBeVisible();
     await page.getByRole('button', { name: '사용 권한 신청', exact: true }).click();
     await expect(page.getByLabel('이름', { exact: true })).toBeVisible();
-    await page.getByRole('button', { name: '샘플 데이터로 체험하기' }).click();
+    await page.getByRole('button', { name: '샘플 데이터로 체험하기' }).click();await page.getByRole('button',{name:'상세 업무 열기'}).click();
     for (const name of ['운영 현황', '셀 데이터', '셀 매칭', '팩 · 검사이력', '품질 리포트', '알고리즘 검증', '공정 관리', '품질·공정 승인함', '사용자 관리']) {
       if(name==='셀 데이터'||name==='셀 매칭')await page.getByRole('navigation',{name:'주요 업무'}).getByRole('button',{name:'셀 매칭',exact:true}).click();
       if(name==='품질 리포트'||name==='알고리즘 검증')await page.getByRole('navigation',{name:'주요 업무'}).getByRole('button',{name:'품질 분석',exact:true}).click();

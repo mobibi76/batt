@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('quality work follows the same pack through confirmation, independent approval and outcomes',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'상세 업무 열기'}).click();
  await page.getByRole('button',{name:'셀 매칭 시작',exact:true}).click();await page.getByRole('button',{name:'조합 추천',exact:true}).click();await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('CONNECTED-QUALITY');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await page.getByRole('button',{name:'이 팩 검사로 이어가기'}).click();await expect(page.getByRole('dialog')).toHaveAttribute('aria-label','CONNECTED-QUALITY');
  await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await page.getByLabel('검사 구분').selectOption('final');await page.getByLabel('판정').selectOption('fail');await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await page.getByRole('button',{name:'닫기',exact:true}).click();
@@ -13,6 +13,6 @@ test('quality work follows the same pack through confirmation, independent appro
  for(const width of [1440,390,320]){await page.setViewportSize({width,height:720});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
 });
 test('quality drilldown filters the affected records rather than opening an unrelated list',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'팩별 검사 이력 확인'}).click();await expect(page.getByLabel('확인할 품질 상태')).toHaveValue('unlinked');
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'상세 업무 열기'}).click();await page.getByRole('button',{name:'팩별 검사 이력 확인'}).click();await expect(page.getByLabel('확인할 품질 상태')).toHaveValue('unlinked');
  await page.getByRole('button',{name:'전체 팩 보기'}).click();await expect(page.getByLabel('확인할 품질 상태')).toHaveValue('all');
 });

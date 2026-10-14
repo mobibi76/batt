@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('six work destinations fit without sidebar scrolling and monitoring returns to evidence',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'상세 업무 열기'}).click();
  await expect(page.getByRole('navigation',{name:'주요 업무'}).getByRole('button')).toHaveCount(6);
  for(const [width,height] of [[1440,720],[1366,600],[900,600],[390,640],[320,480]]){
   await page.setViewportSize({width,height});

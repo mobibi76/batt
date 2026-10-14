@@ -6,7 +6,7 @@ test('lego layout editing, persistence and isolated simulated telemetry',async({
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'운영 현황');const before=await page.locator('.console-stage-buttons').innerText();
  await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 구성',exact:true}).click();await expect(page.locator('.twin-viewport canvas')).toBeVisible();await expect(page.locator('.twin-device')).toHaveCount(6);
  await step(page,'선택 장비 · 데이터 정의');await page.getByLabel('장비 이름',{exact:true}).fill('입고 스캐너 A');await page.getByRole('button',{name:'장비·데이터 적용'}).click();await expect(page.locator('.twin-device').first()).toContainText('입고 스캐너 A');
- await page.getByRole('button',{name:'90° 회전'}).click();await expect(page.locator('.twin-rotation')).toContainText('90°');
+ await page.getByRole('button',{name:'배치·주기',exact:true}).click();await page.getByRole('button',{name:'90° 회전'}).click();await expect(page.locator('.twin-rotation')).toContainText('90°');
  await page.getByLabel('X 격자 좌표').fill('-9');await page.getByRole('button',{name:'장비·데이터 적용'}).click();await expect(page.getByLabel('X 격자 좌표')).toHaveValue('-9');
  await step(page,'저장·가져오기');await page.getByRole('button',{name:'이 브라우저에 저장'}).click();
  await page.getByRole('button',{name:'시뮬레이션',exact:true}).click();await step(page,'모의 처리량·실행 기록');await page.getByRole('button',{name:'가상 실행',exact:true}).click();await expect(page.getByTestId('twin-tick')).not.toHaveText('0초 · 실행 중');await page.getByRole('button',{name:'일시정지',exact:true}).click();

@@ -51,3 +51,12 @@ export function qualitySummary(packs:Pack[],tests:Inspection[]) {
   const linked=packs.filter(p=>p.pack_cells?.length===8 && latest.has(p.id) && tests.some(t=>t.pack_id===p.id&&t.kind==='aging')).length;
   return {tested:latest.size,failed,rate:latest.size?100*failed/latest.size:null,linked,linkRate:packs.length?100*linked/packs.length:null};
 }
+
+export function inspectionQueues(packs: Pack[], tests: Inspection[]) {
+  const aging = new Set(tests.filter(t => t.kind === 'aging').map(t => t.pack_id));
+  const final = new Set(tests.filter(t => t.kind === 'final').map(t => t.pack_id));
+  return {
+    aging: packs.filter(p => !aging.has(p.id)).length,
+    final: packs.filter(p => aging.has(p.id) && !final.has(p.id)).length,
+  };
+}

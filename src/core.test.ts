@@ -1,6 +1,6 @@
 import { describe,it,expect } from 'vitest';
 import {matchCells,fits} from '../supabase/functions/_shared/matching';
-import {sampleCells,validateRows,qualitySummary} from './lib';
+import {sampleCells,validateRows,qualitySummary,inspectionQueues} from './lib';
 describe('SOP matching invariants',()=>{
   it('returns disjoint groups of eight satisfying each hard constraint',()=>{const cells=sampleCells();const r=matchCells(cells,10);expect(r.groups.length).toBe(10);const ids=r.groups.flatMap(g=>g.cell_ids);expect(new Set(ids).size).toBe(ids.length);for(const g of r.groups){expect(g.cell_ids).toHaveLength(8);expect(fits(cells.filter(c=>g.cell_ids.includes(c.id)))).toBe(true);}});
   it('does not use held cells or invent missing cells',()=>{const cells=sampleCells().slice(0,8);cells[0].status='held';expect(matchCells(cells).groups).toHaveLength(0);});
@@ -14,4 +14,13 @@ describe('import validation',()=>{
 describe('quality metrics',()=>{
   it('does not display zero defects when there are no inspections',()=>expect(qualitySummary([],[]).rate).toBe(null));
   it('counts each pack once using latest final result, keeping incomplete packs in linkage denominator',()=>{const packs=['a','b'].map(id=>({id,serial_no:id,created_at:'',pack_cells:Array.from({length:8},(_,i)=>({cell_id:String(i),position:i+1}))}));const tests=[{id:'1',pack_id:'a',kind:'final' as const,result:'fail' as const,note:'',created_at:'2026-01-01'},{id:'2',pack_id:'a',kind:'final' as const,result:'pass' as const,note:'',created_at:'2026-01-02'},{id:'3',pack_id:'a',kind:'aging' as const,result:'pass' as const,note:'',created_at:'2026-01-02'}];expect(qualitySummary(packs,tests)).toEqual({tested:1,failed:0,rate:0,linked:1,linkRate:50});});
+});
+
+describe('inspection queues',()=>{
+  it('counts missing records once per pack, including final-before-aging records',()=>{
+    const packs=['a','b','c','d'].map(id=>({id,serial_no:id,created_at:'',pack_cells:[]}));
+    const tests=[['b','aging'],['b','aging'],['c','final'],['d','aging'],['d','final']].map(([pack_id,kind],i)=>({id:String(i),pack_id,kind:kind as 'aging'|'final',result:'fail' as const,note:'',created_at:'2026-10-14'}));
+    expect(inspectionQueues(packs,tests)).toEqual({aging:2,final:1});
+    expect(inspectionQueues([],[])).toEqual({aging:0,final:0});
+  });
 });

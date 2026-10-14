@@ -1,6 +1,8 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --radius-chip: 999px;
+  --space-2: 2px;
   --color-ink: #213a32;
   --color-ink-strong: #3e5a46;
   --color-ink-secondary: #6f8064;

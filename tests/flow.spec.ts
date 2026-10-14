@@ -1,3 +1,4 @@
+import {choose} from './chips';
 import {navigate,step} from './navigate';
 import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
@@ -14,7 +15,7 @@ test('demo process map follows approval and inspection records',async({page})=>{
  await navigate(page,'팩 · 검사이력');
  await page.getByRole('button',{name:'상세 조회'}).click();
  await page.getByRole('button',{name:'검사 결과 저장'}).click();
- await page.getByLabel('검사 구분').selectOption('final');
+ await choose(page,'검사 구분','final');
  await page.getByRole('button',{name:'검사 결과 저장'}).click();
  await expect(page.locator('.inspection-list .badge').filter({hasText:'합격'})).toHaveCount(2);
 });

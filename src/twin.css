@@ -68,6 +68,9 @@
 .twin-import.disabled { opacity:0.5; cursor:not-allowed; }
 .twin-method { margin-top:var(--space-20); border-top:1px solid var(--color-border); padding-top:var(--space-16); }
 .twin-method summary { cursor:pointer; color:var(--color-ink-strong); font-weight:var(--weight-semibold); }
+.twin-builder.focus { grid-template-columns: minmax(0,1fr); }
+.twin-scenarios { margin: var(--space-16); }
+.twin-scenarios summary { cursor: pointer; font-weight: var(--weight-semibold); }
 @media(max-width:1100px) { .twin-builder { grid-template-columns:1fr; } .twin-library-items { grid-template-columns:repeat(3,minmax(0,1fr)); } .twin-detail-grid { grid-template-columns:1fr; } }
 @media(max-width:800px) { .twin-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .twin-library-items { grid-template-columns:repeat(2,minmax(0,1fr)); } .twin-viewport { height:var(--twin-viewport-mobile-height); } }
 @media(max-width:480px) { .twin-form-grid, .twin-library-items { grid-template-columns:1fr; } .twin-summary > div { padding:var(--space-12); } .twin-summary strong { font-size:var(--font-size-20); } }

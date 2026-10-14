@@ -11,8 +11,8 @@ export function QualityPriorities({ packs, tests, onNavigate }: Props) {
       <h2>최종검사 불량률</h2>
       <div className="outcome-value">{q.rate === null ? '—' : number(q.rate, 2)}{q.rate !== null && <span>%</span>}</div>
       <p className="outcome-basis">{q.tested ? `불합격 ${number(q.failed)}팩 / 최종검사 ${number(q.tested)}팩` : '최종검사 기록이 없어 아직 집계할 수 없습니다.'}</p>
-      <p>팩별 최신 결과 기준 · 재검사 반영 · 초도 불량률과 다름</p>
-      <div className="outcome-reference">제안서 목표 2.08% → 1.0% · 실제 개선 여부는 동일 조건의 전후 비교 필요</div>
+      <details className="metric-context"><summary>집계 기준·목표</summary><p>팩별 최신 결과 기준 · 재검사 반영 · 초도 불량률과 다름</p>
+      <div className="outcome-reference">제안서 목표 2.08% → 1.0% · 실제 개선 여부는 동일 조건의 전후 비교 필요</div></details>
       <button className="text-button" onClick={() => onNavigate('quality')}>집계 기준·품질 리포트 <ArrowRight className="icon-15"/></button>
     </article>
     <article className="panel outcome-card">
@@ -20,8 +20,8 @@ export function QualityPriorities({ packs, tests, onNavigate }: Props) {
       <h2>검사 이력 연결률</h2>
       <div className="outcome-value">{q.linkRate === null ? '—' : number(q.linkRate, 1)}{q.linkRate !== null && <span>%</span>}</div>
       <p className="outcome-basis">{packs.length ? `완전 연결 ${number(q.linked)}팩 / 전체 ${number(packs.length)}팩 · 미연결 ${number(packs.length - q.linked)}팩` : '등록된 팩이 없어 아직 집계할 수 없습니다.'}</p>
-      <p>구성 셀 8개 + 에이징 + 최종검사 기록이 모두 있는 팩</p>
-      <div className="outcome-reference">합격 여부와 별개인 기록 완전성 지표 · 검사 미완료 팩도 분모에 포함</div>
+      <details className="metric-context"><summary>연결 기준</summary><p>구성 셀 8개 + 에이징 + 최종검사 기록이 모두 있는 팩</p>
+      <div className="outcome-reference">합격 여부와 별개인 기록 완전성 지표 · 검사 미완료 팩도 분모에 포함</div></details>
       <button className="text-button" onClick={() => onNavigate('packs')}>팩별 검사 이력 확인 <ArrowRight className="icon-15"/></button>
     </article>
   </section>;

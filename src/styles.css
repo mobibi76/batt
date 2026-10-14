@@ -1823,6 +1823,19 @@ td,th {
 .sidebar nav button { flex-shrink: 0; }
 .heading-actions { flex-wrap: wrap; max-width: 100%; }
 .search { min-height: var(--control-height); }
+.progressive { margin-top: var(--space-16); }
+.progressive > summary { padding: var(--space-16); cursor: pointer; font-weight: var(--weight-semibold); color: var(--color-ink-strong); }
+.progressive[open] > summary { border-bottom: 1px solid var(--color-border); margin-bottom: var(--space-16); }
+.progressive > .panel { border: 0; box-shadow: none; }
+.decision-focus { padding: var(--space-20); background: var(--color-surface-subtle); }
+.decision-focus h2, .decision-focus h3 { margin: var(--space-10) 0; }
+.decision-focus p, .context-line { color: var(--color-ink-secondary); line-height: var(--leading-1_7); }
+.mode-switch { display: flex; flex-wrap: wrap; gap: var(--space-6); }
+.mode-switch button { min-height: var(--control-height); padding: var(--space-10) var(--space-16); border: 1px solid var(--color-border); border-radius: var(--radius-7); background: var(--color-surface); color: var(--color-ink); }
+.mode-switch button.active { background: var(--color-brand); border-color: var(--color-brand); color: var(--color-surface); }
+.attention-list { padding-left: var(--space-20); }
+.metric-context { margin: var(--space-12) 0; font-size: var(--font-size-12); color: var(--color-ink-secondary); }
+.metric-context summary { cursor: pointer; }
 .search input { min-height: 0; margin: 0; line-height: var(--control-line-height); }
 .primary svg, .secondary svg, .small-button svg, .text-button svg, .search > svg { flex-shrink: 0; }
 @media (max-width: 800px) {

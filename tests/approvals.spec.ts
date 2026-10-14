@@ -1,5 +1,5 @@
 import {choose} from './chips';
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('twin snapshot is submitted, independently reviewed and copied without editing its approval',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 구성',exact:true}).click();await step(page,'공정 검토 요청');await page.getByLabel('공정 제출 이름').fill('1라인 가상 배치');await page.getByLabel('공정 검토 요청 사유').fill('연결 순서와 전압 태그 기준 확인');await page.getByRole('button',{name:'현재 공정 검토 요청',exact:true}).click();await expect(page.locator('.twin-message')).toContainText('승인함에 제출');await page.getByRole('button',{name:'품질·공정 승인함 열기'}).click();if(await page.getByRole('button',{name:'제출본 검토',exact:true}).first().isVisible())await page.getByRole('button',{name:'제출본 검토',exact:true}).first().click();await expect(page.locator('.approval-detail')).toContainText('본인이 제출한 요청');await expect(page.getByRole('button',{name:'제출본 승인',exact:true})).toHaveCount(0);

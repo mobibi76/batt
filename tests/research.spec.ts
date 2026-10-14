@@ -1,4 +1,4 @@
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 ﻿import {test,expect} from '@playwright/test';
 
 test('public-data experiments are reproducible, exported, persisted and isolated from operations',async({page})=>{

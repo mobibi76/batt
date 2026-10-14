@@ -1,6 +1,6 @@
 import { ChoiceChips } from './ChoiceChips';
 import usePageSize from './usePageSize';
-import {modeForTask} from './workModes';
+import {modeForTask,type Tab} from './workModes';
 import OperationsConsole,{type WorkMode} from './OperationsConsole';
 import './workflow.css';
 import PackWorkspace from './PackWorkspace';
@@ -20,7 +20,6 @@ import { createDemoRequest, submitTwin, supersedeDemoRequests, type Approval } f
 import type { Layout } from './twin/model';
 const DigitalTwin=lazy(()=>import('./DigitalTwin'));
 const ApprovalCenter=lazy(()=>import('./ApprovalCenter'));
-type Tab='overview'|'cells'|'matching'|'packs'|'quality'|'members'|'research'|'twin'|'approvals';
 const names:Record<Tab,string>={overview:'운영 현황',cells:'셀 데이터',matching:'셀 매칭',packs:'팩 · 검사이력',quality:'품질 리포트',members:'사용자 관리',research:'알고리즘 검증',twin:'공정 관리',approvals:'품질·공정 승인함'};
 const roleNames={admin:'관리자',operator:'업무 구성원',viewer:'조회자'};
 const statusNames={pending:'승인 대기',approved:'승인 완료',rejected:'가입 반려',suspended:'이용 중지'};

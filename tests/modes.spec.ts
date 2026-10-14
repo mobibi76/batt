@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {navigate} from './navigate';
+import {navigate} from './workspace';
 test('field and control own their actual tools',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
  await navigate(page,'셀 매칭');await expect(page.getByRole('button',{name:'현장',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.getByRole('navigation',{name:'작업 선택'}).getByRole('button')).toHaveCount(2);

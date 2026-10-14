@@ -1,4 +1,4 @@
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('registered records refresh automatically and failed refresh is visibly stale',async({page})=>{
  const id='11111111-1111-4111-8111-111111111111';let fail=false,reads=0;

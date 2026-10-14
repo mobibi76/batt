@@ -1,5 +1,5 @@
 import {choose} from './chips';
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 import { test,expect } from '@playwright/test';
 import { PerspectiveCamera, Vector3 } from 'three';
 import { defaultLayout } from '../src/twin/model';

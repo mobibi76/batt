@@ -1,5 +1,5 @@
 import {choose} from './chips';
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('quality work follows the same pack through confirmation, independent approval and outcomes',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();

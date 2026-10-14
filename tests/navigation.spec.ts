@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 test('navigation stays visible and returns from design to inspection evidence',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
  for(const [width,height] of [[1440,720],[1366,600],[900,600],[390,640],[320,480]]){await page.setViewportSize({width,height});await expect(page.locator('.sidebar')).toHaveCount(0);const box=await page.getByRole('button',{name:'로그아웃',exact:true}).boundingBox();expect(box.y+box.height).toBeLessThanOrEqual(height);}

@@ -6,7 +6,7 @@ import {qualitySummary,inspectionQueues,number,type Pack,type Inspection,type Pr
 import {prioritizedWork,independentReview,firstPassSummary,type ApprovalIndex,type PackSignal} from './workflow';
 import {canConfirm,canReview} from './permissions';
 import {defaultLayout,initialSimulation,validateLayout} from './twin/model';
-import type {Tab} from './WorkspaceNavigation';
+import type {Tab} from './workModes';
 import './console.css';
 import './twin.css';
 const TwinScene=lazy(()=>import('./twin/TwinScene'));

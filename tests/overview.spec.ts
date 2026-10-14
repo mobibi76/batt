@@ -1,6 +1,6 @@
 import {choose} from './chips';
 import {test,expect} from '@playwright/test';
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 test('control analysis distinguishes first pass and latest result while intake tracks linkage',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'운영 현황');await page.getByRole('button',{name:'분석·보고',exact:true}).click();await expect(page.locator('.console-number')).toHaveText('—');
  await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).click();await page.getByLabel('팩 일련번호').fill('QUALITY-OVERVIEW');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();

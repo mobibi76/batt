@@ -1,5 +1,5 @@
 import {choose} from './chips';
-import {navigate,step} from './navigate';
+import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
  await page.goto('/batt/');

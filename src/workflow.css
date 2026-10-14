@@ -24,3 +24,7 @@
 .outcome-comparison p { font-size:var(--font-size-12); color:var(--color-ink-secondary); }
 .workflow-actions button, .workflow-continuation button, .quality-actions button, .matching-entry button, .workflow-pack-next button { white-space:normal; max-width:100%; }
 @media(max-width:800px) { .outcome-comparison { grid-template-columns:1fr; } .matching-entry { align-items:stretch; flex-direction:column; } .quality-actions li > div { width:100%; } }
+.nav-group { display:flex; flex-direction:column; }
+.nav-group .nav-label { margin:var(--space-12) var(--space-16) var(--space-7); }
+.data-freshness { display:flex; flex-wrap:wrap; gap:var(--space-12); padding:var(--space-12) var(--space-16); margin-bottom:var(--space-20); background:var(--color-surface-subtle); color:var(--color-ink-secondary); font-size:var(--font-size-12); border-radius:var(--radius-8); }
+.data-freshness.stale { background:var(--color-warning-surface); color:var(--color-warning-ink); }

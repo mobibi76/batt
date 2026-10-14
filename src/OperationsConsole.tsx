@@ -1,14 +1,15 @@
 import FieldConfirmation from './FieldConfirmation';
 import {lazy,Suspense,useMemo,useState} from 'react';
 import {qualitySummary,inspectionQueues,number,type Pack,type Inspection,type Profile} from './lib';
-import {prioritizedWork,independentReview,type ApprovalIndex,type PackSignal} from './workflow';
+import {prioritizedWork,independentReview,firstPassSummary,type ApprovalIndex,type PackSignal} from './workflow';
 import {canConfirm,canReview} from './permissions';
 import {defaultLayout,initialSimulation,validateLayout} from './twin/model';
 import type {Tab} from './WorkspaceNavigation';
 import './console.css';
 import './twin.css';
 const TwinScene=lazy(()=>import('./twin/TwinScene'));
-export type WorkMode='field'|'control';
+export type {WorkMode} from './workModes';
+import type {WorkMode} from './workModes';
 type View='space'|'decision'|'intake'|'analysis'|'improve';
 type Props={active:boolean;mode:WorkMode;onMode:(mode:WorkMode)=>void;profile:Profile;demo:boolean;packs:Pack[];tests:Inspection[];requests:ApprovalIndex[]|null;cells:number;available:number;lastSync:string;syncError:boolean;approvalError:string;onOpen:(tab:Tab)=>void;onWork:(s:PackSignal)=>void;onLegacy:()=>void;onRecord:(pack:Pack,kind:Inspection['kind'],result:Inspection['result'],note:string)=>Promise<void>};
 export default function OperationsConsole(p:Props){
@@ -16,6 +17,7 @@ export default function OperationsConsole(p:Props){
  const [view,setView]=useState<View>('space'),[stage,setStage]=useState<'all'|'assembly'|'aging'|'final'>('all'),[chosenId,setChosenId]=useState(''),[deviceId,setDeviceId]=useState('');
  const [loaded]=useState(()=>{try{const raw=localStorage.getItem(`jsi-twin-v1-${p.profile.id}`);return {layout:raw?validateLayout(JSON.parse(raw)):defaultLayout(),error:false};}catch{return {layout:defaultLayout(),error:true};}});
  const simulation=useMemo(()=>{const sim=initialSimulation(loaded.layout);for(const machine of Object.values(sim.machines))machine.status='offline';return sim;},[loaded.layout]);
+ const first=firstPassSummary(p.packs,p.tests);
  const q=qualitySummary(p.packs,p.tests),queues=inspectionQueues(p.packs,p.tests);
  const all=prioritizedWork(p.packs,p.tests,p.requests,p.profile,p.demo);
  const work=all.filter(s=>p.mode==='control'?independentReview(s,p.profile,p.demo):independentReview(s,p.profile,false)?false:stage==='all'?true:stage==='assembly'?s.state==='ready'||s.state==='unlinked':stage==='aging'?!s.aging||s.aging.result==='fail':!!s.aging&&(!s.final||s.final.result==='fail'));
@@ -35,9 +37,9 @@ export default function OperationsConsole(p:Props){
     <div className="console-pager"><button className="secondary" disabled={index<=0} onClick={()=>setChosenId(work[index-1].pack.id)}>이전 대상</button><span>{index<0?'선택 전':`${index+1} / ${work.length}`}</span><button className="secondary" disabled={!work.length||index===work.length-1} onClick={()=>setChosenId(work[index+1].pack.id)}>다음 대상</button></div>
    </div>}
    {!recordPack&&activeView==='intake'&&<div className="console-focus"><h2>판단에 쓸 수 있는 기록인가?</h2><strong className="console-number">{q.linkRate===null?'—':number(q.linkRate,1)+'%'}</strong><p>셀 8개·두 검사 연결 {q.linked}/{p.packs.length}팩</p><p>등록 셀 {p.cells}개 · 장비 자동 수신 미연결</p><button className="primary" onClick={()=>p.onOpen('cells')}>측정 파일·등록 데이터 확인</button><button className="secondary" onClick={()=>p.onOpen('packs')}>누락 검사 확인</button></div>}
-   {!recordPack&&activeView==='analysis'&&<div className="console-focus"><h2>불량이 실제로 줄었는가?</h2><strong className="console-number">{q.rate===null?'—':number(q.rate,2)+'%'}</strong><p>최신 최종검사 불합격 {q.failed}/{q.tested}팩</p><p>재검사 반영값 · 초도 결과와 구분해서 비교합니다.</p><button className="primary" onClick={()=>p.onOpen('quality')}>분석·보고서</button><button className="secondary" onClick={()=>p.onOpen('research')}>알고리즘 검증</button></div>}
+   {!recordPack&&activeView==='analysis'&&<div className="console-focus"><h2>불량이 실제로 줄었는가?</h2><strong className="console-number">{q.rate===null?'—':number(q.rate,2)+'%'}</strong><p>최신 최종검사 불합격 {q.failed}/{q.tested}팩</p><p>초도 불량률 {first.rate===null?'—':number(first.rate,2)+'%'} · 첫 검사 {first.failed}/{first.tested}팩</p><small>초도와 최신의 차이는 재검사 효과일 수 있습니다.</small><button className="primary" onClick={()=>p.onOpen('quality')}>분석·보고서</button><button className="secondary" onClick={()=>p.onOpen('research')}>알고리즘 검증</button></div>}
    {!recordPack&&activeView==='improve'&&<div className="console-focus"><h2>변경할 공정을 검증하세요</h2><p>가상 배치 → 시뮬레이션 → 검토 요청</p><p>개인 설계본과 운영 공정은 다릅니다. 가상 결과가 실제 품질을 보증하지 않습니다.</p><button className="primary" onClick={()=>p.onOpen('twin')}>공정 설계·시뮬레이션</button><button className="secondary" onClick={()=>p.onOpen('approvals')}>공정 제출본 검토</button></div>}
   </div>
-  <footer className="console-footer"><span>{p.mode==='field'?'현장 확인 ≠ 최종 품질 승인':'시스템 관리 ≠ 품질 승인 권한'}</span><button className="text-button" onClick={p.onLegacy}>상세 업무 열기</button></footer>
+  <footer className="console-footer"><div className="console-task-actions">{p.mode==='field'?<><button className="secondary" onClick={()=>p.onOpen('packs')}>팩·검사</button>{(p.demo||canConfirm(p.profile,'assembly'))&&<button className="secondary" onClick={()=>p.onOpen('matching')}>셀 매칭</button>}</>:<><button className="secondary" onClick={()=>p.onOpen('approvals')}>품질 승인</button><button className="secondary" onClick={()=>p.onOpen('cells')}>데이터 관리</button></>}</div><button className="text-button" onClick={p.onLegacy}>운영 지표</button></footer>
  </section>;
 }

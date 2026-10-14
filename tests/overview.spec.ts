@@ -1,9 +1,10 @@
+import {navigate} from './navigate';
 ﻿import { test, expect } from '@playwright/test';
 
 test('quality-first overview updates queues, traceability and latest-result defects', async ({ page }) => {
   await page.goto('/batt/');
-  await page.getByRole('button', { name: '샘플 데이터로 체험하기' }).click();await page.getByRole('button',{name:'상세 업무 열기'}).click();
-  const overview = async () => page.getByRole('navigation').getByRole('button', { name: '운영 현황', exact: true }).click();
+  await page.getByRole('button', { name: '샘플 데이터로 체험하기' }).click();await page.getByRole('button',{name:'운영 지표'}).click();
+  const overview = async () => navigate(page,'운영 현황');
   const outcomes = page.locator('.outcome-card');
   await expect(outcomes.locator('h2')).toHaveText(['최종검사 불량률', '검사 이력 연결률']);
   await expect(outcomes.locator('.outcome-value')).toHaveText(['—', '—']);

@@ -33,3 +33,8 @@
 .console-confirmation h2, .console-confirmation p, .console-confirmation label { margin:0; }
 .console-confirmation textarea { min-height:0; resize:none; }
 .console-confirmation > button { align-self:flex-start; }
+.console-task-actions { display:flex; gap:var(--space-8); }
+.console-footer { flex-wrap:wrap; }
+.console-task-actions button { white-space:normal; }
+.topbar .mode-switch { margin:0; flex-shrink:0; }
+@media(max-width:700px) { .topbar .topbar-right { display:none; } .topbar { gap:var(--space-8); } .topbar .mode-switch button { padding:var(--space-8); } }

@@ -1,14 +1,14 @@
-import {navigate} from './navigate';
+import {navigate,step} from './navigate';
 import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
  await page.goto('/batt/');
- await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'운영 지표'}).click();
- await page.getByText('공정 흐름·트윈 관제 보기',{exact:true}).click();
- await expect(page.getByRole('heading',{name:'한눈에 보는 공정 흐름'})).toBeVisible();
- await page.getByRole('button',{name:'셀 매칭 시작'}).click();
+ await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('button',{name:'공정 공간',exact:true}).click();
+ await expect(page.locator('.console-scene canvas')).toBeVisible();
+ await navigate(page,'셀 매칭');
  await page.getByRole('button',{name:'조합 추천',exact:true}).click();
- await expect(page.getByRole('button',{name:'조합 검토 · 확정'})).toHaveCount(3);
- await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();
+ await expect(page.locator('.candidate')).toHaveCount(3);
+ await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();
  await page.getByRole('textbox',{name:'팩 일련번호'}).fill('TEST-PACK-001');
  await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await navigate(page,'팩 · 검사이력');
@@ -20,13 +20,13 @@ test('demo process map follows approval and inspection records',async({page})=>{
 });
 test('imports XLSX and rejects malformed CSV before upload',async({page})=>{
  await page.goto('/batt/');
- await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await page.getByRole('button',{name:'운영 지표'}).click();
+ await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
  await navigate(page,'셀 매칭');await navigate(page,'셀 데이터');
  await page.locator('input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');
  await expect(page.getByRole('dialog').getByText('형식 검증 완료')).toBeVisible();
  await page.getByRole('button',{name:'전체 1개 등록'}).click();
- await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');
+ await step(page,'셀 재고');await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');
  await expect(page.getByRole('cell',{name:'XLSX-QA-001',exact:true})).toBeVisible();
- await page.locator('input[type=file]').setInputFiles({name:'bad.csv',mimeType:'text/csv',buffer:Buffer.from('id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\nBAD,LOT,nope,0.42,30000,2026-10-14')});
+ await step(page,'측정 파일로 시작하세요');await page.locator('input[type=file]').setInputFiles({name:'bad.csv',mimeType:'text/csv',buffer:Buffer.from('id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\nBAD,LOT,nope,0.42,30000,2026-10-14')});
  await expect(page.getByRole('dialog').getByRole('button',{name:'전체 1개 등록'})).toBeDisabled();
 });

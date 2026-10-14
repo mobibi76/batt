@@ -1,3 +1,4 @@
+import {navigate,step} from './navigate';
 import {test,expect} from '@playwright/test';
 test('registered records refresh automatically and failed refresh is visibly stale',async({page})=>{
  const id='11111111-1111-4111-8111-111111111111';let fail=false,reads=0;
@@ -8,12 +9,12 @@ test('registered records refresh automatically and failed refresh is visibly sta
   if(path.endsWith('/packs')){reads++;if(fail)return route.fulfill({status:400,json:{message:'test outage'}});return route.fulfill({json:reads>1?[{id:'pack-1',serial_no:'AUTO-UPDATED',created_at:new Date().toISOString(),pack_cells:[]}]:[]});}
   return route.fulfill({json:[]});
  });
- await page.clock.install();await page.goto('/batt/');await page.getByRole('button',{name:'운영 지표'}).click();await expect(page.locator('.data-freshness')).toContainText('마지막 조회');
+ await page.clock.install();await page.goto('/batt/');await expect(page.locator('.console-source')).toContainText('기록 조회');
  await expect(page.getByRole('navigation').getByRole('button',{name:'사용자 관리'})).toHaveCount(0);
- await page.clock.fastForward(16000);
- await expect(page.locator('.outcome-basis').nth(1)).toContainText('전체 1팩');
+ await page.getByRole('button',{name:'관제',exact:true}).click();await page.getByRole('button',{name:'데이터 인입',exact:true}).click();await page.clock.fastForward(16000);
+ await expect(page.locator('.console-focus')).toContainText('0/1팩');
  fail=true;await page.clock.fastForward(16000);
- await expect(page.locator('.data-freshness')).toContainText('갱신 실패 · 이전 조회본');
- await expect(page.locator('.outcome-basis').nth(1)).toContainText('전체 1팩');
- fail=false;await page.clock.fastForward(16000);await expect(page.locator('.data-freshness')).toContainText('마지막 조회');
+ await expect(page.locator('.console-source')).toContainText('갱신 실패 · 이전 조회본');
+ await expect(page.locator('.console-focus')).toContainText('0/1팩');
+ fail=false;await page.clock.fastForward(16000);await expect(page.locator('.console-source')).toContainText('기록 조회');
 });

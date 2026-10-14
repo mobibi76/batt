@@ -1,3 +1,4 @@
+import TaskSteps from './TaskSteps';
 ﻿import { useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, FlaskConical, Play, LoaderCircle, FileUp } from 'lucide-react';
 import { download, number } from './lib';
@@ -30,7 +31,7 @@ export default function ResearchLab({userId}:{userId:string}) {
   setReport(next);const records=[next,...history].slice(0,10);setHistory(records);try{localStorage.setItem(storageKey,JSON.stringify(records));}catch{setError('실험은 완료했지만 브라우저 저장 공간이 부족합니다. 보고서를 내려받으세요.');}
  }catch(e){setError(e instanceof Error?e.message:'검증 실패');}finally{setBusy(false);}}
  const cohorts=dataset?[...new Set(dataset.cells.map(c=>c.cohort))].sort():[];
- return <div className="research-lab">
+ return <TaskSteps className="research-lab" focus={report?'3. 검증 결과':undefined}>
   <div className="notice"><FlaskConical className="icon-20"/><div><strong>운영 데이터와 분리된 알고리즘 연구 공간</strong><p>실험은 이 브라우저에서 실행하고 최근 10건을 보관합니다. 운영 셀·팩·품질 지표에는 반영하지 않습니다.</p></div></div>
   <section className="panel"><div className="section-head"><div><h2>1. 연구 데이터</h2><p>측정 조건이 같은 그룹 안에서만 셀 8개를 조합합니다.</p></div><button className="secondary" disabled={busy} onClick={loadPublic}>UConn 공개 데이터 불러오기</button></div>
    <div className="research-body"><p>탑재 데이터: <strong>실측 기반 LFP 55셀</strong> · Batch 1: 23셀 / Batch 2: 24셀 / Batch 3: 8셀 · 초기 RPT=0, SOC 45–55%에서 셀당 1개 펄스 선택.</p><p className="muted">1.2Ah 셀의 펄스 전 전압·펄스 유래 R0·용량입니다. 저항은 생산 ACIR과 다르며, 원본 CSV에 온도 열이 없습니다. 30Ah로 수치를 확대하거나 결측값을 합성하지 않았습니다.</p>
@@ -47,5 +48,5 @@ export default function ResearchLab({userId}:{userId:string}) {
   </section>}
   <section className="panel"><div className="section-head"><div><h2>4. 운영 적용 검토</h2><p>현재 단계: 현장 검증 필요 · 운영 알고리즘 미변경</p></div></div><div className="research-body"><p>보고서에는 원본 표본·출처·데이터 해시·알고리즘 버전·조건·조합별 결과가 포함됩니다. 이 결과를 근거로 다음 항목을 검증한 뒤 운영 후보를 결정합니다.</p><ul>{blockers.map(b=><li key={b}>{b}</li>)}</ul></div></section>
   <section className="panel"><div className="section-head"><div><h2>최근 실험</h2><p>현재 사용자·브라우저에 최대 10건 저장 · 다른 PC와 동기화되지 않습니다.</p></div></div><div className="research-body">{!history.length?<p>아직 실행한 실험이 없습니다.</p>:<div className="research-history">{history.map(r=><button className="secondary" key={r.id} onClick={()=>{setDataset(r.dataset);setLimits({...r.limits});setSeed(r.seed);setCohort('all');setReport(r);setError('');}} disabled={busy}>{new Date(r.created_at).toLocaleString('ko-KR')} · {r.dataset.title} · 시드 {r.seed}</button>)}</div>}</div></section>
- </div>;
+ </TaskSteps>;
 }

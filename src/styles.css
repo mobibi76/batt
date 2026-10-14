@@ -303,7 +303,7 @@ small {
   color:var(--color-sidebar-faint)
 }
 .main-column {
-  margin-left:var(--space-236);
+  margin-left:var(--sidebar-width);
   flex:1;
   min-width:0
 }
@@ -443,8 +443,8 @@ small {
   padding:var(--space-7)
 }
 .stat-icon svg {
-  width:16px;
-  height:16px
+  width:var(--size-icon-16);
+  height:var(--size-icon-16)
 }
 .stat-value {
   font-size:var(--font-size-34);
@@ -479,7 +479,7 @@ small {
   overflow:hidden
 }
 .section-head {
-  padding:var(--space-23) var(--space-23) var(--space-17);
+  padding:var(--space-23) var(--panel-padding-inline) var(--space-17);
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -1273,7 +1273,7 @@ textarea {
   padding-right:var(--space-12)
 }
 .main-column {
-  margin-left:var(--space-205)
+  margin-left:var(--sidebar-medium-width)
 }
 .content {
   padding:var(--space-25)
@@ -1341,8 +1341,8 @@ td,th {
   gap:var(--space-8)
 }
 .sidebar nav button svg {
-  width:21px;
-  height:21px;
+  width:var(--size-icon-21);
+  height:var(--size-icon-21);
   flex-shrink:0
 }
 .user-card {
@@ -1350,7 +1350,7 @@ td,th {
   padding-top:var(--space-18)
 }
 .main-column {
-  margin-left:var(--space-72)
+  margin-left:var(--sidebar-rail-width)
 }
 .content {
   padding:var(--space-22) var(--space-18)
@@ -1393,7 +1393,7 @@ td,th {
   display:none
 }
 .section-head {
-  padding:var(--space-20) var(--space-17)
+  padding:var(--space-20) var(--panel-padding-inline)
 }
 .topbar-right {
   font-size:var(--font-size-9)
@@ -1680,7 +1680,7 @@ td,th {
   margin:0;
   height:var(--control-height);
   min-height:var(--control-height);
-  line-height:20px;
+  line-height:var(--control-line-height);
   flex-shrink:0
 }
 .upload-actions svg {
@@ -1769,32 +1769,32 @@ td,th {
 .outcome-reference { margin-top: var(--space-12); margin-bottom: var(--space-12); padding: var(--space-10) var(--space-12); background: var(--color-surface-subtle); border-radius: var(--radius-6); font-size: var(--font-size-10); color: var(--color-ink-secondary); line-height: var(--leading-1_7); }
 .outcome-card .text-button { margin-top: auto; align-self: flex-start; white-space: normal; text-align: left; }
 .work-queues, .throughput-panel { margin-bottom: var(--space-22); }
-.queue-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-12); padding: 0 var(--space-23) var(--space-20); }
+.queue-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-12); padding: 0 var(--panel-padding-inline) var(--space-20); }
 .queue-card { display: flex; flex-direction: column; text-align: left; gap: var(--space-9); padding: var(--space-18); border: 1px solid var(--color-border); border-radius: var(--radius-8); background: var(--color-surface-subtle); color: var(--color-ink-secondary); font-size: var(--font-size-11); }
 .queue-card.waiting { background: var(--color-warning-surface); border-color: var(--color-process-node-waiting-border-color); }
 .queue-card strong { color: var(--color-ink); font-weight: var(--weight-semibold); }
 .queue-value { font-size: var(--font-size-30); font-weight: var(--weight-semibold); color: var(--color-ink-strong); font-variant-numeric: tabular-nums; }
 .queue-value small, .throughput-grid small { margin-left: var(--space-7); font-size: var(--font-size-11); font-weight: var(--weight-regular); }
 .queue-link { display: flex; align-items: center; gap: var(--space-5); margin-top: auto; color: var(--color-brand); }
-.queue-note { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-10); padding: var(--space-12) var(--space-23); border-top: 1px solid var(--color-border); color: var(--color-ink-secondary); font-size: var(--font-size-11); }
+.queue-note { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-10); padding: var(--space-12) var(--panel-padding-inline); border-top: 1px solid var(--color-border); color: var(--color-ink-secondary); font-size: var(--font-size-11); }
 .queue-note.has-failures { color: var(--color-danger-ink); background: var(--color-danger-surface); }
-.throughput-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0 var(--space-23); gap: var(--space-16); }
+.throughput-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0 var(--panel-padding-inline); gap: var(--space-16); }
 .throughput-grid dt { font-size: var(--font-size-11); color: var(--color-ink-secondary); }
 .throughput-grid dd { margin: var(--space-7) 0; font-size: var(--font-size-25); font-variant-numeric: tabular-nums; }
-.throughput-note { font-size: var(--font-size-10); color: var(--color-ink-muted); margin: 0; padding: var(--space-12) var(--space-23) var(--space-20); }
+.throughput-note { font-size: var(--font-size-10); color: var(--color-ink-muted); margin: 0; padding: var(--space-12) var(--panel-padding-inline) var(--space-20); }
 @media (max-width: 800px) {
   .quality-priorities { grid-template-columns: 1fr; }
   .outcome-card { padding: var(--space-20); }
-  .queue-grid { grid-template-columns: 1fr; padding: 0 var(--space-17) var(--space-20); }
-  .queue-note { padding: var(--space-12) var(--space-17); }
-  .throughput-grid { padding: 0 var(--space-17); gap: var(--space-10); }
-  .throughput-note { padding: var(--space-12) var(--space-17) var(--space-20); }
+  .queue-grid { grid-template-columns: 1fr; padding: 0 var(--panel-padding-inline) var(--space-20); }
+  .queue-note { padding: var(--space-12) var(--panel-padding-inline); }
+  .throughput-grid { padding: 0 var(--panel-padding-inline); gap: var(--space-10); }
+  .throughput-note { padding: var(--space-12) var(--panel-padding-inline) var(--space-20); }
 }
 /* Isolated research workspace: shared product tokens and controls. */
 .research-lab { display: grid; gap: var(--space-22); }
 .research-lab > .notice { margin: 0; }
 .research-lab .notice p { margin: var(--space-5) 0 0; }
-.research-body { padding: 0 var(--space-23) var(--space-23); font-size: var(--font-size-12); color: var(--color-ink-secondary); overflow-wrap: anywhere; }
+.research-body { padding: 0 var(--panel-padding-inline) var(--space-23); font-size: var(--font-size-12); color: var(--color-ink-secondary); overflow-wrap: anywhere; }
 .research-body p { margin-bottom: var(--space-12); }
 .research-body details { border-top: 1px solid var(--color-border); padding: var(--space-12) 0; }
 .research-body summary { cursor: pointer; color: var(--color-ink-strong); font-weight: var(--weight-semibold); }
@@ -1805,13 +1805,26 @@ td,th {
 .research-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-16); }
 .research-file { margin: 0; }
 .research-cohort { padding-bottom: var(--space-20); }
-.research-cohort h3, .research-cohort > p { padding: 0 var(--space-23); }
+.research-cohort h3, .research-cohort > p { padding: 0 var(--panel-padding-inline); }
 .research-history { display: flex; flex-direction: column; gap: var(--space-9); }
 .research-history button { white-space: normal; text-align: left; justify-content: flex-start; }
 .research-hash { font-family: var(--font-numeric); font-size: var(--font-size-10); margin-top: var(--space-16); }
 .research-lab li { margin-bottom: var(--space-9); line-height: var(--leading-1_7); }
 @media (max-width: 800px) {
-  .research-body { padding: 0 var(--space-17) var(--space-20); }
+  .research-body { padding: 0 var(--panel-padding-inline) var(--space-20); }
   .research-controls { grid-template-columns: 1fr; gap: 0; }
   .research-lab .section-head > .secondary { white-space: normal; }
+}
+
+/* Shared control geometry and constrained navigation. */
+.sidebar { top: 0; height: 100vh; height: 100dvh; }
+.sidebar > * { flex-shrink: 0; }
+.sidebar nav { min-height: 0; flex: 1; overflow-y: auto; }
+.sidebar nav button { flex-shrink: 0; }
+.heading-actions { flex-wrap: wrap; max-width: 100%; }
+.search { min-height: var(--control-height); }
+.search input { min-height: 0; margin: 0; line-height: var(--control-line-height); }
+.primary svg, .secondary svg, .small-button svg, .text-button svg, .search > svg { flex-shrink: 0; }
+@media (max-width: 800px) {
+  :root { --panel-padding-inline: var(--space-17); }
 }

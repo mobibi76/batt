@@ -100,7 +100,6 @@
   --color-sop-card-color: #bcd29c;
   --color-sop-card-p-color: #9bb6a4;
   --color-user-card-border-top: #ffffff12;
-  --space-236: 236px;
   --color-topbar-background: #ffffffd9;
   --space-38: 38px;
   --color-breadcrumb-strong-color: #4c6155;
@@ -180,11 +179,9 @@
   --color-auth-switch-button-color: #4d7852;
   --space-42: 42px;
   --font-size-52: 52px;
-  --space-205: 205px;
   --font-size-29: 29px;
   --space-35: 35px;
   --font-size-36: 36px;
-  --space-72: 72px;
   --font-size-25: 25px;
   --font-size-16: 16px;
   --space-28: 28px;
@@ -226,4 +223,6 @@
   --size-icon-22: 22px;
   --size-icon-11: 11px;
   --chart-area-opacity: 0.24;
+  --control-line-height: 20px;
+  --panel-padding-inline: var(--space-23);
 }

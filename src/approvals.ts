@@ -19,7 +19,7 @@ export function packEvidence(pack:Pack,cells:Cell[],tests:Inspection[]):PackSnap
  return {pack:structuredClone(pack),cells:pack.pack_cells.map(pc=>cells.find(c=>c.id===pc.cell_id)!).filter(Boolean),aging:structuredClone(aging),final:structuredClone(final)};
 }
 export function normalizeTwin(layout:unknown):Layout {const valid=validateLayout(layout);const error=runError(valid);if(error)throw Error(error);return valid;}
-export async function submitTwin(layout:Layout,title:string,note:string){normalizeTwin(layout);const {error}=await supabase.rpc('submit_quality_request',{request_kind:'twin',target_pack:null,request_title:title,request_message:note,twin_layout:layout});if(error)throw Error(error.message);}
+export async function submitTwin(layout:Layout,title:string,note:string){normalizeTwin(layout);const {data,error}=await supabase.rpc('submit_quality_request',{request_kind:'twin',target_pack:null,request_title:title,request_message:note,twin_layout:layout});if(error)throw Error(error.message);return data as string;}
 export function createDemoRequest(kind:Approval['kind'],snapshot:Approval['snapshot'],title:string,note:string,by='demo-requester'):Approval {
  if(!title.trim()||!note.trim())throw Error('이름과 요청 사유를 입력하세요.');
  if(kind==='twin')normalizeTwin(snapshot);

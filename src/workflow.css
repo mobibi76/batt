@@ -1,0 +1,26 @@
+.quality-workbench, .workflow-continuation, .outcome-review { margin-bottom:var(--space-22); }
+.workbench-body { padding:0 var(--panel-padding-inline) var(--space-22); }
+.quality-actions { list-style:none; margin:0; padding:0; }
+.quality-actions li, .matching-entry, .workflow-continuation { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:var(--space-16); }
+.quality-actions li { padding:var(--space-16) 0; border-bottom:1px solid var(--color-border); }
+.quality-actions li:first-child { padding-top:0; }
+.quality-actions p, .matching-entry p, .workflow-continuation p { color:var(--color-ink-secondary); margin:var(--space-7) 0 0; font-size:var(--font-size-12); line-height:var(--leading-1_7); }
+.quality-actions strong { overflow-wrap:anywhere; }
+.matching-entry { margin-top:var(--space-20); padding:var(--space-16); background:var(--color-surface-accent); border-radius:var(--radius-8); }
+.matching-entry > div { flex:1; min-width:0; }
+.workflow-filter, .workflow-actions, .workflow-pack-next { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-12); }
+.workflow-filter { padding:0 var(--panel-padding-inline) var(--space-16); }
+.workflow-filter label { margin:0; }
+.workflow-continuation { padding:var(--space-20) var(--panel-padding-inline); }
+.workflow-pack-next { margin:var(--space-16) 0; padding:var(--space-16); background:var(--color-surface-subtle); border:1px solid var(--color-border); border-radius:var(--radius-8); }
+.workflow-return { margin:var(--space-22) 0; }
+.overview-grid.workflow-measurements { grid-template-columns:minmax(0,1fr); }
+.candidate-cells { margin:0 var(--panel-padding-inline) var(--space-16); }
+.candidate-cells summary { cursor:pointer; font-size:var(--font-size-12); font-weight:var(--weight-semibold); color:var(--color-ink-secondary); }
+.outcome-comparison { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--space-20); }
+.outcome-comparison article { border:1px solid var(--color-border); border-radius:var(--radius-8); padding:var(--space-20); }
+.outcome-comparison h3 { font-size:var(--font-size-13); margin:0 0 var(--space-12); }
+.outcome-comparison strong { font-size:var(--font-size-30); }
+.outcome-comparison p { font-size:var(--font-size-12); color:var(--color-ink-secondary); }
+.workflow-actions button, .workflow-continuation button, .quality-actions button, .matching-entry button, .workflow-pack-next button { white-space:normal; max-width:100%; }
+@media(max-width:800px) { .outcome-comparison { grid-template-columns:1fr; } .matching-entry { align-items:stretch; flex-direction:column; } .quality-actions li > div { width:100%; } }

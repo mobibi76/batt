@@ -1,4 +1,5 @@
 ﻿import { ArrowRight, Activity, Link2 } from 'lucide-react';
+import type {PackFilter} from './workflow';
 import { number, qualitySummary, inspectionQueues, type Pack, type Inspection } from './lib';
 
 
@@ -21,13 +22,13 @@ export function QualityPriorities({ packs, tests, onNavigate }: Props) {
       <div className="outcome-value">{q.linkRate === null ? '—' : number(q.linkRate, 1)}{q.linkRate !== null && <span>%</span>}</div>
       <p className="outcome-basis">{packs.length ? `완전 연결 ${number(q.linked)}팩 / 전체 ${number(packs.length)}팩 · 미연결 ${number(packs.length - q.linked)}팩` : '등록된 팩이 없어 아직 집계할 수 없습니다.'}</p>
       <details className="metric-context"><summary>연결 기준</summary><p>구성 셀 8개 + 에이징 + 최종검사 기록이 모두 있는 팩</p>
-      <div className="outcome-reference">합격 여부와 별개인 기록 완전성 지표 · 검사 미완료 팩도 분모에 포함</div></details>
+      <div className="outcome-reference">제안서 목표: 대상 공정데이터 100% 연결·표준화 · 현재 지표는 팩 단위 기록 연결률이며 학습 적합성 검증과 별개</div></details>
       <button className="text-button" onClick={() => onNavigate('packs')}>팩별 검사 이력 확인 <ArrowRight className="icon-15"/></button>
     </article>
   </section>;
 }
 
-export function WorkQueues({ packs, tests, recommendations, onNavigate }: Props & { recommendations: number }) {
+export function WorkQueues({ packs, tests, recommendations, onNavigate, onFilter }: Props & { recommendations: number; onFilter:(filter:PackFilter)=>void }) {
   const queues = inspectionQueues(packs, tests);
   const failed = qualitySummary(packs, tests).failed;
   return <section className="panel work-queues" aria-label="공정별 대기량">
@@ -36,10 +37,10 @@ export function WorkQueues({ packs, tests, recommendations, onNavigate }: Props 
       { label: '조합 확인 대기', value: recommendations, unit: '조합', detail: '현재 실행의 미확정 추천', tab: 'matching' as const },
       { label: '에이징 기록 대기', value: queues.aging, unit: '팩', detail: '에이징 기록이 없는 구성 팩', tab: 'packs' as const },
       { label: '최종검사 기록 대기', value: queues.final, unit: '팩', detail: '에이징 기록 있음 · 최종검사 없음', tab: 'packs' as const },
-    ].map(item => <button className={`queue-card ${item.value ? 'waiting' : ''}`} key={item.label} onClick={() => onNavigate(item.tab)}>
+    ].map(item => <button className={`queue-card ${item.value ? 'waiting' : ''}`} key={item.label} onClick={() => item.tab==='matching'?onNavigate('matching'):onFilter(item.label.startsWith('에이징')?'aging':'final')}>
       <strong>{item.label}</strong><span className="queue-value">{number(item.value)}<small>{item.unit}</small></span><span>{item.detail}</span><span className="queue-link">작업 화면 보기 <ArrowRight className="icon-14"/></span>
     </button>)}</div>
-    <div className={`queue-note ${failed ? 'has-failures' : ''}`}><span>최신 최종검사 불합격 <strong>{number(failed)}팩</strong> · 기록 대기량과 별도로 확인하세요.</span><button className="text-button" onClick={() => onNavigate('packs')}>검사 결과 확인 <ArrowRight className="icon-14"/></button></div>
+    <div className={`queue-note ${failed ? 'has-failures' : ''}`}><span>최신 최종검사 불합격 <strong>{number(failed)}팩</strong> · 기록 대기량과 별도로 확인하세요.</span><button className="text-button" onClick={() => onFilter('failed')}>검사 결과 확인 <ArrowRight className="icon-14"/></button></div>
   </section>;
 }
 

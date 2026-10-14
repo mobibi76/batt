@@ -46,7 +46,7 @@ export async function readFile(file:File) {
 }
 export function qualitySummary(packs:Pack[],tests:Inspection[]) {
   const latest=new Map<string,Inspection>();
-  [...tests].filter(t=>t.kind==='final').sort((a,b)=>a.created_at.localeCompare(b.created_at)).forEach(t=>latest.set(t.pack_id,t));
+  [...tests].filter(t=>t.kind==='final'&&packs.some(p=>p.id===t.pack_id)).sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id.localeCompare(b.id)).forEach(t=>latest.set(t.pack_id,t));
   const failed=[...latest.values()].filter(t=>t.result==='fail').length;
   const linked=packs.filter(p=>p.pack_cells?.length===8 && latest.has(p.id) && tests.some(t=>t.pack_id===p.id&&t.kind==='aging')).length;
   return {tested:latest.size,failed,rate:latest.size?100*failed/latest.size:null,linked,linkRate:packs.length?100*linked/packs.length:null};

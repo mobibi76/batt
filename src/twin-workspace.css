@@ -1,4 +1,4 @@
-.twin-studio { --studio-inspector-width:24rem; height:100%; min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:var(--space-8); padding:var(--space-8); }
+.twin-studio { --studio-inspector-width:24rem; height:100%; min-height:0; display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; gap:var(--space-8); padding:var(--space-8); }
 .studio-command-bar { position:relative; display:flex; align-items:center; justify-content:space-between; gap:var(--space-8); min-width:0; }
 .studio-command-toggle { display:none; }
 .studio-command-bar .mode-switch { flex-shrink:0; margin:0; }
@@ -7,8 +7,9 @@
 .studio-scene,.studio-inspector,.studio-panels { min-height:0; min-width:0; }
 .studio-scene .twin-stage { margin:0; }
 .studio-inspector { display:flex; flex-direction:column; border:1px solid var(--color-border); border-radius:var(--radius-8); background:var(--color-surface); }
-.studio-tool-picker { display:flex; align-items:center; gap:var(--space-8); margin:0; padding:var(--space-8); white-space:nowrap; border-bottom:1px solid var(--color-border); }
-.studio-tool-picker select { min-width:0; width:100%; margin:0; }
+.studio-tool-picker { display:flex; gap:var(--space-4); margin:0; padding:0; }
+.studio-tool-picker button { flex:1; }
+.studio-tool-picker button { min-width:0; }
 .studio-panels { flex:1; }
 .studio-panel { height:100%; overflow:auto; padding:var(--space-8); }
 .studio-panel[hidden] { display:none; }
@@ -41,7 +42,8 @@
 .studio-mobile-switch { display:none; }
 @media(max-width:1199px) { .twin-studio { --studio-inspector-width:21rem; } .studio-command-bar { flex-wrap:wrap; } .studio-command-bar .twin-toolbar { flex:1; } }
 @media(max-width:899px) {
- .twin-studio { grid-template-rows:auto auto minmax(0,1fr) auto; }
+ .twin-studio { grid-template-rows:auto auto auto minmax(0,1fr) auto; }
+ .studio-tool-picker { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
  .studio-mobile-switch { display:flex; gap:var(--space-8); }
  .studio-mobile-switch button { flex:1; }
  .studio-body { grid-template-columns:minmax(0,1fr); }

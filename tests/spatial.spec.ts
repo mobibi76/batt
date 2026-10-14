@@ -13,7 +13,7 @@ for(const [width,height] of [[1366,768],[1024,600],[768,1024],[390,844]])test(`s
  expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight&&document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 test('property tabs preserve draft values and equipment selection opens its inspector',async({page})=>{
- await page.setViewportSize({width:1366,height:768});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'공정 관리');await step(page,'장비 목록에서 선택');await page.locator('.twin-device').first().click();await expect(page.getByRole('combobox',{name:'현재 작업'})).toHaveValue('선택 장비 · 데이터 정의');
+ await page.setViewportSize({width:1366,height:768});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'공정 관리');await step(page,'장비 목록에서 선택');await page.locator('.twin-device').first().click();await expect(page.getByRole('navigation',{name:'공정 작업 선택'}).getByRole('button',{name:'선택 장비 · 데이터 정의',exact:true})).toHaveAttribute('aria-pressed','true');
  await page.getByLabel('장비 이름',{exact:true}).fill('새 공정 리더');await page.getByRole('button',{name:'수치 태그',exact:true}).click();await page.getByRole('button',{name:'장비·데이터 적용'}).click();await page.getByRole('button',{name:'장비',exact:true}).click();await expect(page.getByLabel('장비 이름',{exact:true})).toHaveValue('새 공정 리더');await expect(page.locator('.studio-scene canvas')).toBeVisible();await expect(page.getByRole('button',{name:'가상 실행',exact:true})).toHaveCount(0);
 });
 test('invalid hidden property reveals the field without dropping its draft',async({page})=>{

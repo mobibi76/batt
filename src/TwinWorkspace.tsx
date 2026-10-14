@@ -1,5 +1,5 @@
 import {isValidElement,useEffect,useState,type ReactNode} from 'react';
-import {flatten,label,content} from './TaskSteps';
+import {flatten,label,content,taskName} from './TaskSteps';
 import './twin-workspace.css';
 
 // Keep the scene mounted while changing tools: camera, selection and simulation
@@ -20,10 +20,10 @@ export default function TwinWorkspace({children,mode,selectionRequest}:{children
  return <div className={`twin-studio show-${surface}`}>
   <div className="studio-command-bar">{modes}<button className="secondary studio-command-toggle" aria-label="공정 조작" aria-expanded={commandsOpen} onClick={()=>setCommandsOpen(!commandsOpen)}>조작</button><div className={`studio-commands ${commandsOpen?'open':''}`} onClick={()=>setCommandsOpen(false)}>{toolbar}</div></div>
   <div className="studio-mobile-switch" aria-label="공간과 도구 전환"><button className={surface==='scene'?'primary':'secondary'} aria-pressed={surface==='scene'} onClick={()=>setSurface('scene')}>공정 공간</button><button className={surface==='tools'?'primary':'secondary'} aria-pressed={surface==='tools'} onClick={()=>setSurface('tools')}>작업 도구</button></div>
+  <nav className="studio-tool-picker visible-task-tabs" aria-label="공정 작업 선택">{panels.map(n=><button key={label(n)} aria-label={label(n)} className={selectedLabel===label(n)?'primary':'secondary'} aria-pressed={selectedLabel===label(n)} onClick={()=>{setSelected(label(n));setSurface('tools');}}>{taskName(label(n))}</button>)}</nav>
   <div className="studio-body">
    <div className="studio-scene">{scene}</div>
    <aside className="studio-inspector" aria-label="공정 작업 도구">
-    <label className="studio-tool-picker">작업 도구<select aria-label="현재 작업" value={selectedLabel} onChange={e=>setSelected(e.target.value)}>{panels.map(n=><option key={label(n)}>{label(n)}</option>)}</select></label>
     <div className="studio-panels">{panels.map(n=><div className="studio-panel" hidden={label(n)!==selectedLabel} key={label(n)}>{content(n)}</div>)}</div>
    </aside>
   </div>

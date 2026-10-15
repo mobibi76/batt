@@ -10,7 +10,7 @@ test('all tasks use visible chips and equipment can be selected and cleared',asy
 test('large LOT choices are searchable and paginated while preserving selection',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 데이터');
  const csv='id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\n'+Array.from({length:12},(_,i)=>`CHIP-${i},LOT-CHIP-${String(i).padStart(2,'0')},3200,0.42,30000,2026-10-14T00:00:00Z`).join('\n');
- await page.locator('input[type=file]').setInputFiles({name:'chips.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});await page.getByRole('button',{name:'전체 12개 등록'}).click();await navigate(page,'셀 매칭');
+ await page.locator('.upload-actions input[type=file]').setInputFiles({name:'chips.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});await page.getByRole('button',{name:'전체 12개 등록'}).click();await navigate(page,'셀 매칭');
  const group=page.getByRole('radiogroup',{name:'대상 LOT',exact:true}),field=group.locator('..');await expect(group.getByRole('radio')).toHaveCount(8);
  const first=await group.getByRole('radio').first().getAttribute('value');await field.getByRole('button',{name:'다음 선택지'}).click();expect(await group.getByRole('radio').first().getAttribute('value')).not.toBe(first);
  await page.getByRole('textbox',{name:'대상 LOT 검색'}).fill('LOT-CHIP-11');await choose(page,'대상 LOT','LOT-CHIP-11');await expect(group.getByRole('radio',{name:'LOT-CHIP-11'})).toBeChecked();

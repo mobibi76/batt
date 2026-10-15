@@ -13,7 +13,7 @@ const TwinScene=lazy(()=>import('./twin/TwinScene'));
 export type {WorkMode} from './workModes';
 import type {WorkMode} from './workModes';
 type View='space'|'decision'|'intake'|'analysis'|'improve';
-type Props={task:Tab;taskTitle:string;children:ReactNode;onLogout:()=>void;onReport:()=>void;active:boolean;mode:WorkMode;onMode:(mode:WorkMode)=>void;profile:Profile;demo:boolean;packs:Pack[];tests:Inspection[];requests:ApprovalIndex[]|null;cells:number;available:number;lastSync:string;syncError:boolean;approvalError:string;onOpen:(tab:Tab)=>void;onWork:(s:PackSignal)=>void;onRecord:(pack:Pack,kind:Inspection['kind'],result:Inspection['result'],note:string)=>Promise<void>};
+type Props={task:Tab;taskTitle:string;children:ReactNode;onLogout:()=>void;onReport:()=>void;active:boolean;mode:WorkMode;onMode:(mode:WorkMode)=>void;profile:Profile;demo:boolean;packs:Pack[];tests:Inspection[];requests:ApprovalIndex[]|null;cells:number;available:number;lastSync:string;syncError:boolean;approvalError:string;onOpen:(tab:Tab)=>void;onWork:(s:PackSignal)=>void;onRecord:(pack:Pack,kind:Inspection['kind'],result:Inspection['result'],note:string,resultKind?:'measured'|'test')=>Promise<void>};
 export default function OperationsConsole(p:Props){
  const [recordPack,setRecordPack]=useState<Pack|null>(null);
  const [view,setView]=useState<View>('space'),[stage,setStage]=useState<'all'|'assembly'|'aging'|'final'>('all'),[chosenId,setChosenId]=useState(''),[deviceId,setDeviceId]=useState('');

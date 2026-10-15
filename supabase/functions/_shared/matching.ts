@@ -1,5 +1,5 @@
-export type Cell = { id: string; lot: string; voltage_mv: number; resistance_mohm: number; capacity_mah: number; status: string; measured_at: string };
-export type Group = { cell_ids: string[]; spreads: Record<string, number>; score: number; sop_version: string };
+export type Cell = { source_kind?:string; source_batch_id?:string;  id: string; lot: string; voltage_mv: number; resistance_mohm: number; capacity_mah: number; status: string; measured_at: string };
+export type Group = { run_id?:string; cell_ids: string[]; spreads: Record<string, number>; score: number; sop_version: string };
 const dimensions = ['voltage_mv', 'resistance_mohm', 'capacity_mah'] as const;
 const limits = [10, 0.01, 500];
 const scales = [1000, 100000, 1000];

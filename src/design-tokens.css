@@ -1,6 +1,7 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --size-evidence-card-min: 220px;
   --radius-chip: 999px;
   --space-2: 2px;
   --color-ink: #213a32;

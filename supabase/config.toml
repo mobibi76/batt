@@ -13,3 +13,6 @@ enable_confirmations = false
 # Handler verifies the JWT with auth.getUser and enforces approved membership.
 # This supports projects using asymmetric JWT signing keys.
 verify_jwt = false
+
+[functions.analyze-batch]
+verify_jwt = false

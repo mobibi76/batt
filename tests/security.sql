@@ -4,7 +4,7 @@ insert into auth.users(id,email,raw_user_meta_data) values
  ('11111111-1111-4111-8111-111111111111','rls-test-pending@example.invalid','{"role":"admin","status":"approved"}'),
  ('22222222-2222-4222-8222-222222222222','rls-test-operator@example.invalid','{}'),
  ('33333333-3333-4333-8333-333333333333','rls-test-viewer@example.invalid','{}');
-update public.profiles set status='approved' where id='22222222-2222-4222-8222-222222222222';
+update public.profiles set status='approved',process_stages=array['assembly'] where id='22222222-2222-4222-8222-222222222222';
 update public.profiles set status='approved',role='viewer' where id='33333333-3333-4333-8333-333333333333';
 set local role authenticated;
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',true);
@@ -19,7 +19,7 @@ do $$ begin
     perform public.import_cells('[]','test');
     raise exception 'FAIL: pending user import';
   exception when raise_exception then
-    if sqlerrm<>'작업 권한이 필요합니다' then raise; end if;
+    if sqlerrm<>'셀 등록·매칭 담당 권한이 필요합니다' then raise; end if;
   end;
 end $$;
 select set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',true);
@@ -44,7 +44,7 @@ do $$ begin
   begin
     perform public.import_cells('[]','test');
     raise exception 'FAIL: viewer import';
-  exception when raise_exception then if sqlerrm<>'작업 권한이 필요합니다' then raise; end if; end;
+  exception when raise_exception then if sqlerrm<>'셀 등록·매칭 담당 권한이 필요합니다' then raise; end if; end;
 end $$;
 select 'PASS: membership, escalation, import, approval, duplicate prevention, viewer permissions' as result;
 rollback;

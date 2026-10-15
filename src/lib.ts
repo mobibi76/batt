@@ -3,12 +3,12 @@ import Papa from 'papaparse';
 import type { Cell } from '../supabase/functions/_shared/matching';
 export const supabase=createClient('https://asfrsorbzmqhnwnxlxar.supabase.co','sb_publishable_LrFnxngIgK3b6vGzBd469Q_n-DSu3dy');
 export type Profile={id:string;email:string;display_name:string;role:'admin'|'operator'|'viewer';status:'pending'|'approved'|'rejected'|'suspended';created_at:string;quality_reviewer?:boolean;process_stages?:('assembly'|'aging'|'final')[]};
-export type Pack={created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
-export type Inspection={created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'final';result:'pass'|'fail';note:string;created_at:string};
+export type Pack={source_kind?:string;matching_run_id?:string;created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
+export type Inspection={evidence_kind?:'measured'|'test'|'unknown';created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'final';result:'pass'|'fail';note:string;created_at:string};
 export const number=(v:number,d=0)=>v.toLocaleString('ko-KR',{maximumFractionDigits:d});
 export const date=(v:string)=>new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 export function sampleCells():Cell[] {
-  return Array.from({length:128},(_,i)=>({id:`DEMO-${String(i+1).padStart(4,'0')}`,lot:`DEMO-LOT-${Math.floor(i/32)+1}`,voltage_mv:3300+Math.floor(i/32)*4+(i%8)*0.6,resistance_mohm:Number((0.42+Math.floor(i/32)*0.003+(i%8)*0.0004).toFixed(5)),capacity_mah:30000+Math.floor(i/32)*120+(i%8)*18,status:'available',measured_at:'2026-10-14T00:00:00Z'}));
+  return Array.from({length:128},(_,i)=>({id:`DEMO-${String(i+1).padStart(4,'0')}`,lot:`DEMO-LOT-${Math.floor(i/32)+1}`,voltage_mv:3300+Math.floor(i/32)*4+(i%8)*0.6,resistance_mohm:Number((0.42+Math.floor(i/32)*0.003+(i%8)*0.0004).toFixed(5)),capacity_mah:30000+Math.floor(i/32)*120+(i%8)*18,source_kind:'synthetic',status:'available',measured_at:'2026-10-14T00:00:00Z'}));
 }
 const fields=['id','lot','voltage_mv','resistance_mohm','capacity_mah','measured_at'] as const;
 export function download(name:string,body:string,type='text/csv;charset=utf-8') {

@@ -2,7 +2,7 @@ import { ChoiceChips } from './ChoiceChips';
 import TaskSteps from './TaskSteps';
 ﻿import { useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, FlaskConical, Play, LoaderCircle, FileUp } from 'lucide-react';
-import { download, number } from './lib';
+import { download, number, supabase } from './lib';
 import { algorithmNames, keys, type ExperimentResult, type Limits } from './research/engine';
 import { parseResearchCsv, sha256, type Dataset } from './research/data';
 
@@ -12,12 +12,12 @@ const labels={voltage_mv:'전압 편차 (mV)',resistance_mohm:'펄스 저항 편
 const blockers=['1.2Ah 연구 셀과 주성산업 30Ah 셀의 규격·측정법 차이 확인','현장 독립 LOT에서 기존 방식 대비 비교 검증','초도·재검사 결과와 실제 팩 불량 라벨 확보','운영 SOP·서버 재검증 및 관리자 승인 후 별도 배포'];
 const mean=(xs:number[])=>xs.reduce((a,b)=>a+b,0)/xs.length;
 
-export default function ResearchLab({userId}:{userId:string}) {
+export default function ResearchLab({userId,demo=false,canSave=false}:{userId:string;demo?:boolean;canSave?:boolean}) {
  const [dataset,setDataset]=useState<Dataset|null>(null),[limits,setLimits]=useState(defaults),[seed,setSeed]=useState(20261014),[cohort,setCohort]=useState('all');
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[report,setReport]=useState<Report|null>(null),[history,setHistory]=useState<Report[]>([]);
  const [source,setSource]=useState(''),[license,setLicense]=useState(''),[condition,setCondition]=useState('');
  const worker=useRef<Worker|null>(null);const mounted=useRef(true);const storageKey=`jsi-research-v1-${userId}`;
- useEffect(()=>{mounted.current=true;try{const records=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(records))setHistory(records.filter(r=>r.schema_version===1&&Array.isArray(r.results)&&r.dataset?.cells).slice(0,10));}catch{/* corrupted cache is not an experiment */}return()=>{mounted.current=false;worker.current?.terminate();};},[storageKey]);
+ useEffect(()=>{mounted.current=true;if(demo){try{const records=JSON.parse(localStorage.getItem(storageKey)||'[]');if(Array.isArray(records))setHistory(records.filter(r=>r.schema_version===1&&Array.isArray(r.results)&&r.dataset?.cells).slice(0,10));}catch{/* corrupted cache is not an experiment */}}else{void supabase.from('research_runs').select('report').eq('created_by',userId).order('created_at',{ascending:false}).limit(10).then(({data,error})=>{if(!mounted.current)return;if(error)setError(error.message);else setHistory((data||[]).map(r=>r.report));});}return()=>{mounted.current=false;worker.current?.terminate();};},[storageKey,demo,userId]);
  async function loadPublic(){setError('');setBusy(true);try{const response=await fetch(`${import.meta.env.BASE_URL}research/uconn-lfp.json`);if(!response.ok)throw Error('공개 데이터 파일을 불러오지 못했습니다.');const d=await response.json() as Dataset;setDataset(d);setReport(null);setCohort('all');setLimits({...defaults});}catch(e){setError(String(e));}finally{setBusy(false);}}
  async function importFile(file:File){setError('');setBusy(true);try{
   if(file.size>2*1024*1024)throw Error('검증 CSV는 최대 2MB입니다.');
@@ -29,11 +29,11 @@ export default function ResearchLab({userId}:{userId:string}) {
   const hash=await sha256(JSON.stringify(snapshot));if(!mounted.current)return;const frozenLimits={...limits};
   const results=await new Promise<ExperimentResult>((resolve,reject)=>{const w=new Worker(new URL('./research/worker.ts',import.meta.url),{type:'module'});worker.current=w;w.onmessage=e=>{w.terminate();worker.current=null;e.data.error?reject(Error(e.data.error)):resolve(e.data.results);};w.onerror=()=>{w.terminate();worker.current=null;reject(Error('검증 작업을 완료하지 못했습니다.'));};w.postMessage({cells:snapshot.cells,limits:frozenLimits,seed});});
   const next:Report={schema_version:1,id:crypto.randomUUID(),created_at:new Date().toISOString(),engine_version:'research-matching-1.0.0',dataset:snapshot,dataset_sha256:hash,limits:frozenLimits,seed,trials:5,results,scope:'배치 내 조합 균일성 탐색. 불량률·수명·현장 성능 검증이 아님. 5회는 동일 셀의 순서 반복이며 독립 표본이 아님.',promotion:{status:'현장 검증 필요 · 운영 미적용',blockers}};
-  setReport(next);const records=[next,...history].slice(0,10);setHistory(records);try{localStorage.setItem(storageKey,JSON.stringify(records));}catch{setError('실험은 완료했지만 브라우저 저장 공간이 부족합니다. 보고서를 내려받으세요.');}
+  setReport(next);const records=[next,...history].slice(0,10);if(demo){setHistory(records);try{localStorage.setItem(storageKey,JSON.stringify(records));}catch{setError('실험은 완료했지만 브라우저 저장 공간이 부족합니다. 보고서를 내려받으세요.');}}else if(canSave){const saved=await supabase.from('research_runs').insert({id:next.id,created_by:userId,report:next});if(saved.error)throw Error(`계산 완료, 서버 저장 실패: ${saved.error.message}. 보고서를 내려받으세요.`);setHistory(records);}else{setError('계산 완료 · 조회 권한에서는 서버에 저장하지 않습니다.');}
  }catch(e){setError(e instanceof Error?e.message:'검증 실패');}finally{setBusy(false);}}
  const cohorts=dataset?[...new Set(dataset.cells.map(c=>c.cohort))].sort():[];
  return <TaskSteps className="research-lab" focus={report?'3. 검증 결과':undefined}>
-  <div className="notice"><FlaskConical className="icon-20"/><div><strong>운영 데이터와 분리된 알고리즘 연구 공간</strong><p>실험은 이 브라우저에서 실행하고 최근 10건을 보관합니다. 운영 셀·팩·품질 지표에는 반영하지 않습니다.</p></div></div>
+  <div className="notice"><FlaskConical className="icon-20"/><div><strong>운영 데이터와 분리된 알고리즘 연구 공간</strong><p>실험은 브라우저에서 실행합니다. {demo?'체험 기록은 이 브라우저에 보관합니다.':'담당자 실행 결과는 서버에 보관하며 최근 10건을 표시합니다.'} 운영 셀·팩·품질 지표에는 반영하지 않습니다.</p></div></div>
   <section className="panel"><div className="section-head"><div><h2>1. 연구 데이터</h2><p>측정 조건이 같은 그룹 안에서만 셀 8개를 조합합니다.</p></div><button className="secondary" disabled={busy} onClick={loadPublic}>UConn 공개 데이터 불러오기</button></div>
    <div className="research-body"><p>탑재 데이터: <strong>실측 기반 LFP 55셀</strong> · Batch 1: 23셀 / Batch 2: 24셀 / Batch 3: 8셀 · 초기 RPT=0, SOC 45–55%에서 셀당 1개 펄스 선택.</p><p className="muted">1.2Ah 셀의 펄스 전 전압·펄스 유래 R0·용량입니다. 저항은 생산 ACIR과 다르며, 원본 CSV에 온도 열이 없습니다. 30Ah로 수치를 확대하거나 결측값을 합성하지 않았습니다.</p>
    <details><summary>출처·전처리·다른 공개 데이터 활용 범위</summary><div className="research-source"><a href="https://digitalcommons.lib.uconn.edu/reil_datasets/3/" target="_blank" rel="noreferrer">UConn 원본 데이터 (CC BY 4.0)</a><a href="https://github.com/REIL-UConn/SOC-Agnostic-Rapid-State-of-Health-Estimation-of-Lithium-Ion-Batteries" target="_blank" rel="noreferrer">연구진 전처리 자료 (MIT)</a><p>출처: Li et al. (2025), UConn–MathWorks LFP/Gr Second-Life Battery Aging Dataset; Navidi et al. (2026), DOI 10.1016/j.apenergy.2026.128451.</p><p>Severson 수명 데이터는 연구 표준 CSV로 전처리 후 가져올 수 있습니다. 24V 실사용 이력과 AI Hub 결함 이미지는 별도의 이상탐지·영상 모델이 필요하며 이 조합 엔진에 아직 연결하지 않았습니다.</p></div></details>

@@ -21,7 +21,11 @@ Deno.serve(async (req: Request)=>{
     if(body.lot) query=query.eq('lot',body.lot);
     const {data,error}=await query;
     if(error) throw error;
+    const start=performance.now();
     const result=matchCells(data||[],body.count??3);
-    return reply(result);
+    const admin=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
+    const saved=await admin.rpc('commit_standard_run',{actor:user.id,output:{...result,input_snapshot:data,parameters:{lot:body.lot||null,count:body.count??3},sop_version:'JSI-SOP-v1',elapsed_ms:performance.now()-start}});
+    if(saved.error)throw saved.error;
+    return reply({...result,groups:result.groups.map(g=>({...g,run_id:saved.data})),run_id:saved.data});
   } catch(e) { return reply({error:e instanceof Error?e.message:'매칭 요청을 처리할 수 없습니다.'},400); }
 });

@@ -1738,6 +1738,8 @@ td,th {
 .icon-14 { width: var(--size-icon-14); height: var(--size-icon-14); }
 
 .icon-16 { width: var(--size-icon-16); height: var(--size-icon-16); }
+.inline-icon-label { display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--space-5); overflow-wrap: anywhere; }
+.inline-icon-label > svg { flex-shrink: 0; }
 
 .icon-15 { width: var(--size-icon-15); height: var(--size-icon-15); }
 

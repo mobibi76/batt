@@ -6,7 +6,7 @@ test('registered records refresh automatically and failed refresh is visibly sta
  await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',async route=>{
   const path=new URL(route.request().url()).pathname;
   if(path.endsWith('/profiles'))return route.fulfill({json:{id,email:'test@example.com',display_name:'현장 담당자',role:'operator',status:'approved',process_stages:['final'],created_at:''}});
-  if(path.endsWith('/packs')){reads++;if(fail)return route.fulfill({status:400,json:{message:'test outage'}});return route.fulfill({json:reads>1?[{id:'pack-1',serial_no:'AUTO-UPDATED',created_at:new Date().toISOString(),pack_cells:[]}]:[]});}
+  if(path.endsWith('/packs')){reads++;if(fail)return route.fulfill({status:400,json:{message:'test outage'}});return route.fulfill({json:reads>1?[{id:'pack-1',source_kind:'measured',serial_no:'AUTO-UPDATED',created_at:new Date().toISOString(),pack_cells:[]}]:[]});}
   return route.fulfill({json:[]});
  });
  await page.clock.install();await page.goto('/batt/');await expect(page.locator('.console-source')).toContainText('기록 조회');

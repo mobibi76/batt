@@ -1,0 +1,52 @@
+주성산업 MVP 운영·복구 절차 — 2026-10-15
+
+1. 운영 구성
+웹 GitHub Pages / DB·Auth Supabase / 계산 analyze-batch, match-cells.
+Linux IDC Docker 이관은 별도 후속 작업이다. 이 문서는 이관 완료 증명서가 아니다.
+관리자는 계정과 공정 권한을 관리하고, 공정 담당자는 기록하며, 지정된 승인권자가 최종 품질을 승인한다.
+
+2. 배포
+사전: npm ci → npm test → npm run test:db → npm run build → npm run test:e2e.
+DB: npx supabase db push --dry-run 으로 대상 확인 후 npx supabase db push.
+계산: npx supabase functions deploy analyze-batch --use-api
+      npx supabase functions deploy match-cells --use-api
+웹: main push → GitHub Actions 성공 및 실제 Pages 접속 확인.
+202610150003은 구형 직접 API를 차단하므로 구 웹을 계속 쓰면 등록/확정 오류가 발생한다.
+같은 배포 작업에서 DB·함수·웹을 갱신하고 사용자는 화면을 새로고침한다.
+DB 이력은 삭제하지 않으며 이후 오류는 교정 마이그레이션으로 대응한다.
+
+3. 장애 대응
+화면의 갱신 실패 표시는 이전 조회본이다. 실제 상태로 간주하지 말고 연결 복구 후 다시 조회한다.
+배치 버전 충돌이면 기존 입력을 복사해 보관하고 최신 자료 다시 조회 후 변경점을 검토한다.
+저장 응답이 끊겼다면 무조건 다시 입력하지 말고 배치/팩/검사 이력을 먼저 조회한다.
+권한 오류는 관리자에게 공정 담당과 승인권 배정을 확인한다. RLS를 끄지 않는다.
+팩 확정 이후 새 검사는 기존 승인을 재검토 상태로 만든다. 이전 승인 표시만 보고 출하 판단하지 않는다.
+
+4. 보관 대상
+DB: profiles, cells, packs, pack_cells, inspections, quality_requests, quality_events,
+intake_batches, evidence_events, matching_runs, research_runs, audit_logs 및 Auth 계정.
+소스: Git 커밋, SQL 마이그레이션, Edge 함수, 의존성 잠금 파일.
+설정: Auth URL/SMTP/가입 정책, API 키·비밀키, Edge 환경변수, 접근제어를 별도 비밀 저장소에 보관.
+고객 원본: 현재는 파일 바이너리를 클라우드에 올리지 않는다. 원래 고객 원본 위치의 백업을 별도로 유지.
+DB 원행/파일 해시는 원본 파일 보관 자체를 대신하지 않는다.
+
+5. 실제 Supabase 백업/복구
+공식 절차 확인(2026-10-15):
+https://supabase.com/docs/guides/platform/backups
+https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore
+운영 담당자는 현재 프로젝트 플랜·사용 가능한 백업 시점·보존기간을 Dashboard에서 확인한다.
+DB 백업에는 Storage 파일 바이너리가 포함되지 않는다. 파일 저장을 도입하면 별도로 백업한다.
+수동 논리 백업은 공식 CLI 절차의 roles/schema/data 덤프를 함께 보관한다.
+덤프·계정·키·고객 자료는 GitHub에 커밋하지 않는다. 백업 생성시각·커밋·해시·관리자를 기록한다.
+운영 복원은 데이터 손실 구간과 중단시간을 확정한 뒤 수행한다. 시험은 별도 격리 프로젝트에서 먼저 수행한다.
+복원 후 계정 로그인, 담당 권한, RLS, 원자료 건수/해시, 추천 입력, 팩 연결,
+검사·승인·감사이력, Edge 함수와 웹 환경설정을 대조한다.
+업무 시나리오를 합성 데이터로 실행하고 실제 복원 소요시간과 손실 구간을 기록한다.
+
+6. 검증 수준과 남은 외부 작업
+자동 test:db는 격리 PGlite DB의 아카이브 복원으로 원자료·버전·팩·API 권한 보존을 확인한다.
+이는 관리형 Supabase의 Auth/Storage/프로젝트 전체 복원을 검증한 것이 아니다.
+현재 PC에서는 Docker daemon에 연결할 수 없고 실제 복원 대상 프로젝트도 지정되지 않았다.
+실제 Supabase 백업 가용성 확인·전체 복원 훈련·백업 보존기간·RPO/RTO 합의는 미완료로 남긴다.
+고객 SOP·LOT 혼합 규칙·시험조건 확정 및 실제 사용자 검수도 별도 확인이 필요하다.
+이 항목을 소프트웨어 자동 테스트 통과로 대체하지 않는다.

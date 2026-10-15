@@ -11,7 +11,7 @@ test('demo process map follows approval and inspection records',async({page})=>{
  await expect(page.locator('.candidate')).toHaveCount(3);
  await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();
  await page.getByRole('textbox',{name:'팩 일련번호'}).fill('TEST-PACK-001');
- await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
+ await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await navigate(page,'팩 · 검사이력');
  await page.getByRole('button',{name:'상세 조회'}).click();
  await page.getByRole('button',{name:'검사 결과 저장'}).click();

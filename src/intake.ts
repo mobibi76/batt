@@ -28,7 +28,7 @@ export function parseIntake(sheet:unknown[][],name:string,hash:string):Intake {
   const iso=date instanceof Date?null:String(date??'');
   const measured_at=iso&&/^\d{4}-\d{2}-\d{2}T.*(Z|[+-]\d{2}:\d{2})$/.test(iso)&&Number.isFinite(Date.parse(iso))?iso:null;
   if(!measured_at)issues.push('측정 시각 시간대 확인 필요');
-  return {row_no:rowNo,id,channel,voltage_mv:voltage,resistance_mohm:resistance,capacity_mah:capacity,measured_at,issues,state:(equipmentError||voltage===null||capacity===null?'held':'ready') as EvidenceCell['state'],raw:row};
+  return {row_no:rowNo,id,channel,lot:grading?null:String(record.lot??'').trim()||null,voltage_mv:voltage,resistance_mohm:resistance,capacity_mah:capacity,measured_at,issues,state:(equipmentError||voltage===null||capacity===null?'held':'ready') as EvidenceCell['state'],raw:row};
  });
  return {name,hash,source_kind:grading?'reconstructed':'unknown',mapping_version:grading?'cell-grading-88-v1':'canonical-v1',headers:sheet.slice(0,grading?2:1),rows,warnings:grading?['OCV=D열, 방전용량=AO열(mAh). 내부저항은 제공되지 않음.','채널은 영구 셀 식별자가 아닙니다. 임시 ID는 같은 파일 안의 추적용입니다.','장비 시각의 시간대·원본성·제품 규격은 고객 확인 필요. 원행과 2단 헤더를 함께 보존합니다.']:['출처를 지정하고 측정 조건을 확인하세요.']};
 }

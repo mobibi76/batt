@@ -77,3 +77,6 @@
 .console-task-body .twin-stage>.section-head { display:none; }
 .visible-task-tabs { display:flex; flex-wrap:wrap; gap:var(--space-4); }
 .visible-task-tabs button { min-height:var(--control-height); white-space:normal; padding:var(--space-8); font-size:var(--font-size-12); }
+
+.console-analysis-actions { display:flex; flex-wrap:wrap; gap:var(--space-8); }
+.console-analysis > .evidence-tabs { padding:0; }

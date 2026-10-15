@@ -18,7 +18,7 @@ test('large LOT choices are searchable and paginated while preserving selection'
  await choose(page,'추천 팩 수','5');await expect(page.getByRole('radio',{name:'5팩',exact:true})).toBeChecked();await page.screenshot({path:'.local/chips-matching-390.png'});
 });
 test('required approval pack remains required and keyboard selection works',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('CHIP-REQUIRED');await page.getByRole('button',{name:'확인 및 팩 구성'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('CHIP-REQUIRED');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성'}).click();
  await navigate(page,'품질·공정 승인함');await step(page,'새 검토 요청');await page.getByLabel('검토 요청 사유',{exact:true}).fill('필수 팩 선택 검증');await page.getByRole('button',{name:'팩 품질 검토 요청'}).click();
  const radio=page.getByRole('radio',{name:'CHIP-REQUIRED',exact:true});await expect(radio).toBeFocused();await expect(radio).not.toBeChecked();await page.keyboard.press('Space');await expect(radio).toBeChecked();
  expect(await page.locator('.approval-submit').evaluate(e=>new FormData(e as HTMLFormElement).get('pack'))).toBeTruthy();

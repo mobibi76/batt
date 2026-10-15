@@ -19,7 +19,11 @@ try {
  await db.query(`update public.profiles set status='approved',role='operator',quality_reviewer=true where id=$1`,[ids.reviewer]);
  await db.query(`update public.profiles set status='approved',role='admin' where id=$1`,[ids.admin]);
  async function identity(id,role='authenticated'){await db.exec('reset role');await db.query(`select set_config('request.jwt.claim.sub',$1,false)`,[id]);await db.exec(`set role ${role}`);}
- const q=async(sql,params=[])=>{const r=await db.query(sql,params);return Object.values(r.rows[0]||{})[0];};
+ const q=async(sql,params=[])=>{
+  if(sql.includes('public.review_evidence(')){sql=sql.replace('review_evidence($1,$2,$3,$4,$5)','review_evidence_checked($1,$2,$3,$4,$6,$5)');params=[...params,(await db.query('select revision from public.intake_batches where id=$1',[params[0]])).rows[0].revision];}
+  if(sql.includes('public.review_evidence_group(')){sql=sql.replace('review_evidence_group($1,$2,$3,$4)','review_evidence_group_checked($1,$2,$3,$4,$5)');params=[...params,(await db.query('select revision from public.intake_batches where id=$1',[params[0]])).rows[0].revision];}
+  if(sql.includes('approve_recorded_pack($1,$2,$3)'))sql=sql.replace('approve_recorded_pack($1,$2,$3)',"approve_recorded_pack($1,$2,$3,'fixture review')");
+  const r=await db.query(sql,params);return Object.values(r.rows[0]||{})[0];};
  const rows=Array.from({length:16},(_,i)=>({row_no:i+3,id:`TEST-${i}`,channel:String(i),voltage_mv:3300,resistance_mohm:null,capacity_mah:25000+i,measured_at:null,issues:['missing resistance'],state:'ready'}));
  const payload={name:'synthetic.csv',hash:'a'.repeat(64),source_kind:'synthetic',mapping_version:'test-v1',rows};
  await identity(ids.pending);
@@ -27,6 +31,8 @@ try {
  assert.equal(await q('select count(*) from public.intake_batches'),0);
  await identity(ids.admin);await assert.rejects(()=>q('select public.register_intake($1,$2)',[payload,'test']),/담당 권한/);
  await identity(ids.operator);
+ await assert.rejects(()=>q("select public.import_cells('[]','bypass')"),/permission/);
+ await assert.rejects(()=>q("select public.approve_pack(array[]::text[],'bypass')"),/permission/);
  const batch=await q('select public.register_intake($1,$2)',[payload,'synthetic fixture, not customer data']);
  await assert.rejects(()=>q('select public.register_intake($1,$2)',[payload,'duplicate']),/unique/);
  await assert.rejects(()=>q("update public.intake_batches set source_kind='measured' where id=$1",[batch]),/permission/);
@@ -37,6 +43,7 @@ try {
  for(const row of rows.slice(0,8))await q('select public.review_evidence($1,$2,$3,$4,$5)',[batch,row.id,'ready','synthetic retest',{voltage_mv:3300,resistance_mohm:.42,capacity_mah:25000,measured_at:'2026-10-15T09:00:00+09:00'}]);
  await assert.rejects(()=>q('select public.approve_evidence_pack($1,$2,$3,$4)',[run,rows.slice(0,8).map(r=>r.id),'STALE','reason']),/최신 자료/);
  const b=(await db.query('select * from public.intake_batches where id=$1',[batch])).rows[0];
+ await assert.rejects(()=>q("select public.review_evidence_checked($1,$2,'held','stale',1,null)",[batch,rows[0].id]),/변경/);
  assert.equal(b.original_rows[0].resistance_mohm,null);assert.equal(b.rows[0].resistance_mohm,.42);assert.equal(await q('select count(*) from public.evidence_events'),8);
  output=analyzeEvidence(b.rows);
  await identity(ids.operator,'service_role');run=await q('select public.commit_matching_run($1,$2,$3,$4)',[batch,b.revision,ids.operator,output]);
@@ -66,9 +73,29 @@ try {
  await assert.rejects(()=>q('insert into public.research_runs(id,report) values($1,$2)',['20000000-0000-4000-8000-000000000002',{}]),/row-level security/);
  await identity(ids.operator);await q('select public.review_evidence_group($1,$2,$3,$4)',[batch,rows.slice(8).map(r=>r.id),'retest','group remeasurement']);
  assert.equal(await q("select count(*) from public.evidence_events where action='retest'"),8);
+ const newRows=canonical.map((c,i)=>({...c,id:`UNIFIED-${i}`}));
+ const normalized=newRows.map((c,i)=>({...c,row_no:i+2,channel:c.id,state:'ready',issues:[],raw:Object.values(c)}));
+ const unifiedBatch=await q('select public.import_reviewed_intake($1,$2,$3)',[{name:'unified.csv',hash:'b'.repeat(64),source_kind:'synthetic',mapping_version:'canonical-v1',rows:normalized},'synthetic original rows',newRows]);
+ assert.equal(await q('select count(*) from cells where source_batch_id=$1',[unifiedBatch]),8);
+ const prior=matchCells(newRows);
+ await identity(ids.operator,'service_role');const priorRun=await q('select public.commit_standard_run($1,$2)',[ids.operator,{...prior,input_snapshot:newRows}]);await identity(ids.operator);
+ await q("select public.review_evidence_checked($1,$2,'ready','remeasured',1,$3)",[unifiedBatch,newRows[0].id,{voltage_mv:3301,resistance_mohm:.42,capacity_mah:25000,measured_at:'2026-10-15T01:00:00Z'}]);
+ await assert.rejects(()=>q("select public.approve_recorded_pack($1,'STALE-STANDARD',$2,'review')",[newRows.map(c=>c.id),priorRun]),/변경/);
+ assert.equal(await q('select voltage_mv from cells where id=$1',[newRows[0].id]),'3301');
+ console.log('PASS: unified standard upload, retained raw rows, inventory remeasurement and stale standard run rejection');
  console.log('PASS: permissions, immutable raw data, missing SOP, stale runs, retest, pack provenance, duplicate use, independent approval and supersession');
  await db.exec('reset role');
  await db.exec((await readFile('tests/security.sql','utf8')).replace(/^\uFEFF/,''));
  console.log('PASS: existing security integration tests');
+ await db.exec('reset role');
+ const before=(await db.query('select id,rows,original_rows,revision from intake_batches order by id')).rows;
+ const archive=await db.dumpDataDir();
+ const restored=new PGlite({loadDataDir:archive});
+ try{
+  assert.deepEqual((await restored.query('select id,rows,original_rows,revision from intake_batches order by id')).rows,before);
+  assert.equal((await restored.query('select count(*) from packs')).rows[0].count,(await db.query('select count(*) from packs')).rows[0].count);
+  assert.equal((await restored.query("select has_function_privilege('authenticated','public.approve_pack(text[],text)','execute') allowed")).rows[0].allowed,false);
+  console.log('PASS: isolated database archive restore preserves raw data, revisions, packs and API permissions (not managed Supabase restore)');
+ }finally{await restored.close();}
 } catch(error) {console.error('FAIL:',error.message,error.where||'',error.position||'');process.exitCode=1;} finally {await db.close();}
 

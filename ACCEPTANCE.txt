@@ -1,0 +1,53 @@
+실제 수행 범위 Gap 대응·검수표 — 2026-10-15
+적용: 작업 범위.txt의 실제 수행 범위 절만. 비교안·학습형 AI·현장 실증·Docker 이관은 합산하지 않음.
+
+G01 추적성 우회 차단
+구형 import_cells/approve_pack/무버전 검토 API의 authenticated 직접 실행 권한 제거.
+근거: 202610150003_close_review_gaps.sql, scripts/test-database.mjs.
+검수: 직접 호출 거부, 저장된 추천과 사유를 가진 경로만 확정, SOP/중복 사용/독립 승인 보존.
+
+G02 실측/시험 지표 분리
+실측 팩+실측 검사, 합성 팩+시험 검사, 전체 혼합 참고 집계 분리.
+실측 대상이 없으면 미집계. 재구성·미확인 자료는 실측 성과에서 제외.
+근거: src/gaps.test.ts, OperationsConsole, OutcomeReview, 텍스트 보고서.
+
+G03 등록·검토 경로 연결
+표준 파일도 원행과 LOT가 있는 배치를 저장. 기존 재고는 배치 검토로 연결.
+공통 화면에서 셀/조합 보류·재검사, 재측정, 사유·변경 전후 저장.
+미사용 재고 재측정은 원자료 보존 후 재고값 갱신. 팩 사용 셀은 수정 차단.
+근거: import_reviewed_intake, open_inventory_review, test-database.
+시연: 표준 등록 → 셀 매칭 → 조합 검토 → 보류·재검사 검토로 → 재측정 → 재계산 → 팩 확정.
+
+G04 LOT·추천 근거
+정규화 LOT 보존, 표준/배치 엔진의 다른 LOT 혼합 방지, 서버 확정 재검사.
+LOT 누락은 배치 단위 시험 비교임을 명시. 시험조건 메모는 보존하되 자동 적합성 인증은 아님.
+근거: src/gaps.test.ts, evidence-greedy-v2, multi-order-greedy-v2.
+
+G05 QC 조치 연결
+QC 셀 ID와 이탈 항목 → 측정 검토·재검사 연결. 후보 균일성 점수와 선정 기준 표시.
+점수는 불량 확률이 아니며 미측정 항목은 전체 SOP 적합으로 확정하지 않음.
+근거: EvidenceWorkspace, evidence.test.ts, tests/evidence.spec.ts.
+
+G06 이력 조회
+배치 이름 검색, 셀/LOT 검색, 이력 셀/시작일 검색, 서버 페이지 조회.
+처리자·시각·사유·변경 전후 표시. 내보내기는 조회 페이지 범위임을 명시.
+현재 페이지 정렬은 created_at와 id를 함께 사용한다. 동시 신규 기록 삽입시 페이지를 다시 조회한다.
+
+G07 다중 사용자 충돌
+배치 버전과 행 잠금으로 동시에 제출된 같은 버전 중 하나만 성공.
+버전 변경 감지시 오래된 화면임을 표시하고 재조회. 재측정 후 표준 추천도 확정 거부.
+근거: test-database, test-evidence-backend의 동시 Promise.all 요청 시험.
+최신 조회를 위한 15초 폴링은 장비의 실시간 신호 수집과 다름.
+
+G08 부하·복구·납품 근거
+128/500행 로컬 wall/CPU·재현성: scripts/benchmark-evidence.mjs.
+500행 실제 Edge 실행과 전체 업무 연결: scripts/test-evidence-backend.mjs.
+배포 테스트는 일회용 합성 계정/자료만 생성하고 정리. 고객 원본을 시험 DB로 올리지 않음.
+격리 DB 아카이브 복원: test-database. 실제 Supabase 전체 복원은 미검증.
+운영/복구 절차: OPERATIONS.txt. 고객 검수와 RPO/RTO는 외부 확인 항목으로 남김.
+
+시험 결과의 범위
+단위·DB·브라우저 테스트는 구현 동작을 검증하며 생산 불량률 개선을 입증하지 않음.
+과거 자료의 출처/추천 실행 누락을 임의로 소급 생성하지 않음.
+개별 실행 결과는 CI, 테스트 출력, 배포 실행 로그에서 확인한다.
+실제 사용자 검수 기록과 관리형 Supabase 전체 복원 결과가 없으므로 최종 납품 검수 전체 완료로 표현하지 않음.

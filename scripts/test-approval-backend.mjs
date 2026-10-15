@@ -12,7 +12,11 @@ const service=createClient(url,keys.find(k=>k.name==='service_role').api_key,opt
 const publicKey=keys.find(k=>k.name==='anon').api_key;
 const prefix=`approval-qa-${Date.now()}`,users=[],accounts={};let browser;
 function ok(result){if(result.error)throw Error(result.error.message);return result.data;}
-async function rpc(client,name,args){return ok(await client.rpc(name,args));}
+async function rpc(client,name,args){
+ if(name==='import_cells'){name='import_cells_with_source';args={...args,kind:'synthetic'};}
+ if(name==='approve_pack'){const cells=ok(await client.from('cells').select('lot').eq('id',args.cell_ids[0]).single());const run=ok(await client.functions.invoke('match-cells',{body:{lot:cells.lot,count:1}}));name='approve_recorded_pack';args={...args,run:run.run_id,reason:'synthetic test review'};}
+ return ok(await client.rpc(name,args));}
+
 async function denied(client,name,args){const result=await client.rpc(name,args);assert.ok(result.error,`${name} should be denied`);}
 const layout={version:1,source:'simulation',devices:[{id:'IN',kind:'scanner',name:'QA 리더',model:'가상',x:-3,z:0,rotation:0,cycle:2,tags:[{key:'rate',label:'모의 판독률',unit:'%',nominal:99,high:null}]},{id:'OUT',kind:'inspection',name:'QA 검사대',model:'가상',x:3,z:0,rotation:0,cycle:2,tags:[{key:'voltage',label:'전압',unit:'V',nominal:26,high:29}]}],links:[{from:'IN',to:'OUT'}]};
 const twinArgs=(title)=>({request_kind:'twin',target_pack:null,request_title:title,request_message:'자동 검증용 가상 공정',twin_layout:layout});
@@ -100,5 +104,7 @@ try{
 }catch(error){if(browser){let i=0;for(const context of browser.contexts())for(const page of context.pages())await page.screenshot({path:`.local/approval-backend-error-${i++}.png`});}throw error;}finally{
  await browser?.close();
  if(users.length){const requests=ok(await service.from('quality_requests').select('id').in('submitted_by',users)).map(r=>r.id);if(requests.length){ok(await service.from('quality_events').delete().in('request_id',requests));ok(await service.from('quality_requests').delete().in('id',requests));}
- const packs=ok(await service.from('packs').select('id').in('created_by',users)).map(p=>p.id);if(packs.length){ok(await service.from('inspections').delete().in('pack_id',packs));ok(await service.from('pack_cells').delete().in('pack_id',packs));ok(await service.from('packs').delete().in('id',packs));}ok(await service.from('cells').delete().in('created_by',users));ok(await service.from('audit_logs').delete().in('actor',users));for(const id of users)ok(await service.auth.admin.deleteUser(id));console.log('Disposable test users and their records removed.');}
+ const packs=ok(await service.from('packs').select('id').in('created_by',users)).map(p=>p.id);if(packs.length){ok(await service.from('inspections').delete().in('pack_id',packs));ok(await service.from('pack_cells').delete().in('pack_id',packs));ok(await service.from('packs').delete().in('id',packs));}ok(await service.from('cells').delete().in('created_by',users));
+ ok(await service.from('evidence_events').delete().in('created_by',users));ok(await service.from('matching_runs').delete().in('created_by',users));ok(await service.from('intake_batches').delete().in('created_by',users));
+ok(await service.from('audit_logs').delete().in('actor',users));for(const id of users)ok(await service.auth.admin.deleteUser(id));console.log('Disposable test users and their records removed.');}
 }

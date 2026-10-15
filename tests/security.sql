@@ -16,19 +16,22 @@ do $$ begin
     raise exception 'FAIL: self privilege escalation';
   exception when insufficient_privilege then null; end;
   begin
-    perform public.import_cells('[]','test');
+    perform public.import_cells_with_source('[]','test','synthetic');
     raise exception 'FAIL: pending user import';
   exception when raise_exception then
     if sqlerrm<>'셀 등록·매칭 담당 권한이 필요합니다' then raise; end if;
   end;
 end $$;
 select set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',true);
-select public.import_cells((select jsonb_agg(jsonb_build_object('id','RLS-TEST-'||i,'lot','RLS-TEST','voltage_mv',3300,'resistance_mohm',0.42,'capacity_mah',30000,'measured_at','2026-10-14T00:00:00Z')) from generate_series(1,8) i),'transactional test');
-select public.approve_pack(array(select 'RLS-TEST-'||i from generate_series(1,8) i),'RLS-TEST-PACK');
+select public.import_cells_with_source((select jsonb_agg(jsonb_build_object('id','RLS-TEST-'||i,'lot','RLS-TEST','voltage_mv',3300,'resistance_mohm',0.42,'capacity_mah',30000,'measured_at','2026-10-14T00:00:00Z')) from generate_series(1,8) i),'transactional test','synthetic');
+reset role;
+insert into public.matching_runs(id,batch_revision,created_by,result) values('44444444-4444-4444-8444-444444444444',1,'22222222-2222-4222-8222-222222222222',jsonb_build_object('input_snapshot',(select jsonb_agg(to_jsonb(c)) from public.cells c where id like 'RLS-TEST-%'),'groups',jsonb_build_array(jsonb_build_object('cell_ids',(select jsonb_agg('RLS-TEST-'||i) from generate_series(1,8) i)))));
+set local role authenticated;
+select public.approve_recorded_pack(array(select 'RLS-TEST-'||i from generate_series(1,8) i),'RLS-TEST-PACK','44444444-4444-4444-8444-444444444444','test review');
 do $$ begin
   if (select count(*) from public.cells where id like 'RLS-TEST-%' and status='used')<>8 then raise exception 'FAIL: pack did not reserve cells'; end if;
   begin
-    perform public.approve_pack(array(select 'RLS-TEST-'||i from generate_series(1,8) i),'RLS-TEST-DUPLICATE');
+    perform public.approve_recorded_pack(array(select 'RLS-TEST-'||i from generate_series(1,8) i),'RLS-TEST-DUPLICATE','44444444-4444-4444-8444-444444444444','duplicate test');
     raise exception 'FAIL: duplicate approval';
   exception when raise_exception then
     if sqlerrm<>'사용 불가능한 셀이 포함되어 있습니다. 다시 추천받으세요' then raise; end if;
@@ -42,7 +45,7 @@ select set_config('request.jwt.claim.sub','33333333-3333-4333-8333-333333333333'
 do $$ begin
   if not public.is_member() or public.can_operate() then raise exception 'FAIL: viewer permissions'; end if;
   begin
-    perform public.import_cells('[]','test');
+    perform public.import_cells_with_source('[]','test','synthetic');
     raise exception 'FAIL: viewer import';
   exception when raise_exception then if sqlerrm<>'셀 등록·매칭 담당 권한이 필요합니다' then raise; end if; end;
 end $$;

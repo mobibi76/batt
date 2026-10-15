@@ -3,7 +3,7 @@ import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('quality work follows the same pack through confirmation, independent approval and outcomes',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('CONNECTED-QUALITY');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
+ await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('CONNECTED-QUALITY');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await page.getByRole('button',{name:'이 팩 검사로 이어가기'}).click();await expect(page.getByRole('dialog')).toHaveAttribute('aria-label','CONNECTED-QUALITY');
  await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await choose(page,'검사 구분','final');await choose(page,'판정','fail');await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await page.getByRole('button',{name:'닫기',exact:true}).click();
  await page.getByRole('button',{name:'현장',exact:true}).click();await page.getByRole('button',{name:'확인·조치',exact:true}).click();await page.getByRole('button',{name:'첫 대상 확인'}).click();await expect(page.locator('.console-target')).toContainText('CONNECTED-QUALITY');await expect(page.locator('.console-target')).toContainText('최종검사 불합격');

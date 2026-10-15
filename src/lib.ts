@@ -60,3 +60,10 @@ export function inspectionQueues(packs: Pack[], tests: Inspection[]) {
     final: packs.filter(p => aging.has(p.id) && !final.has(p.id)).length,
   };
 }
+
+export type MetricScope='measured'|'test'|'all';
+export function metricCohort(packs:Pack[],tests:Inspection[],scope:MetricScope){
+ const selected=scope==='all'?packs:packs.filter(p=>scope==='measured'?p.source_kind==='measured':p.source_kind==='synthetic');
+ return {packs:selected,tests:tests.filter(t=>selected.some(p=>p.id===t.pack_id)&&(scope==='all'||t.evidence_kind===(scope==='measured'?'measured':'test')))};
+}
+export const metricScopeNames={measured:'실측 자료·실측 검사',test:'합성 자료·시험 검사',all:'전체 등록 · 혼합 참고용'};

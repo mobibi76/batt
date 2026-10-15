@@ -10,7 +10,11 @@ const options={auth:{persistSession:false,autoRefreshToken:false}};
 const service=createClient(url,keys.find(k=>k.name==='service_role').api_key,options),anon=keys.find(k=>k.name==='anon').api_key;
 const prefix=`evidence-qa-${Date.now()}`,users=[];let operator,reviewer;
 function ok(r){if(r.error)throw Error(r.error.message);return r.data;}
-async function rpc(client,name,args){return ok(await client.rpc(name,args));}
+async function rpc(client,name,args){
+ if(name==='review_evidence'){name='review_evidence_checked';args={...args,expected_revision:ok(await client.from('intake_batches').select('revision').eq('id',args.batch).single()).revision};}
+ if(name==='approve_recorded_pack')args={...args,reason:'synthetic review'};
+ return ok(await client.rpc(name,args));}
+
 try{
  for(const role of ['operator','reviewer']){
   const email=`${prefix}-${role}@example.invalid`,password=randomUUID()+'aA1!';
@@ -21,6 +25,10 @@ try{
  const rows=Array.from({length:8},(_,i)=>({row_no:i+2,id:`${prefix}-${i}`,channel:String(i),voltage_mv:3300,resistance_mohm:null,capacity_mah:25000,measured_at:'2026-10-15T00:00:00Z',issues:['synthetic missing resistance'],state:'ready'}));
  const hash=randomUUID().replaceAll('-','').repeat(2);
  const batch=await rpc(operator,'register_intake',{payload:{name:prefix+'.csv',hash,source_kind:'synthetic',mapping_version:'qa-v1',headers:[['synthetic fixture']],rows},note:'Disposable synthetic deployment test; not production evidence'});
+ assert.ok((await operator.rpc('import_cells',{rows:[],source:'bypass'})).error);
+ assert.ok((await operator.rpc('approve_pack',{cell_ids:[],serial:'bypass'})).error);
+ const concurrent=await Promise.all(['A','B'].map(reason=>operator.rpc('review_evidence_checked',{batch,cell:rows[0].id,next_state:'ready',reason,expected_revision:1,measurement:null})));
+ assert.equal(concurrent.filter(r=>!r.error).length,1);assert.equal(concurrent.filter(r=>r.error).length,1);
  const unverified=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:batch}}));assert.ok(unverified.result.alternatives.every(g=>g.status==='unverified'));
  assert.ok((await operator.rpc('approve_evidence_pack',{run:unverified.id,cell_ids:rows.map(r=>r.id),serial:prefix,reason:'must reject missing IR'})).error);
  assert.ok((await reviewer.functions.invoke('analyze-batch',{body:{batch_id:batch}})).error);
@@ -42,6 +50,10 @@ try{
  await rpc(operator,'import_cells_with_source',{rows:canonical,source:prefix,kind:'synthetic'});
  const standard=ok(await operator.functions.invoke('match-cells',{body:{lot:prefix,count:1}}));assert.ok(standard.run_id);assert.equal(standard.groups.length,1);
  await rpc(operator,'approve_recorded_pack',{cell_ids:standard.groups[0].cell_ids,serial:prefix+'-STD',run:standard.run_id});
+ const loadRows=Array.from({length:500},(_,i)=>({...rows[0],id:`${prefix}-LOAD-${i}`,row_no:i+1,lot:'LOAD',resistance_mohm:.42,capacity_mah:25000+i%100}));
+ const loadBatch=await rpc(operator,'register_intake',{payload:{name:prefix+'-load.csv',hash:randomUUID().replaceAll('-','').repeat(2),source_kind:'synthetic',mapping_version:'load-test-v1',rows:loadRows},note:'Disposable 500-row bound test'});
+ const load=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:loadBatch}}));assert.equal(load.result.input_count,500);assert.equal(load.result.recommended.groups.length,62);
+ console.log('PASS: 500-row deployed Edge calculation; elapsed_ms='+Math.round(load.result.elapsed_ms)+' (elapsed, not CPU time)');
  console.log('PASS: deployed batch/standard Edge calculations, missing SOP block, stored runs, retest, pack lineage, independent approval and supersession');
 }catch(error){console.error('FAIL:',error.message);process.exitCode=1;}
 finally{

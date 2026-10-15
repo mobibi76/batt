@@ -30,7 +30,7 @@ export function matchCells(input: Cell[], count=3) {
         const group=[sorted[seed]];
         for (let j=seed+1;j<sorted.length && group.length<8;j++) {
           if(ticks(sorted[j],d)-ticks(sorted[seed],d)>limits[d]*scales[d]) break;
-          if(fits([...group,sorted[j]])) group.push(sorted[j]);
+          if(sorted[j].lot===group[0].lot&&fits([...group,sorted[j]])) group.push(sorted[j]);
         }
         if(group.length===8) {
           const s=spreads(group); const cost=dimensions.reduce((acc,k,i)=>acc+s[k]/limits[i],0);
@@ -43,5 +43,5 @@ export function matchCells(input: Cell[], count=3) {
     groups.push({cell_ids:ids,spreads:spreads(best),score:Math.round((1-bestCost/3)*100),sop_version:'JSI-SOP-v1'});
     remaining=remaining.filter(c=>!ids.includes(c.id));
   }
-  return {groups,remaining:remaining.length,method:'multi-order-greedy-v1',message:groups.length ? 'SOP 적합 추천 조합입니다. 전체 재고의 전역 최적해를 보장하지 않습니다.' : '탐색 범위에서 조합을 찾지 못했습니다. 조합이 불가능하다는 의미는 아닙니다.'};
+  return {groups,remaining:remaining.length,method:'multi-order-greedy-v2',message:groups.length ? 'SOP 적합 추천 조합입니다. 전체 재고의 전역 최적해를 보장하지 않습니다.' : '탐색 범위에서 조합을 찾지 못했습니다. 조합이 불가능하다는 의미는 아닙니다.'};
 }

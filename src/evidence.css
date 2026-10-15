@@ -5,7 +5,7 @@
 .evidence-workspace > .notice { margin: var(--space-4) var(--space-12); padding: var(--space-8); flex-shrink: 0; }
 .evidence-tabs { display: flex; flex-wrap: wrap; gap: var(--space-8); padding: var(--space-12) var(--space-16); }
 .evidence-workspace > .evidence-tabs { flex-shrink: 0; }
-.evidence-body { display: grid; align-content: start; gap: var(--space-8); padding: var(--space-12); min-width: 0; min-height: 0; flex: 1; overflow: auto; }
+.evidence-body { display: grid; grid-auto-rows: max-content; align-content: start; gap: var(--space-8); padding: var(--space-12); min-width: 0; min-height: 0; flex: 1; overflow: auto; }
 .evidence-body p { margin: 0; }
 .evidence-context { margin: 0; padding: var(--space-4) var(--space-12); color: var(--color-ink-secondary); overflow-wrap: anywhere; flex-shrink: 0; font-size: var(--type-caption-size); }
 .evidence-body textarea { min-height: var(--control-height); }
@@ -14,3 +14,5 @@
 .evidence-options article { padding: var(--space-12); border: 1px solid var(--color-border); border-radius: var(--radius-12); }
 .evidence-form { display: grid; gap: var(--space-12); }
 .evidence-body td, .evidence-body p { overflow-wrap: anywhere; }
+
+.evidence-diff { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--type-caption-size); }

@@ -1,0 +1,51 @@
+/* Shared sizing across operational, research, approval and demo screens.
+   Text links and icon-only controls retain their semantic compact geometry. */
+.primary:not(.full), .secondary:not(.full), .small-button {
+  width: min(100%, var(--control-width));
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  flex-shrink: 1;
+}
+.choice-field .choice-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--control-choice-width)), 1fr));
+}
+.choice-field .choice-chip, .choice-field .choice-chip span { width: 100%; min-width: 0; }
+:is(.visible-task-tabs, .evidence-tabs, .row-actions, .modal-actions, .workflow-actions, .twin-actions, .console-analysis-actions, .private-demo-entry nav) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--control-choice-width)), 1fr));
+  gap: var(--space-8);
+}
+:is(.visible-task-tabs, .evidence-tabs, .row-actions, .modal-actions, .workflow-actions, .twin-actions, .console-analysis-actions, .private-demo-entry nav) > :is(button, .file-button, .twin-import) { width: 100%; min-width: 0; }
+:is(.console-mode, .console-tabs, .console-task-actions, .upload-actions) > :is(button, .file-button) { flex: 1 1 0; min-width: 0; }
+.console-pager > button, .choice-pages > button { width: min(34%, var(--control-width)); }
+.console-stage-buttons > button, .auth-form .full { width: 100%; }
+@media(max-width:700px) {
+  :root { --control-width: 128px; --control-choice-width: 88px; }
+  .visible-task-tabs { grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--control-choice-width)), 1fr)); gap: var(--space-4); }
+}
+/* Compact monitoring and spatial panels already specify their fitting column count. */
+.console-space-info .choice-chips, .twin-connect-label .choice-chips { grid-template-columns: repeat(2,minmax(0,1fr)); }
+@media(max-height:540px) and (max-width:700px) {
+  .console-space-info .choice-chips { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+/* Keep the compact, single-row controls inside the spatial command bar. */
+.studio-command-bar .twin-actions { display:flex; flex:1; min-width:0; }
+.studio-command-bar .twin-actions > button { flex:1 1 0; width:0; min-width:0; }
+@media(max-width:700px) {
+ .data-validation .choice-field [aria-label="검증 판정"] { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}
+.studio-commands { flex:1; min-width:0; }
+.studio-command-bar .twin-toolbar { width:100%; }
+.studio-panel .editor-tabs > button { width:0; min-width:0; padding-inline:var(--space-4); }
+.data-validation > .choice-field:first-child .choice-chips { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.upload-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.upload-actions > .primary, .upload-actions > .secondary { width:100%; }
+.studio-panel .choice-chips { grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--control-choice-width)),1fr)); }
+.studio-panel .editor-actions > button { padding-inline:var(--space-4); }
+.console-task-actions { width:calc(var(--control-width) * 2 + var(--space-8)); }
+.studio-command-bar .mode-switch { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+@media(max-width:899px) {
+ .studio-command-bar .studio-commands { flex:0 0 100%; }
+}

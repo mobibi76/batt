@@ -1,6 +1,8 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --control-width: 160px;
+  --control-choice-width: 112px;
   --color-provenance-ink: #6743a5;
   --color-provenance-surface: #f1eafa;
   --size-private-demo-max: 900px;

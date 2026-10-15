@@ -1,13 +1,15 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
-  --color-manual-brand: #805f57;
-  --color-manual-hover: #684c45;
-  --color-manual-surface: #f7f6f4;
-  --color-manual-accent: #b4968d;
-  --color-manual-border: #ded9d5;
-  --color-manual-selected: #eee6e1;
-  --color-manual-muted: #69635f;
+  --color-manual-brand: #526878;
+  --color-manual-hover: #405463;
+  --color-manual-surface: #f3f4f2;
+  --color-manual-accent: var(--color-manual-brand);
+  --color-manual-border: #d4dbe0;
+  --color-manual-selected: #e7edf0;
+  --color-manual-muted: #5f6b73;
+  --color-manual-paper: #fafaf8;
+  --color-manual-ink: #303a40;
   --color-manual-dimmer: rgba(15,31,29,.66);
   --size-manual-panel: 680px;
   --size-manual-index: 280px;

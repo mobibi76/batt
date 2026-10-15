@@ -1,5 +1,7 @@
-/* Help uses a muted warm palette; operational and status colours stay scoped outside it. */
+/* Help uses warm neutral surfaces and muted blue-grey accents; operational and status colours stay scoped outside it. */
 .manual-dialog,.manual-launch {
+ --color-surface:var(--color-manual-paper);
+ --color-ink:var(--color-manual-ink);
  --color-brand:var(--color-manual-brand);
  --color-brand-hover:var(--color-manual-hover);
  --color-focus:var(--color-manual-brand);
@@ -25,7 +27,7 @@
 .manual-dimmer { position:absolute; inset:0; background:var(--color-manual-dimmer); }
 .has-spotlight .manual-dimmer { background:transparent; }
 .manual-spotlight { position:fixed; left:var(--guide-x); top:var(--guide-y); width:var(--guide-w); height:var(--guide-h); border:var(--space-3) solid var(--color-manual-accent); box-shadow:0 0 0 100vmax var(--color-manual-dimmer); pointer-events:none; }
-.manual-explanation { position:absolute; bottom:var(--space-16); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-surface); border:1px solid var(--color-border-strong); border-radius:var(--radius-8); padding:var(--space-16); box-shadow:var(--shadow-toast-box-shadow); }
+.manual-explanation { position:absolute; bottom:var(--space-16); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-paper); border:1px solid var(--color-border-strong); border-radius:var(--radius-8); padding:var(--space-16); box-shadow:var(--shadow-toast-box-shadow); }
 .panel-top .manual-explanation { top:var(--space-8); bottom:auto; }
 .manual-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--space-12); }
 .manual-heading h1,.manual-heading h2 { margin:var(--space-4) 0; font-size:var(--type-section-size); }
@@ -42,7 +44,7 @@
 .manual-index,.manual-reading { min-height:0; overflow:auto; }
 .manual-index nav { display:grid; gap:var(--space-4); margin:var(--space-12) 0; }
 .manual-index input { width:100%; }
-.manual-reading { padding:0 var(--space-16); }
+.manual-reading { padding:0 var(--space-16); background:var(--color-manual-paper); border-radius:var(--radius-8); }
 .manual-article { max-width:var(--size-decision-max); }
 .manual-article h2 { margin-top:0; }
 .manual-article h3 { margin-top:var(--space-16); }

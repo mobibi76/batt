@@ -1,6 +1,7 @@
 import Papa from 'papaparse';
+import {seversonEvidence} from './seversonEvidence';
 
-export const reference={id:'severson-variance-100-10-v1',title:'Severson · 초기 방전 곡선 기반 수명 회귀',doi:'https://doi.org/10.1038/s41560-019-0356-8',paper:'https://web.mit.edu/braatzgroup/Severson_NatureEnergy_2019.pdf',processing:'https://github.com/rdbraatz/data-driven-prediction-of-battery-cycle-life-before-capacity-degradation/blob/master/Load%20Data.ipynb',scope:'10·100사이클 Q(V) 입력 준비도. 데이터 구조·기초 품질·신고 조건 비교이며 수명 예측·성능 인증·현장 승인 아님.'};
+export const reference={id:'severson-variance-100-10-v1',title:'Severson · 초기 방전 곡선 기반 수명 회귀',doi:seversonEvidence.paper.doi,paper:seversonEvidence.paper.url,processing:seversonEvidence.code.url,evidence:seversonEvidence,scope:'10·100사이클 Q(V) 입력 준비도. 데이터 구조·기초 품질·신고 조건 비교이며 수명 예측·성능 인증·현장 승인 아님.'};
 export const requiredColumns=['cell_id','cycle','voltage_v','discharge_capacity_ah'];
 export const conditionColumns=['cell_model','chemistry','nominal_capacity_ah','chamber_temperature_c','discharge_c_rate','discharge_cutoff_v','charge_policy','rest_protocol','preprocessing_note','source_record'];
 export const labelColumns=['cycle_life_cycles','eol_capacity_fraction','test_status'];

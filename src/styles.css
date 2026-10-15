@@ -1861,8 +1861,11 @@ td,th {
 .metric-context summary { cursor: pointer; }
 .member-permissions summary { cursor: pointer; font-weight: var(--weight-semibold); }
 .validation-file-input { display: none; }
+.source-reference { min-width: 0; overflow-wrap: anywhere; }
+.source-reference > details { margin-top: var(--space-6); }
+.source-reference .workflow-actions { flex-wrap: wrap; }
 .research-lab:has(> .task-step-body > .task-step-panel:not([hidden]) > .data-validation-panel) > .task-shared { display: none; }
-.data-validation-panel > .section-head { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+.console-task-body .data-validation-panel > .section-head { padding-top: var(--space-8); padding-bottom: var(--space-8); }
 .data-validation .choice-label { display: none; }
 .validation-result-head, .validation-pagination { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); margin: var(--space-12) 0; }
 .validation-result-head > span { min-width: 0; overflow-wrap: anywhere; }
@@ -1877,7 +1880,7 @@ td,th {
 .data-validation > .choice-field { margin-bottom: var(--space-6); }
 @media (max-width: 700px) {
  .research-lab:has(> .task-step-body > .task-step-panel:not([hidden]) > .data-validation-panel) > .visible-task-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
- .research-lab:has(> .task-step-body > .task-step-panel:not([hidden]) > .data-validation-panel) > .visible-task-tabs button { word-break: keep-all; overflow-wrap: anywhere; }
+ .research-lab:has(> .task-step-body > .task-step-panel:not([hidden]) > .data-validation-panel) > .visible-task-tabs button { word-break: keep-all; overflow-wrap: anywhere; padding: var(--space-4); }
  .data-validation [aria-label="검증 판정"] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
  .data-validation [aria-label="검증 판정"] .choice-chip span { width: 100%; padding: var(--space-4); font-size: var(--type-caption-size); }
  .validation-result-head, .validation-pagination { margin: var(--space-6) 0; }

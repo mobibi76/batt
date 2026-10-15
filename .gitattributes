@@ -1,0 +1,4 @@
+# Preserve reference artifact hashes across Windows and Linux deployments.
+public/research/*.json text eol=lf
+public/research/UCONN-PROCESSED-LICENSE.txt -text
+public/research/sources/* -text

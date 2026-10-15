@@ -4,6 +4,8 @@
 
 ## 탑재한 실측 자료
 
+연구 화면의 출처 링크에는 **앱 내 보관 자료**를 함께 제공한다. 외부 링크 장애에 대비한 보관 범위·고정 버전·해시·관리 절차는 [REFERENCE-ARCHIVE.md](REFERENCE-ARCHIVE.md)를 참고한다. 원본 일부·사실 요약·전문 보관을 구분한다.
+
 `데이터 검증`은 Severson의 10·100사이클 수명 회귀 입력 요건과 사용자 CSV의 스키마·품질·시험 조건을 비교한다. [검사 규칙·범위·검수](DATA-VALIDATION.md)를 참고한다. 이 기능은 브라우저 검사·보고서 다운로드만 수행하며 아래 조합 비교의 서버 저장/최근 실험 대상에 포함되지 않는다.
 
 - 원본: Li, Tingkai et al. (2025), **UConn-MathWorks LFP/Gr Second-Life Battery Aging Dataset**, https://digitalcommons.lib.uconn.edu/reil_datasets/3/ — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).

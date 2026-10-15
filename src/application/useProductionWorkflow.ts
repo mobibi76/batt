@@ -53,7 +53,7 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
     else {
         await production.importCells(upload.intake, uploadSource, upload.cells);
         await reload();
-    } setToast(`${upload.cells.length}개 셀 등록 완료`); setUpload(null); setContinuation({ kind: 'cells' }); }); }
+    } setUpload(null); setContinuation({ kind: 'cells' }); }); }
     async function runMatch() { await action(async () => { const start = performance.now(); let result; if (demo)
         result = matchCells(available.filter(c => !lot || c.lot === lot), count);
     else {
@@ -73,15 +73,15 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
     else {
         createdId = await production.confirm(approval, serial, reviewReason);
         await reload();
-    } setGroups(groups.filter(g => !g.cell_ids.some(id => approval.cell_ids.includes(id)))); setApproval(null); setToast('팩 조합을 확정했습니다. 검사이력을 등록할 수 있습니다.'); setContinuation({ kind: 'pack', packId: createdId }); }); }
-    async function recordInspection(pack: Pack, kind: Inspection['kind'], result: Inspection['result'], note: string, resultKind: 'measured' | 'test' = 'test') { if (demo) {
+    } setGroups(groups.filter(g => !g.cell_ids.some(id => approval.cell_ids.includes(id)))); setApproval(null); setContinuation({ kind: 'pack', packId: createdId }); }); }
+    async function recordInspection(pack: Pack, kind: Inspection['kind'], result: Inspection['result'], note: string, resultKind: 'measured' | 'test' = 'test', notify = true) { if (demo) {
         setTests(rows => [{ evidence_kind: 'test', created_by: 'demo-requester', confirmed_name: kind === 'aging' ? '체험 에이징 담당자' : '체험 최종검사 담당자', id: crypto.randomUUID(), pack_id: pack.id, kind, result, note, created_at: new Date().toISOString() }, ...rows]);
         setDemoRequests(rows => supersedeDemoRequests(rows, pack.id));
     }
     else {
         await production.inspect(pack.id, kind, result, note, resultKind);
         await reload();
-    } setToast('검사 결과를 기록했습니다.'); }
+    } if (notify) setToast('검사 결과를 기록했습니다.'); }
     async function inspect(e: FormEvent<HTMLFormElement>) { e.preventDefault(); if (!selectedPack)
         return; const f = new FormData(e.currentTarget); await action(() => recordInspection(selectedPack, String(f.get('kind')) as Inspection['kind'], String(f.get('result')) as Inspection['result'], String(f.get('note')), String(f.get('evidence_kind')) as 'measured' | 'test')); }
     async function review(id: string, status: string, role = 'operator') { await action(async () => { await production.reviewMember(id, status, role); await reload(); setToast('사용자 권한을 변경했습니다.'); }); }

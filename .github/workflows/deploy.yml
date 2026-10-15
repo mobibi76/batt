@@ -25,8 +25,8 @@ jobs:
       - run: npm run build
       - name: Install browser for control layout checks
         run: npx playwright install --with-deps chrome
-      - name: Check control words and responsive layout before deployment
-        run: npm run test:e2e -- tests/control-labels.spec.ts tests/design.spec.ts --workers=2
+      - name: Check workflows and responsive controls before deployment
+        run: npm run test:e2e -- tests/control-labels.spec.ts tests/design.spec.ts tests/console.spec.ts --workers=2
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

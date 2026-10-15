@@ -1,10 +1,19 @@
 import {it,expect} from 'vitest';
-import {packSignal,matchesPack,prioritizedWork,firstPassSummary,type ApprovalIndex} from './workflow';
+import {packSignal,matchesPack,prioritizedWork,firstPassSummary,nextInspection,type ApprovalIndex} from './workflow';
 import {qualitySummary,type Pack,type Inspection,type Profile} from './lib';
 const pack:Pack={id:'p',serial_no:'p',created_at:'2026-10-01',created_by:'assembler',pack_cells:Array.from({length:8},(_,i)=>({cell_id:String(i),position:i+1}))};
 const test=(id:string,kind:'aging'|'final',result:'pass'|'fail',at='2026-10-01'):Inspection=>({id,pack_id:'p',kind,result,created_at:at,note:'',created_by:kind});
 const profile:Profile={id:'reviewer',role:'operator',status:'approved',created_at:'',email:'',display_name:'',quality_reviewer:true,process_stages:[]};
 const request:ApprovalIndex={id:'r',kind:'pack',pack_id:'p',status:'pending',submitted_by:'assembler',submitted_at:'2026-10-02'};
+it('next inspection follows unresolved evidence and assigned permissions without reopening completed checks',()=>{
+ const operator={...profile,process_stages:['aging','final'] as Profile['process_stages']};
+ expect(nextInspection(packSignal(pack,[],[]),operator)).toBe('aging');
+ expect(nextInspection(packSignal(pack,[test('a','aging','pass')],[]),operator)).toBe('final');
+ expect(nextInspection(packSignal(pack,[test('a','aging','pass'),test('f','final','fail')],[]),operator)).toBe('final');
+ expect(nextInspection(packSignal(pack,[test('a','aging','pass'),test('f','final','pass')],[]),operator)).toBeNull();
+ expect(nextInspection(packSignal(pack,[],[]),{...operator,role:'admin'})).toBeNull();
+ expect(nextInspection(packSignal(pack,[test('a','aging','pass')],[]),{...operator,process_stages:['aging']})).toBeNull();
+});
 it('missing evidence, failed evidence and approval state remain distinct',()=>{
  expect(packSignal(pack,[],[]).state).toBe('aging');
  expect(packSignal(pack,[test('a','aging','pass')],[]).state).toBe('final');

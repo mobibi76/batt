@@ -3,7 +3,7 @@ import {navigate,step} from './workspace';
 
 test('public-data experiments are reproducible, exported, persisted and isolated from operations',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- await navigate(page,'운영 현황');const before=await page.locator('.console-space-info').innerText();
+ await navigate(page,'운영 현황');await page.getByRole('button',{name:'전체 공정',exact:true}).click();const before=await page.locator('.console-space-info').innerText();
  await navigate(page,'품질 분석');await navigate(page,'알고리즘 검증');
  await expect(page.locator('.research-lab button').filter({hasText:'알고리즘 비교 실행'})).toBeDisabled();
  await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();
@@ -17,7 +17,7 @@ test('public-data experiments are reproducible, exported, persisted and isolated
  expect(dl.suggestedFilename()).toMatch(/JSI_연구검증_.*\.json/);
  const stream=await dl.createReadStream();const chunks=[];for await(const c of stream!)chunks.push(c);const report=JSON.parse(Buffer.concat(chunks).toString('utf8').replace(/^\ufeff/,''));
  expect(report.dataset.cells).toHaveLength(55);expect(report.results).toHaveLength(3);expect(report.dataset_sha256).toMatch(/^[a-f0-9]{64}$/);expect(report.promotion.status).toContain('운영 미적용');
- await navigate(page,'운영 현황');expect(await page.locator('.console-space-info').innerText()).toBe(before);
+ await navigate(page,'운영 현황');await page.getByRole('button',{name:'전체 공정',exact:true}).click();expect(await page.locator('.console-space-info').innerText()).toBe(before);
  await navigate(page,'품질 분석');await navigate(page,'알고리즘 검증');await expect(page.locator('.research-history button')).toHaveCount(1);await step(page,'최근 실험');await page.locator('.research-history button').click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();await step(page,'2. 비교 조건');await expect(page.getByRole('button',{name:'알고리즘 비교 실행'})).toBeEnabled();await expect(page.getByLabel('재현 시드')).toHaveValue('20261014');
  await page.setViewportSize({width:390,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

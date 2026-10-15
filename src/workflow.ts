@@ -14,6 +14,13 @@ export function packSignal(pack:Pack,tests:Inspection[],requests:ApprovalIndex[]
  return {pack,aging,final,linked,failed,request,state,reason};
 }
 export type PackSignal=ReturnType<typeof packSignal>;
+/** Select the unresolved inspection the operator can actually perform. Never imply approval. */
+export function nextInspection(signal:PackSignal,profile:Profile,demo=false):Inspection['kind']|null{
+ for(const kind of ['aging','final'] as const){
+  if((demo||canConfirm(profile,kind))&&(!signal[kind]||signal[kind]?.result==='fail'))return kind;
+ }
+ return null;
+}
 export function independentReview(signal:PackSignal,profile:Profile,demo=false){return signal.request?.status==='pending'&&(demo||(canReview(profile)&&![signal.pack.created_by,signal.aging?.created_by,signal.final?.created_by,signal.request.submitted_by].includes(profile.id)));}
 export function matchesPack(signal:PackSignal,filter:PackFilter){return filter==='all'||(filter==='failed'?signal.failed:filter==='unlinked'?!signal.linked:filter==='aging'?!signal.aging:filter==='final'?!!signal.aging&&!signal.final:filter==='pending'?signal.request?.status==='pending':signal.state===filter);}
 export function canHandle(signal:PackSignal,profile:Profile,demo=false){

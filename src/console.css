@@ -80,3 +80,9 @@
 
 .console-analysis-actions { display:flex; flex-wrap:wrap; gap:var(--space-8); }
 .console-analysis > .evidence-tabs { padding:0; }
+/* Keep the decision and its action together; inspection owns the screen until closed. */
+.console-decision .console-target { width:100%; max-width:var(--size-decision-max); align-self:center; }
+.console-target .console-target-action { margin-top:var(--space-16); }
+.operations-console:has(.console-confirmation) { grid-template-rows:auto auto minmax(0,1fr); }
+.operations-console:has(.console-confirmation) > .console-tabs,
+.operations-console:has(.console-confirmation) > .console-footer { display:none; }

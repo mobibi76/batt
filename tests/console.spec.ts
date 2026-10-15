@@ -16,8 +16,24 @@ test('field and control replace content without scrolling across display sizes',
 test('field confirmation uses existing pack data and does not perform quality approval',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
  await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('FIELD-001');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
- await page.getByRole('button',{name:'판단 화면으로'}).click();await page.getByRole('button',{name:'확인·조치',exact:true}).click();await page.getByRole('button',{name:'첫 대상 확인'}).click();await expect(page.locator('.console-target')).toContainText('FIELD-001');
+ await page.getByRole('button',{name:'판단 화면으로'}).click();await page.getByRole('button',{name:'확인·조치',exact:true}).click();await expect(page.locator('.console-target')).toContainText('FIELD-001');
  await page.getByRole('button',{name:'검사 확인·기록'}).click();await choose(page,'판정','fail');await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await page.getByLabel('검사 메모',{exact:true}).fill('검사 조건 확인');await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await expect(page.locator('.console-target')).toContainText('에이징 불합격');
  await page.locator('.console-footer').getByRole('button',{name:'팩·검사',exact:true}).click();await page.getByRole('button',{name:'판단 화면으로'}).click();await expect(page.locator('.console-target')).toContainText('FIELD-001');
  await page.getByRole('button',{name:'관제',exact:true}).click();await page.getByRole('button',{name:'최종 품질',exact:true}).click();await expect(page.locator('.console-decision')).toContainText('판단 대상이 없습니다');
+});
+
+test('next work selects the unresolved inspection then hands the same pack to quality review',async({page})=>{
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await expect(page.getByRole('button',{name:'확인·조치',exact:true})).toHaveAttribute('aria-pressed','true');
+ await page.getByRole('button',{name:'셀 매칭 시작',exact:true}).click();await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('NEXT-WORK');await page.getByLabel('조합 검토 사유',{exact:true}).fill('업무 연결 검증');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
+ await page.getByRole('button',{name:'판단 화면으로'}).click();await expect(page.locator('.console-target')).toContainText('NEXT-WORK');await expect(page.getByRole('button',{name:'첫 대상 확인'})).toHaveCount(0);
+ for(const kind of ['aging','final']){
+  await page.setViewportSize({width:320,height:480});
+  await page.getByRole('button',{name:'검사 확인·기록',exact:true}).click();await expect(page.getByRole('radiogroup',{name:'검사 구분'}).locator(`input[value="${kind}"]`)).toBeChecked();
+  await expect(page.getByRole('button',{name:'검사 메모·저장으로'})).toBeInViewport({ratio:1});await expect(page.getByRole('button',{name:'검사 입력 닫기'})).toBeInViewport({ratio:1});
+  expect(await page.locator('.console-content').evaluate(e=>e.scrollHeight<=e.clientHeight+1)).toBe(true);
+  await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await expect(page.getByRole('button',{name:'검사 결과 저장',exact:true})).toBeInViewport({ratio:1});await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await page.setViewportSize({width:1366,height:768});
+ }
+ await expect(page.getByRole('button',{name:'검사 확인·기록',exact:true})).toHaveCount(0);await page.getByRole('button',{name:'품질 검토 요청',exact:true}).click();await expect(page.getByRole('radiogroup',{name:'품질 검토 대상 팩'}).getByRole('radio',{name:'NEXT-WORK'})).toBeChecked();
+ await navigate(page,'운영 현황');await page.getByRole('button',{name:'데이터 인입',exact:true}).click();await choose(page,'지표 집계 대상','test');await page.getByRole('button',{name:'누락 검사 확인'}).click();await expect(page.getByRole('radiogroup',{name:'확인할 품질 상태'}).locator('input[value="unlinked"]')).toBeChecked();await expect(page.getByText('현재 조건에 해당하는 팩이 없습니다.',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'전체 팩 보기',exact:true}).click();await expect(page.getByRole('row').filter({hasText:'NEXT-WORK'})).toBeVisible();
 });

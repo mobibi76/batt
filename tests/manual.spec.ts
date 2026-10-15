@@ -36,8 +36,8 @@ test('help stays reachable when the twin header changes with viewport size',asyn
 });
 
 test('every scenario has readable numbered screenshots, outcomes and troubleshooting',async({page})=>{
- await page.goto('/batt/#docs/inspection');const nav=page.getByRole('navigation',{name:'업무 시나리오'});const names=await nav.getByRole('button').allTextContents();expect(names).toHaveLength(13);
- for(const name of names){await nav.getByRole('button',{name,exact:true}).click();const article=page.locator('.manual-reading article');expect(await article.locator('.manual-figure').count()).toBeGreaterThanOrEqual(2);await expect(article.locator('.manual-troubleshooting')).toBeVisible();await expect(article).toContainText('처리 후 확인');
+ await page.goto('/batt/#docs/inspection');const nav=page.getByRole('navigation',{name:'업무 시나리오'});await expect(nav.getByRole('button')).toHaveCount(13);const names=await nav.getByRole('button').allTextContents();expect(names).toHaveLength(13);
+ for(const name of names){await nav.getByRole('button',{name,exact:true}).click();const article=page.locator('.manual-reading article');await expect(article.locator('h2')).toHaveText(name);expect(await article.locator('.manual-figure').count()).toBeGreaterThanOrEqual(2);await expect(article.locator('.manual-troubleshooting')).toBeVisible();await expect(article).toContainText('처리 후 확인');
   const images=article.locator('img');await images.evaluateAll(async nodes=>{await Promise.all(nodes.map(async node=>{const img=node as HTMLImageElement;img.loading='eager';await img.decode();if(img.naturalWidth!==1366)throw Error('Broken manual capture');}));});
   expect(await article.locator('.manual-callouts li').count()).toBeGreaterThanOrEqual(2);
  }

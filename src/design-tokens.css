@@ -11,6 +11,7 @@
   --color-manual-paper: #fafaf8;
   --color-manual-ink: #303a40;
   --color-manual-dimmer: rgba(15,31,29,.66);
+  --size-manual-print-image: 105mm;
   --size-manual-panel: 680px;
   --size-manual-index: 280px;
   --size-decision-max: 800px;

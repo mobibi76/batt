@@ -1,6 +1,6 @@
-﻿export type ManualStep={title:string;body:string;target?:string};
+export type ManualStep={title:string;body:string;target?:string};
 export type ManualScenario={id:string;title:string;role:string;start:string;steps:ManualStep[];criteria:string;exception:string;done:string};
-export const manualVersion='2026-10-15';
+export const manualVersion='2026-10-16';
 export const scenarios:ManualScenario[]=[
  {id:'access',title:'로그인·사용 권한 신청',role:'전체 직원',start:'회사에서 사용할 이메일 계정을 준비합니다.',steps:[{title:'가입 신청',body:'처음 방문했다면 사용 권한 신청에서 이름·이메일·비밀번호를 입력합니다. 이메일 인증이 요청되면 완료하세요.',target:'.auth-switch'},{title:'관리자 승인 후 로그인',body:'가입 접수와 사용 승인은 별개입니다. 승인 대기라면 관리자에게 계정 승인을 요청합니다.',target:'.auth-form form'},{title:'체험 데이터 구분',body:'공개 체험은 합성 데이터입니다. 고객 제공 데이터 체험은 로그인한 승인 사용자만 이용합니다.',target:'.auth-form .secondary'}],criteria:'가입 승인, 공정 담당 배정, 최종 품질 승인권은 서로 다릅니다.',exception:'로그인 실패 시 이메일과 비밀번호를 확인하세요. 승인 대기·이용 중지는 관리자에게 문의합니다.',done:'승인된 역할로 현장 또는 관제 작업 화면에 진입합니다.'},
  {id:'field',title:'현장·담당 작업 확인',role:'공정별 담당자',start:'담당 공정이 배정되어 있어야 합니다. 체험에서는 시험 역할을 사용합니다.',steps:[{title:'판단할 팩 확인',body:'팩 번호, 처리 사유와 두 검사 상태를 함께 봅니다. 목록은 담당 권한과 상태를 기준으로 구성됩니다.',target:'.console-target'},{title:'다음 업무 수행',body:'검사가 필요하면 검사 확인·기록, 두 검사가 완료되면 품질 검토 요청으로 이어갑니다. 표시만으로 처리되지는 않습니다.',target:'.console-target-action'},{title:'대상 또는 공정 전환',body:'이전·다음 대상으로 팩을 바꾸거나 공정 공간에서 위치와 대기 상태를 확인합니다.',target:'.console-pager'}],criteria:'불합격·미완료 항목과 현재 팩 번호를 먼저 확인합니다. 검사 확인은 최종 품질 승인이 아닙니다.',exception:'대상이 없으면 담당 공정과 준비된 팩을 확인하세요. 선택한 대상의 상태가 바뀌면 다음 판단 대상을 명시적으로 선택합니다.',done:'해당 팩의 검사 또는 검토 요청으로 연결됩니다.'},

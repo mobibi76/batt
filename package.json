@@ -9,7 +9,8 @@
     "test": "vitest run",
     "test:db": "node --experimental-strip-types scripts/test-database.mjs",
     "test:e2e": "playwright test",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "capture:manual": "node --experimental-strip-types scripts/capture-manual.mts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.0.0",

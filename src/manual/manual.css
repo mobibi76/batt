@@ -30,7 +30,7 @@
 .manual-explanation { position:absolute; bottom:var(--space-16); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-paper); border:1px solid var(--color-border-strong); border-radius:var(--radius-8); padding:var(--space-16); box-shadow:var(--shadow-toast-box-shadow); }
 .panel-top .manual-explanation { top:var(--space-8); bottom:auto; }
 .manual-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--space-12); }
-.manual-heading h1,.manual-heading h2 { margin:var(--space-4) 0; font-size:var(--type-section-size); }
+.manual-heading h1,.manual-heading h2 { word-break:keep-all; overflow-wrap:normal; margin:var(--space-4) 0; font-size:var(--type-section-size); }
 .manual-label,.manual-note { font-size:var(--type-caption-size); color:var(--color-ink-secondary); }
 .manual-topics { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--control-choice-width)),1fr)); gap:var(--space-4); margin:var(--space-12) 0; }
 .manual-topics button,.manual-index button { min-height:var(--control-height); padding:var(--space-8); border:1px solid var(--color-border); border-radius:var(--radius-8); background:var(--color-surface); color:var(--color-ink); font:inherit; text-align:left; }
@@ -81,3 +81,26 @@
 .manual-heading h1,.manual-heading h2,.manual-article h2,.manual-article h3,.manual-current>strong { color:var(--color-ink); }
 .manual-launch:hover,.manual-close:hover { background:var(--color-manual-selected); }
 .manual-topics button:not([aria-pressed=true]):hover,.manual-index button:not([aria-current=page]):hover { background:var(--color-manual-surface); border-color:var(--color-manual-brand); }
+.manual-outline { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--control-width)),1fr)); gap:var(--space-8); margin:var(--space-16) 0; }
+.manual-outline button { min-height:var(--control-height); padding:var(--space-8); color:var(--color-brand); background:var(--color-manual-selected); border:1px solid var(--color-border); border-radius:var(--radius-8); text-align:left; font:inherit; word-break:keep-all; }
+.manual-outline button:hover { border-color:var(--color-brand); }
+.manual-walkthrough-step { margin:var(--space-16) 0; padding-bottom:var(--space-16); border-bottom:1px solid var(--color-border); scroll-margin-top:var(--space-8); }
+.manual-figure { margin:var(--space-12) 0; }
+.manual-figure img { display:block; width:100%; height:auto; border:1px solid var(--color-border); border-radius:var(--radius-8); }
+.manual-figure figcaption { display:flex; flex-wrap:wrap; gap:var(--space-8); justify-content:space-between; margin-top:var(--space-8); color:var(--color-ink-secondary); font-size:var(--type-caption-size); }
+.manual-figure a { color:var(--color-brand); }
+.manual-callouts { list-style:none; padding:0; margin:var(--space-12) 0; display:grid; gap:var(--space-8); }
+.manual-callouts li { display:flex; align-items:flex-start; gap:var(--space-8); }
+.manual-callout-number { display:inline-flex; flex-shrink:0; align-items:center; justify-content:center; width:var(--space-24); height:var(--space-24); border-radius:var(--radius-chip); background:var(--color-brand); color:var(--color-surface); font-weight:var(--weight-bold); }
+.manual-callouts p,.manual-result p { margin:0; }
+.manual-result { border-left:var(--space-3) solid var(--color-brand); background:var(--color-manual-selected); padding:var(--space-12); border-radius:var(--radius-8); }
+.manual-result strong { display:block; margin-bottom:var(--space-4); }
+.manual-troubleshooting { display:grid; gap:var(--space-12); }
+.manual-troubleshooting dt { font-weight:var(--weight-bold); }
+.manual-troubleshooting dd { margin:var(--space-4) 0 0; line-height:var(--type-body-leading); }
+@media print {
+ .manual-outline,.manual-figure figcaption>a { display:none; }
+ .manual-walkthrough-step,.manual-figure,.manual-callouts li,.manual-result { break-inside:avoid; }
+ .manual-figure img { max-height:var(--size-manual-print-image); object-fit:contain; }
+ .manual-print .manual-note { color:var(--color-ink); }
+}

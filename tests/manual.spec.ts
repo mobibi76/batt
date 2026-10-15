@@ -63,3 +63,27 @@ test('closing DOCS cancels pending print preparation instead of printing the wor
  await page.evaluate(()=>{(window as any).manualPrintCalled=false;window.print=()=>{(window as any).manualPrintCalled=true;};});
  await page.getByRole('button',{name:'인쇄·PDF 저장'}).click();await expect(page.getByRole('button',{name:'이미지 준비 중'})).toBeDisabled();await page.getByRole('button',{name:'DOCS 닫기'}).click();release();await page.waitForLoadState('networkidle');expect(await page.evaluate(()=>(window as any).manualPrintCalled)).toBe(false);await expect(page.getByLabel('이메일',{exact:true})).toBeVisible();
 });
+
+test('help targets the selected action, does not highlight the approval toolbar, and follows resizing',async({page})=>{
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('button',{name:'샘플 데이터',exact:true}).click();
+ await page.getByRole('button',{name:'사용 안내',exact:true}).click();
+ const topics=page.getByRole('navigation',{name:'설명할 항목'});
+ await topics.getByRole('button',{name:'업무로 돌아가기',exact:true}).click();
+ const target=page.locator('.sample-data-view .console-task-heading > button');
+ for(const [width,height] of [[1366,768],[390,844],[320,480]]){
+  await page.setViewportSize({width,height});
+  await expect.poll(async()=>{const a=await target.boundingBox(),b=await page.locator('.manual-spotlight').boundingBox();return !!a&&!!b&&Math.abs(a.x-b.x)<1&&Math.abs(a.y-b.y)<1&&Math.abs(a.width-b.width)<1&&Math.abs(a.height-b.height)<1;}).toBe(true);
+ }
+ await page.keyboard.press('Escape');await page.setViewportSize({width:1366,height:768});await target.click();await navigate(page,'품질·공정 승인함');await page.getByRole('button',{name:'사용 안내',exact:true}).click();await topics.getByRole('button',{name:'근거 검토 후 판단',exact:true}).click();
+ await expect(page.locator('.manual-spotlight')).toHaveCount(0);await expect(page.locator('.manual-current small')).toBeVisible();await page.keyboard.press('Escape');
+});
+
+test('inspection highlight includes evidence, kind and judgement, and can reveal the underlying area',async({page})=>{
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('HELP-BOUNDS');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 강조 영역 검사');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();await page.getByRole('button',{name:'판단 화면으로'}).click();await page.getByRole('button',{name:'검사 확인·기록'}).click();
+ await page.getByRole('button',{name:'사용 안내',exact:true}).click();await page.getByRole('button',{name:'실측·시험 및 판정 구분',exact:true}).click();
+ for(const name of ['현장 검사 근거','검사 구분','판정']){
+  await expect.poll(async()=>{const a=await page.getByRole('radiogroup',{name,exact:true}).boundingBox(),b=await page.locator('.manual-spotlight').boundingBox();return !!a&&!!b&&b.x<=a.x+1&&b.y<=a.y+1&&b.x+b.width>=a.x+a.width-1&&b.y+b.height>=a.y+a.height-1;}).toBe(true);
+ }
+ await page.setViewportSize({width:320,height:480});await page.getByRole('button',{name:'강조 영역만 보기',exact:true}).click();await expect(page.locator('.manual-spotlight')).toBeVisible();await expect(page.getByRole('button',{name:'설명 닫기',exact:true})).toBeInViewport({ratio:1});await page.getByRole('button',{name:'설명 다시 펼치기',exact:true}).click();await expect(page.getByRole('button',{name:'실측·시험 및 판정 구분',exact:true})).toHaveAttribute('aria-pressed','true');
+});

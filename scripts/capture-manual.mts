@@ -7,6 +7,8 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {navigate,step} from '../tests/workspace.ts';
 import {choose} from '../tests/chips.ts';
+import {auditHelp,helpAuditResults} from './audit-manual-help.mts';
+const audit=process.argv.includes('--audit-help');
 const origin='http://127.0.0.1:4173',root=new URL('../',import.meta.url);
 const dest=new URL('public/manual/screens/',root),catalogPath=new URL('src/manual/walkthroughs.json',root);
 await mkdir(dest,{recursive:true});
@@ -17,6 +19,7 @@ const button=(name:string)=>p.getByRole('button',{name,exact:true});
 async function demo(){await fresh();await p.goto(origin+'/batt/');await button('샘플 데이터로 체험하기').click();}
 async function save(){await writeFile(catalogPath,JSON.stringify(catalog,null,2)+'\n');}
 async function snap(scenario:string,key:string,title:string,items:[Locator,string][],result:string,note='합성 체험 데이터 · 실제 생산·고객 자료 아님'){
+ if(audit){await auditHelp(p,`${scenario}/${key}`);return;}
  await p.evaluate(()=>document.fonts.ready);await p.locator('.toast').waitFor({state:'hidden',timeout:4500}).catch(()=>{});
  const marks=[];for(const [loc,text] of items){const e=loc.first();await expect(e).toBeVisible();const b=await e.boundingBox();if(!b||b.y<0||b.y+b.height>900||b.x<0||b.x+b.width>1366)throw Error(`Capture target outside viewport ${scenario}/${key}: ${text} ${JSON.stringify(b)}`);marks.push({...b,text});}
  await p.evaluate(({marks,note})=>{const layer=document.createElement('div');layer.id='manual-capture-overlay';layer.style.cssText='position:fixed;inset:0;z-index:2147483647;pointer-events:none';
@@ -96,4 +99,4 @@ async function sample(){catalog.sample=[];const profile=await fixtureSession('op
  await snap('sample','entry','비공개 체험에서 원자료와 보완 체험 선택',[[button('보완값 포함 업무 체험'),'결측을 시험값으로 보완한 업무 흐름을 연습합니다. 보완값은 예측값이나 실측값이 아닙니다.'],[button('보완 전 원자료 검토'),'결측을 유지한 상태로 원자료와 미검증 조건을 보려면 이 경로를 선택합니다.'],[button('출처·제공 날짜'),'출처와 파일 메타정보를 확인합니다. 파일 생성일을 고객 제공일로 단정하지 않습니다.']],'예시 화면은 고객 자료 형식을 모사한 합성 데이터입니다. 실제 고객 측정값은 포함되지 않습니다.','고객 체험 화면의 합성 재현 · 고객 원본·측정값 없음');await button('보완값 포함 업무 체험').click();await button('샘플 데이터').click();
  await snap('sample','values','원본·사용값과 보완 표시 확인',[[p.locator('.sample-data-view .sample-value-grid'),'행별 원자료와 사용값, 결측·시험 보완 표시를 대조합니다. 보라색 시험 보완값을 실제 측정값으로 해석하지 않습니다.'],[button('출처·날짜'),'해당 파일의 출처와 날짜 설명으로 이동합니다.']],'같은 셀의 원자료와 보완값을 구분한 상태로 체험합니다. 이 캡처의 제공값 표시도 전부 합성 예시입니다.','고객 체험 화면의 합성 재현 · 제공값 표시도 가상 값');await button('출처·날짜').click();
  await snap('sample','source','출처 확인 후 원래 업무로 복귀',[[p.locator('.sample-data-view'),'파일명·메타정보 날짜·제공일 미확인 여부를 확인합니다. 자료 제공 날짜가 확인되지 않으면 임의로 확정하지 않습니다.'],[p.locator('.sample-data-view').getByRole('button',{name:'업무로 돌아가기',exact:true}),'확인을 마치면 업무로 돌아가기를 누릅니다. 이전 작업 선택과 계산 결과는 유지됩니다.']],'체험 중 팩·검사·승인은 운영 기록과 분리되며 체험을 종료하면 폐기됩니다.','고객 체험 화면의 합성 재현 · 고객 원본·측정값 없음');}
-try{const groups={access,work,twin,research,members,sample};for(const [name,run] of Object.entries(groups)){if(!process.argv[2]||process.argv[2]===name)await run();}}catch(e){if(p)await p.screenshot({path:fileURLToPath(new URL('.local/manual-capture-error.png',root))});throw e;}finally{await browser.close();}
+try{const groups={access,work,twin,research,members,sample};for(const [name,run] of Object.entries(groups)){if(!process.argv[2]||process.argv[2]==='--audit-help'||process.argv[2]===name)await run();}}catch(e){if(p)await p.screenshot({path:fileURLToPath(new URL('.local/manual-capture-error.png',root))});throw e;}finally{if(audit)await writeFile(new URL('.local/manual-help-audit.json',root),JSON.stringify(helpAuditResults,null,2));await browser.close();}

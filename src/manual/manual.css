@@ -27,8 +27,12 @@
 .manual-dimmer { position:absolute; inset:0; background:var(--color-manual-dimmer); }
 .has-spotlight .manual-dimmer { background:transparent; }
 .manual-spotlight { position:fixed; left:var(--guide-x); top:var(--guide-y); width:var(--guide-w); height:var(--guide-h); border:var(--space-3) solid var(--color-manual-accent); box-shadow:0 0 0 100vmax var(--color-manual-dimmer); pointer-events:none; }
-.manual-explanation { position:absolute; bottom:var(--space-16); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-paper); border:1px solid var(--color-border-strong); border-radius:var(--radius-8); padding:var(--space-16); box-shadow:var(--shadow-toast-box-shadow); }
-.panel-top .manual-explanation { top:var(--space-8); bottom:auto; }
+.manual-explanation { position:absolute; bottom:var(--space-8); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-paper); border:1px solid var(--color-border-strong); border-radius:var(--radius-8); padding:var(--space-16); box-shadow:var(--shadow-toast-box-shadow); }
+.panel-top-center .manual-explanation,.panel-top-left .manual-explanation,.panel-top-right .manual-explanation { top:var(--space-8); bottom:auto; }
+.panel-top-left .manual-explanation,.panel-bottom-left .manual-explanation { left:var(--space-8); transform:none; }
+.panel-top-right .manual-explanation,.panel-bottom-right .manual-explanation { left:auto; right:var(--space-8); transform:none; }
+.manual-reveal { margin-top:var(--space-8); }
+.manual-compact .manual-label { display:none; }
 .manual-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--space-12); }
 .manual-heading h1,.manual-heading h2 { word-break:keep-all; overflow-wrap:normal; margin:var(--space-4) 0; font-size:var(--type-section-size); }
 .manual-label,.manual-note { font-size:var(--type-caption-size); color:var(--color-ink-secondary); }

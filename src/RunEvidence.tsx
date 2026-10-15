@@ -1,8 +1,10 @@
+import DecisionEvidence,{type DecisionContext} from './DecisionEvidence';
 import {useState} from 'react';
-import {supabase,download} from './lib';
-export default function RunEvidence({id}:{id?:string}){
- const [result,setResult]=useState<Record<string,any>|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false);
- async function load(){setBusy(true);setError('');const r=await supabase.from('matching_runs').select('*').eq('id',id).single();if(r.error)setError(r.error.message);else setResult(r.data);setBusy(false);}
- if(!id)return <p className="muted">기존 기록: 추천 실행 스냅샷이 연결되지 않았습니다.</p>;
- return <details><summary>추천 실행 근거</summary><button className="secondary" disabled={busy} onClick={()=>void load()}>저장된 실행 근거 조회</button>{error&&<p role="alert">{error}</p>}{result&&<><p>알고리즘 {result.result.engine_version||result.result.method} · SOP {result.result.sop_version} · 입력 {result.result.input_snapshot?.length}행 · {new Date(result.created_at).toLocaleString('ko-KR')}</p><p>이 기록은 추천 당시 스냅샷입니다. 현재 재고·재검사 상태와 다를 수 있습니다.</p><button className="secondary" onClick={()=>download(`추천근거_${id}.json`,JSON.stringify(result,null,2),'application/json')}>추천 실행 근거 내보내기</button></>}</details>;
+import {supabase} from './lib';
+export default function RunEvidence({packId,ids,demo=false}:{id?:string;packId:string;ids:string[];demo?:boolean}){
+ const [context,setContext]=useState<DecisionContext>();
+ const [error,setError]=useState(''),[busy,setBusy]=useState(false);
+ async function load(){setBusy(true);setError('');try{const c=await supabase.rpc('pack_decision_context',{target_pack:packId});if(c.error)throw c.error;setContext(c.data);}catch(e){setError((e as {message:string}).message);}finally{setBusy(false);}}
+ if(demo)return <p className="muted">체험 기록 · 서버 추천 근거를 조회하지 않습니다.</p>;
+ return <details><summary>추천 실행 근거</summary><p>팩 구성 당시 추천·처리 이력입니다. 품질 제출본은 제출 시점에 별도로 고정됩니다.</p><button className="secondary" disabled={busy} onClick={()=>void load()}>저장된 실행 근거 조회</button>{error&&<p role="alert">{error}</p>}{context&&<DecisionEvidence context={context} ids={ids}/>}</details>;
 }

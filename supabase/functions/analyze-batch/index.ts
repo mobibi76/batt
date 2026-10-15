@@ -14,6 +14,7 @@ Deno.serve(async(req:Request)=>{
   const result=analyzeEvidence(batch.rows,body.exclude_outliers===true);
   const admin=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
   const saved=await admin.rpc('commit_matching_run',{batch:batch.id,expected_revision:batch.revision,actor:user.id,output:result});if(saved.error)throw saved.error;
-  return reply({id:saved.data,result});
+  const persisted=await db.from('matching_runs').select('id,batch_id,batch_revision,created_at,result').eq('id',saved.data).single();if(persisted.error)throw persisted.error;
+  return reply(persisted.data);
  }catch(e){return reply({error:e instanceof Error?e.message:(e as {message?:string})?.message||'비교 실패'},400);}
 });

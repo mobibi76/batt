@@ -1,0 +1,32 @@
+import {test,expect,type Page} from '@playwright/test';
+import {navigate,step} from './workspace';
+const actor='11111111-1111-4111-8111-111111111111';
+async function session(page:Page){await page.addInitScript(id=>localStorage.setItem('sb-asfrsorbzmqhnwnxlxar-auth-token',JSON.stringify({access_token:'test-token',refresh_token:'test-refresh',expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user:{id,email:'test@example.com',aud:'authenticated',role:'authenticated'}})),actor);}
+const row={id:'SINGLE',row_no:2,lot:'L',channel:'1',voltage_mv:3300,resistance_mohm:.42,capacity_mah:25000,measured_at:'2026-10-15T00:00:00Z',issues:[],state:'ready'};
+test('server run revision cannot be relabelled with the open batch revision',async({page})=>{
+ await session(page);const batch={id:'batch-a',name:'REVISION-FIXTURE',file_hash:'a'.repeat(64),source_kind:'synthetic',source_note:'synthetic',mapping_version:'qa',revision:1,rows:[row]};
+ await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',async route=>{
+  const u=new URL(route.request().url()),path=u.pathname;
+  if(path.endsWith('/profiles'))return route.fulfill({json:{id:actor,display_name:'작업자',role:'operator',status:'approved',process_stages:['assembly']}});
+  if(path.endsWith('/intake_batches'))return route.fulfill({json:u.searchParams.get('id')?batch:[batch]});
+  if(path.endsWith('/analyze-batch'))return route.fulfill({json:{id:'server-run',batch_revision:2,created_at:'2026-10-15T01:00:00Z',result:{input_count:1,eligible_count:1,qc:[],alternatives:[],recommended:{groups:[],unused:['SINGLE'],used:0,mean_capacity_spread:null},sequence:{groups:[],unused:['SINGLE'],used:0,mean_capacity_spread:null},scope:'synthetic',elapsed_ms:1}}});
+  return route.fulfill({json:[]});
+ });
+ await page.goto('/batt/');await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');await page.getByRole('button',{name:/REVISION-FIXTURE/}).click();await page.getByRole('button',{name:'조합 비교',exact:true}).click();await page.getByRole('button',{name:'배치 조합 비교 실행'}).click();await expect(page.locator('.evidence-workspace')).toContainText('자료가 변경되었거나 최신 상태를 확인할 수 없습니다');await page.getByRole('button',{name:'실행·처리 이력'}).click();await expect(page.locator('.evidence-workspace')).toContainText('자료 v2');
+});
+test('inventory review is reachable without a complete eight-cell candidate and updates demo stock',async({page})=>{
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 데이터');await step(page,'셀 재고');await page.getByRole('button',{name:'측정 검토',exact:true}).first().click();await expect(page.locator('.evidence-workspace')).toContainText('체험 재고 검토');await page.getByRole('button',{name:'측정 검토',exact:true}).first().click();await page.getByLabel('처리 사유',{exact:true}).fill('직접 재고 검토');await page.getByRole('button',{name:'셀 보류',exact:true}).click();await step(page,'셀 재고');await expect(page.getByRole('row').filter({hasText:'DEMO-0001'})).toContainText('보류');
+});
+test('independent reviewer reads frozen matching and retest reasons without admin audit access',async({page})=>{
+ await session(page);const pack={id:'pack-a',serial_no:'SNAPSHOT-PACK',created_by:'other',created_at:'2026-10-15T01:00:00Z',source_kind:'synthetic',pack_cells:Array.from({length:8},(_,i)=>({cell_id:'S'+i,position:i}))};
+ const inspection=(kind:string)=>({id:kind,kind,result:'pass',evidence_kind:'test',created_at:'2026-10-15T02:00:00Z',created_by:'other'});
+ const request={id:'request-a',kind:'pack',pack_id:pack.id,title:'고정 근거 검토',status:'pending',submitted_by:'other',submitted_name:'작업자',submitted_at:'2026-10-15T03:00:00Z',request_note:'시험 검토',snapshot:{pack,cells:Array.from({length:8},(_,i)=>({...row,id:'S'+i})),aging:inspection('aging'),final:inspection('final'),decision_context:{run:{id:'run',result:{engine_version:'evidence-greedy-v3',sop_version:'JSI-SOP-v1',input_snapshot:[row],qc:[],recommended:{groups:[]}}},reviews:[{reason:'SOP 편차 확인 후 확정',actor:'other',actor_name:'공정 담당자',created_at:pack.created_at}],events:[{id:1,cell_id:'S0',action:'remeasured',reason:'저항 재측정 완료',actor_name:'측정 담당자',created_by:'other',created_at:pack.created_at}]}}};
+ await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',async route=>{
+  const u=new URL(route.request().url()),path=u.pathname;
+  if(path.endsWith('/profiles'))return route.fulfill({json:{id:actor,display_name:'승인권자',role:'operator',status:'approved',quality_reviewer:true,process_stages:[]}});
+  if(path.endsWith('/packs'))return route.fulfill({json:[pack]});
+  if(path.endsWith('/quality_requests'))return route.fulfill({json:u.searchParams.get('id')?request:[request],headers:{'content-range':'0-0/1'}});
+  return route.fulfill({json:[]});
+ });
+ await page.goto('/batt/');await navigate(page,'품질·공정 승인함');await page.getByRole('button',{name:'제출본 검토'}).click();await page.getByText('조합 판단·재검사 근거',{exact:true}).click();await expect(page.locator('.decision-focus')).toContainText('SOP 편차 확인 후 확정');await expect(page.locator('.decision-focus')).toContainText('공정 담당자');await page.getByText('구성 셀 처리 이력 1건',{exact:true}).click();await expect(page.getByText(/저항 재측정 완료/)).toBeVisible();for(const width of [1366,390,320]){await page.setViewportSize({width,height:768});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}await page.screenshot({path:'test-results/decision-context.png',fullPage:true});
+});

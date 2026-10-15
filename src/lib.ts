@@ -40,7 +40,7 @@ export async function readFile(file:File) {
     const {readSheet}=await import('read-excel-file/browser');const sheet=await readSheet(file,1);
     if(sheet.length>5001) throw new Error('파일당 최대 5000개 셀을 등록할 수 있습니다.');
     const headers=(sheet[0]||[]).map(v=>String(v??'').trim());
-    rows=sheet.slice(1).filter(row=>row.some(v=>v!==null)).map(row=>Object.fromEntries(headers.map((h,col)=>{const v=row[col];return [h,v instanceof Date?v.toISOString():v];})));
+    rows=sheet.slice(1).filter(row=>row.some(v=>v!==null)).map(row=>Object.fromEntries(headers.map((h,col)=>{const v=row[col];return [h,v instanceof Date?null:v];})));
   } else throw new Error('CSV 또는 XLSX 파일을 선택하세요.');
   return validateRows(rows);
 }

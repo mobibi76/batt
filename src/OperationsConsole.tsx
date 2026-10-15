@@ -13,7 +13,7 @@ const TwinScene=lazy(()=>import('./twin/TwinScene'));
 export type {WorkMode} from './workModes';
 import type {WorkMode} from './workModes';
 type View='space'|'decision'|'intake'|'analysis'|'improve';
-type Props={dataFocus?:string;task:Tab;taskTitle:string;children:ReactNode;onLogout:()=>void;onReport:()=>void;active:boolean;mode:WorkMode;onMode:(mode:WorkMode)=>void;profile:Profile;demo:boolean;packs:Pack[];tests:Inspection[];requests:ApprovalIndex[]|null;cells:number;available:number;lastSync:string;syncError:boolean;approvalError:string;onOpen:(tab:Tab)=>void;onWork:(s:PackSignal)=>void;onRecord:(pack:Pack,kind:Inspection['kind'],result:Inspection['result'],note:string,resultKind?:'measured'|'test')=>Promise<void>};
+type Props={metricScope:MetricScope;onMetricScope:(scope:MetricScope)=>void;dataFocus?:string;task:Tab;taskTitle:string;children:ReactNode;onLogout:()=>void;onReport:()=>void;active:boolean;mode:WorkMode;onMode:(mode:WorkMode)=>void;profile:Profile;demo:boolean;packs:Pack[];tests:Inspection[];requests:ApprovalIndex[]|null;cells:number;available:number;lastSync:string;syncError:boolean;approvalError:string;onOpen:(tab:Tab)=>void;onWork:(s:PackSignal)=>void;onRecord:(pack:Pack,kind:Inspection['kind'],result:Inspection['result'],note:string,resultKind?:'measured'|'test')=>Promise<void>};
 export default function OperationsConsole(p:Props){
  const [analysisPanel,setAnalysisPanel]=useState<'latest'|'evidence'>('latest');
  const [recordPack,setRecordPack]=useState<Pack|null>(null);
@@ -22,7 +22,7 @@ export default function OperationsConsole(p:Props){
  const [loaded,setLoaded]=useState(readLayout);
  useEffect(()=>{if(p.task==='overview')setLoaded(readLayout());},[p.task,p.profile.id]);
  const simulation=useMemo(()=>{const sim=initialSimulation(loaded.layout);for(const machine of Object.values(sim.machines))machine.status='offline';return sim;},[loaded.layout]);
- const [metricScope,setMetricScope]=useState<MetricScope>(p.demo?'test':'measured');
+ const {metricScope,onMetricScope:setMetricScope}=p;
  const cohort=metricCohort(p.packs,p.tests,metricScope);
  const first=firstPassSummary(cohort.packs,cohort.tests);
  const q=qualitySummary(cohort.packs,cohort.tests),queues=inspectionQueues(p.packs,p.tests);

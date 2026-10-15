@@ -33,7 +33,7 @@ try{
  assert.ok((await operator.rpc('approve_evidence_pack',{run:unverified.id,cell_ids:rows.map(r=>r.id),serial:prefix,reason:'must reject missing IR'})).error);
  assert.ok((await reviewer.functions.invoke('analyze-batch',{body:{batch_id:batch}})).error);
  for(const row of rows)await rpc(operator,'review_evidence',{batch,cell:row.id,next_state:'ready',reason:'synthetic remeasurement',measurement:{voltage_mv:3300,resistance_mohm:.42,capacity_mah:25000,measured_at:'2026-10-15T00:00:00Z'}});
- const verified=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:batch}}));assert.equal(verified.result.alternatives[0].status,'pass');
+ const verified=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:batch}}));assert.equal(verified.result.alternatives[0].status,'pass');const persisted=ok(await operator.from('matching_runs').select('batch_revision,created_at').eq('id',verified.id).single());assert.equal(verified.batch_revision,persisted.batch_revision);assert.equal(Date.parse(verified.created_at),Date.parse(persisted.created_at));
  const pack=await rpc(operator,'approve_evidence_pack',{run:verified.id,cell_ids:rows.map(r=>r.id),serial:prefix,reason:'synthetic full SOP review'});
  const consumed=ok(await operator.from('intake_batches').select('rows').eq('id',batch).single());assert.equal(consumed.rows.filter(r=>r.state==='used').length,8);
  const noReuse=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:batch}}));assert.equal(noReuse.result.eligible_count,0);
@@ -42,6 +42,7 @@ try{
  assert.equal(ok(await reviewer.from('research_runs').select('id')).length,0);
  for(const kind of ['aging','final'])await rpc(operator,'record_inspection',{target_pack:pack,test_kind:kind,test_result:'pass',test_note:'synthetic QA',result_kind:'test'});
  const request=await rpc(operator,'submit_quality_request',{request_kind:'pack',target_pack:pack,request_title:'',request_message:'synthetic independent approval',twin_layout:null});
+ const reviewContext=await rpc(reviewer,'pack_decision_context',{target_pack:pack});assert.equal(reviewContext.reviews[0].reason,'synthetic full SOP review');assert.ok(reviewContext.events.some(e=>e.actor_name));assert.equal(ok(await reviewer.from('audit_logs').select('id')).length,0);
  await rpc(reviewer,'decide_quality_request',{request_id:request,decision:'approved',review_note:'synthetic workflow only'});
  const snapshot=ok(await operator.from('quality_requests').select('snapshot,status').eq('id',request).single());assert.equal(snapshot.status,'approved');assert.equal(snapshot.snapshot.final.evidence_kind,'test');assert.equal(snapshot.snapshot.pack.source_kind,'synthetic');
  await rpc(operator,'record_inspection',{target_pack:pack,test_kind:'final',test_result:'fail',test_note:'synthetic retest',result_kind:'test'});
@@ -50,6 +51,7 @@ try{
  await rpc(operator,'import_cells_with_source',{rows:canonical,source:prefix,kind:'synthetic'});
  const standard=ok(await operator.functions.invoke('match-cells',{body:{lot:prefix,count:1}}));assert.ok(standard.run_id);assert.equal(standard.groups.length,1);
  await rpc(operator,'approve_recorded_pack',{cell_ids:standard.groups[0].cell_ids,serial:prefix+'-STD',run:standard.run_id});
+ const multi=canonical.map((c,i)=>({...c,id:`${prefix}-MULTI-${i}`,lot:prefix+'-MULTI'}));for(const half of [multi.slice(0,4),multi.slice(4)])await rpc(operator,'import_cells_with_source',{rows:half,source:prefix,kind:'synthetic'});const targets=await rpc(operator,'inventory_review_targets',{cell_ids:multi.map(c=>c.id)});assert.equal(targets.length,2);for(const t of targets)await rpc(operator,'review_evidence',{batch:t.batch_id,cell:t.cell_ids[0],next_state:'retest',reason:'multi source test',measurement:null});
  const loadRows=Array.from({length:500},(_,i)=>({...rows[0],id:`${prefix}-LOAD-${i}`,row_no:i+1,lot:'LOAD',resistance_mohm:.42,capacity_mah:25000+i%100}));
  const loadBatch=await rpc(operator,'register_intake',{payload:{name:prefix+'-load.csv',hash:randomUUID().replaceAll('-','').repeat(2),source_kind:'synthetic',mapping_version:'load-test-v1',rows:loadRows},note:'Disposable 500-row bound test'});
  const load=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:loadBatch}}));assert.equal(load.result.input_count,500);assert.equal(load.result.recommended.groups.length,62);

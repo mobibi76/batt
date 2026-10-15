@@ -8,7 +8,7 @@ export function parseIntake(sheet:unknown[][],name:string,hash:string):Intake {
  if(grading&&(!String(headers[3]).includes('OpenVoltage')||!String(headers[40]).includes('Cutoff Cap')))throw Error('Cell Grading 컬럼 구조가 다릅니다. 매핑을 확인하세요.');
  if(!grading&&!['id','lot','voltage_mv','capacity_mah','measured_at'].every(k=>headers.includes(k)))throw Error('지원 양식: Cell Grading 88열 또는 표준 셀 양식입니다.');
  const seen=new Set<string>();
- const rows=sheet.slice(grading?2:1).filter(row=>row.some(v=>v!==null&&v!==undefined&&v!=='')).map((row,i)=>{
+ const rows=sheet.slice(grading?2:1).map((row,i)=>({row,i})).filter(({row})=>row.some(v=>v!==null&&v!==undefined&&v!=='')).map(({row,i})=>{
   const issues:string[]=[];const record=Object.fromEntries(headers.map((h,j)=>[h,row[j]]));
   const rowNo=i+(grading?3:2),channel=String(grading?row[1]??'':record.id??'').trim();
   const barcode=String(grading?row[2]??'':record.id??'').trim();
@@ -37,7 +37,7 @@ export async function readIntake(file:File):Promise<Intake>{
  const bytes=await file.arrayBuffer();const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
  let sheet:unknown[][];
  if(file.name.toLowerCase().endsWith('.xlsx')){const {readSheet}=await import('read-excel-file/browser');sheet=await readSheet(file,1);}
- else if(file.name.toLowerCase().endsWith('.csv')){const {default:Papa}=await import('papaparse');const result=Papa.parse(new TextDecoder().decode(bytes),{skipEmptyLines:'greedy'});if(result.errors.length)throw Error('CSV 형식을 확인하세요.');sheet=result.data as unknown[][];}
+ else if(file.name.toLowerCase().endsWith('.csv')){const {default:Papa}=await import('papaparse');const result=Papa.parse(new TextDecoder().decode(bytes));if(result.errors.length)throw Error('CSV 형식을 확인하세요.');sheet=result.data as unknown[][];}
  else throw Error('CSV 또는 XLSX 파일을 선택하세요.');
  return parseIntake(sheet,file.name,hash);
 }

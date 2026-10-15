@@ -3,7 +3,7 @@ import { validateLayout, runError, type Layout } from './twin/model';
 import type { Cell } from '../supabase/functions/_shared/matching';
 export const approvalStatuses={pending:'승인 대기',approved:'승인',rejected:'반려',cancelled:'요청 취소',superseded:'재검토 필요'};
 export type ApprovalStatus=keyof typeof approvalStatuses;
-export type PackSnapshot={pack:Pack;cells:Cell[];aging:Inspection;final:Inspection};
+export type PackSnapshot={decision_context?:import('./DecisionEvidence').DecisionContext;pack:Pack;cells:Cell[];aging:Inspection;final:Inspection};
 export type ApprovalEvent={id:number;request_id:string;actor:string;actor_name:string;action:ApprovalStatus|'submitted';note:string;created_at:string};
 export type Approval={id:string;kind:'pack'|'twin';pack_id:string|null;title:string;snapshot:PackSnapshot|Layout;request_note:string;status:ApprovalStatus;submitted_by:string;submitted_name:string;submitted_at:string;reviewed_by:string|null;reviewed_name:string|null;reviewed_at:string|null;decision_note:string|null;events?:ApprovalEvent[]};
 export const requestColumns='id,kind,pack_id,title,request_note,status,submitted_by,submitted_name,submitted_at,reviewed_by,reviewed_name,reviewed_at,decision_note';

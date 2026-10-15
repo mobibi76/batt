@@ -15,8 +15,12 @@ export function assess(rows:EvidenceCell[]) {
 }
 function quantile(xs:number[],p:number){const pos=(xs.length-1)*p,lo=Math.floor(pos);return xs[lo]+(xs[Math.ceil(pos)]-xs[lo])*(pos-lo);}
 export function qcRows(rows:EvidenceCell[]) {
- const bounds=evidenceKeys.map(k=>{const values=rows.map(x=>x[k]).filter((v):v is number=>v!==null).sort((a,b)=>a-b);if(values.length<8)return null;const q1=quantile(values,.25),q3=quantile(values,.75),iqr=q3-q1;return iqr>0?[q1-1.5*iqr,q3+1.5*iqr]:null;});
- return rows.map(r=>({id:r.id,flags:evidenceKeys.filter((k,i)=>r[k]!==null&&bounds[i]!==null&&(r[k]!<bounds[i]![0]||r[k]!>bounds[i]![1]))})).filter(r=>r.flags.length);
+ return [...new Set(rows.map(r=>r.lot||''))].flatMap(lot=>{
+ const cohort=rows.filter(r=>(r.lot||'')===lot);
+ // A collapsed IQR still identifies departures from the repeated value.
+ const bounds=evidenceKeys.map(k=>{const values=cohort.map(x=>x[k]).filter((v):v is number=>v!==null).sort((a,b)=>a-b);if(values.length<8)return null;const q1=quantile(values,.25),q3=quantile(values,.75),iqr=q3-q1;return [q1-1.5*iqr,q3+1.5*iqr];});
+ return cohort.map(r=>({id:r.id,flags:evidenceKeys.filter((k,i)=>r[k]!==null&&bounds[i]!==null&&(r[k]!<bounds[i]![0]-1e-8||r[k]!>bounds[i]![1]+1e-8))})).filter(r=>r.flags.length);
+ });
 }
 export function analyzeEvidence(input:EvidenceCell[],excludeOutliers=false) {
  if(input.length>500||input.length<1)throw Error('비교는 배치별 1~500행을 지원합니다.');
@@ -45,8 +49,9 @@ export function analyzeEvidence(input:EvidenceCell[],excludeOutliers=false) {
   return [...found.values()].map(group=>({group,missing:Number(assess(group).status!=='pass'),cost:cost(group),key:group.map(r=>r.id).join()})).sort((a,b)=>a.missing-b.missing||a.cost-b.cost||a.key.localeCompare(b.key)).map(x=>x.group);
  }
  // Missing measurements remain unverified in every candidate.
- const alternatives=candidates(eligible).slice(0,3);
+ const ranked=(rows:EvidenceCell[])=>{const complete=rows.filter(r=>evidenceKeys.every(k=>r[k]!==null));const verified=candidates(complete);return verified.length||complete.length===rows.length?verified:candidates(rows);};
+ const alternatives=ranked(eligible).slice(0,3);
  let remaining=[...eligible];const proposed:EvidenceCell[][]=[];
- while(remaining.length>=8){const best=candidates(remaining)[0];if(!best)break;proposed.push(best);const ids=new Set(best.map(r=>r.id));remaining=remaining.filter(r=>!ids.has(r.id));}
- return {engine_version:'evidence-greedy-v2',sop_version:'JSI-SOP-v1',limits:evidenceLimits,exclude_outliers:excludeOutliers,input_count:input.length,eligible_count:eligible.length,input_snapshot:input,qc,sequence:summarize(sequence),recommended:summarize(proposed),alternatives:alternatives.map(g=>({ids:g.map(r=>r.id),score:Math.round((1-cost(g)/3)*100),reason:'동일 LOT 내 SOP 정규화 편차 합 최소 우선 · 미측정 항목은 점수에서 제외',...assess(g)})),elapsed_ms:performance.now()-started,scope:'LOT별 분리 편성. LOT 미확인 행은 동일 배치 내 시험 비교이며 현장 적합성 미확인. 동일 적격 셀 집합 비교. 사용·잔여 셀 차이 포함. 학습·생산 불량률·전역 최적성 검증 아님.'};
+ while(remaining.length>=8){const best=ranked(remaining)[0];if(!best)break;proposed.push(best);const ids=new Set(best.map(r=>r.id));remaining=remaining.filter(r=>!ids.has(r.id));}
+ return {engine_version:'evidence-greedy-v3',sop_version:'JSI-SOP-v1',limits:evidenceLimits,exclude_outliers:excludeOutliers,input_count:input.length,eligible_count:eligible.length,input_snapshot:input,qc,sequence:summarize(sequence),recommended:summarize(proposed),alternatives:alternatives.map(g=>({ids:g.map(r=>r.id),score:Math.round((1-cost(g)/3)*100),reason:'동일 LOT 내 SOP 정규화 편차 합 최소 우선 · 미측정 항목은 점수에서 제외',...assess(g)})),elapsed_ms:performance.now()-started,scope:'LOT별 분리 편성. LOT 미확인 행은 동일 배치 내 시험 비교이며 현장 적합성 미확인. 동일 적격 셀 집합 비교. 사용·잔여 셀 차이 포함. 학습·생산 불량률·전역 최적성 검증 아님.'};
 }

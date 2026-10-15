@@ -9,6 +9,7 @@ export async function step(page:Page,name:string){
  await nav.getByRole('button',{name:value,exact:true}).click();
 }
 export async function navigate(page:Page,name:string){
+ await page.locator('button:visible').filter({hasText:/^(관제|판단 화면으로)$/}).first().waitFor();
  if(!await page.getByRole('button',{name:'관제',exact:true}).isVisible())await page.getByRole('button',{name:'판단 화면으로'}).click();
  await page.getByRole('button',{name:name==='셀 매칭'?'현장':'관제',exact:true}).click();
  if(name==='운영 현황')return;

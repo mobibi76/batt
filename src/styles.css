@@ -1860,6 +1860,12 @@ td,th {
 .metric-context { margin: var(--space-12) 0; font-size: var(--font-size-12); color: var(--color-ink-secondary); }
 .metric-context summary { cursor: pointer; }
 .member-permissions summary { cursor: pointer; font-weight: var(--weight-semibold); }
+.pretrained-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-12); margin-top: var(--space-12); }
+.pretrained-metrics > div { display: grid; gap: var(--space-6); padding: var(--space-12); border-radius: var(--radius-7); background: var(--color-surface-muted); }
+.pretrained-metrics span { font-size: var(--type-caption-size); color: var(--color-ink-secondary); }
+.pretrained-metrics strong { font-size: var(--type-section-size); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.pretrained-explorer details { margin-top: var(--space-12); }
+@media (max-width: 480px) { .pretrained-metrics { gap: var(--space-4); } .pretrained-metrics > div { padding: var(--space-6); } .pretrained-metrics strong { font-size: var(--type-body-size); } }
 .member-permission-fields { display: grid; gap: var(--space-12); padding: var(--space-12) 0; }
 .member-permission-fields fieldset { border: 1px solid var(--color-border); border-radius: var(--radius-7); padding: var(--space-12); }
 .member-permission-fields label { display: flex; align-items: center; gap: var(--space-9); }

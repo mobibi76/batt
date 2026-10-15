@@ -7,7 +7,7 @@
 - 원본: Li, Tingkai et al. (2025), **UConn-MathWorks LFP/Gr Second-Life Battery Aging Dataset**, https://digitalcommons.lib.uconn.edu/reil_datasets/3/ — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 - 전처리 자료: Navidi, Sina et al. (2026), **SOC-agnostic rapid state-of-health estimation of lithium-ion batteries**, DOI https://doi.org/10.1016/j.apenergy.2026.128451.
 - 공식 연구진 저장소: https://github.com/REIL-UConn/SOC-Agnostic-Rapid-State-of-Health-Estimation-of-Lithium-Ion-Batteries — MIT 라이선스(이용허락 명칭이며 MIT 대학 데이터라는 의미가 아님); 저작권 및 허가문은 `public/research/UCONN-PROCESSED-LICENSE.txt`에 보존.
-- 원본 대학 다운로드가 403을 반환하여 연구진의 공개 `data/ecm_stat_features.zip` 수치 CSV를 사용했다. 원본 논문의 모델 코드는 실행하거나 복제하지 않았다.
+- 원본 대학 다운로드가 403을 반환하여 연구진의 공개 `data/ecm_stat_features.zip` 수치 CSV를 사용했다. 이 조합 비교 경로는 원본 논문의 예측 모델을 사용하지 않는다. 별도 공개 모델 추론 경로는 [모델 재사용·재현·검수](PRETRAINED-MODEL.md)를 참고한다. 공개 모델 추론과 Severson 이력은 브라우저 조회·다운로드이며 서버 저장/최근 실험 설명은 조합 비교 보고서에 해당한다.
 - 제공 자료 전체 108셀과 이번 표본을 구분한다. 이번 버전은 Batch 1–3, RPT=0, SOC 45–55%에서 배치/셀당 SOC 50%에 가장 가까운 펄스 하나만 선택한 **55셀(23/24/8)**이다. Batch 4–5는 전처리 조건 차이가 있어 포함하지 않는다.
 - 전압: `V_meas_str`의 첫 샘플 ×1000 (mV). 원본 전처리상 펄스 직전 전압.
 - 저항: `R0_manual` ×1000 (mΩ). 펄스 단계의 ΔV/ΔI로 추정한 값이다. 원본의 추가 배율이 적용된 `R0_used`나 생산 ACIR로 취급하지 않는다.

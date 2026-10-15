@@ -1751,7 +1751,7 @@ td,th {
   .severson-picker-open .severson-selector { display: block; }
   .severson-picker-open .severson-observation { display: none; }
 }
-.severson-chart { display: block; width: 100%; height: auto; color: var(--color-ink-secondary); }
+.severson-chart { display: block; width: 100%; height: var(--research-history-chart-height); color: var(--color-ink-secondary); }
 .severson-chart text { fill: currentColor; font-family: inherit; font-size: var(--font-size-12); }
 .severson-axis { stroke: var(--color-border); }
 .severson-curve { fill: none; stroke: var(--color-brand); stroke-width: 2; vector-effect: non-scaling-stroke; }

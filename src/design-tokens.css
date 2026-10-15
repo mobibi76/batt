@@ -1,6 +1,7 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --research-history-chart-height: clamp(7rem, 20dvh, 12rem);
   --size-evidence-card-min: 220px;
   --radius-chip: 999px;
   --space-2: 2px;

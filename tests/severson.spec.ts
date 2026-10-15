@@ -7,7 +7,7 @@ test('Severson capacity records retain continuation provenance and remain separa
  await panel.getByRole('radio',{name:'2017-06-30',exact:true}).check();
  await panel.getByLabel('Severson 시험 기록 검색',{exact:true}).fill('이어 측정');
  await panel.getByRole('radio',{name:/이어 측정/}).first().check();
- await expect(panel.locator('.notice')).toContainText('새로운 독립 셀로 세지 않으며');
+ await expect(panel.locator('p').filter({hasText:'이 셀은 이전 배치'})).toContainText('새로운 독립 셀로 세지 않으며');
  await expect(panel.getByRole('img')).toHaveAttribute('aria-label',/실제 사이클 번호가 아닌 기록 순번/);
  const promise=page.waitForEvent('download');await panel.getByRole('button',{name:'선택 기록·출처 내려받기'}).click();const file=await promise;
  const chunks=[];for await(const chunk of (await file.createReadStream())!)chunks.push(chunk);

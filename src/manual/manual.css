@@ -9,7 +9,7 @@
  --color-border-strong:var(--color-manual-border);
  --color-neutral-surface:var(--color-manual-surface);
 }
-﻿.manual-launch,.manual-close { display:inline-flex; align-items:center; justify-content:center; width:var(--control-height); min-width:var(--control-height); height:var(--control-height); padding:var(--space-4); border:1px solid var(--color-border); border-radius:var(--radius-8); background:var(--color-surface); color:var(--color-ink); cursor:pointer; flex-shrink:0; }
+.manual-launch,.manual-close { display:inline-flex; align-items:center; justify-content:center; width:var(--control-height); min-width:var(--control-height); height:var(--control-height); padding:var(--space-4); border:1px solid var(--color-border); border-radius:var(--radius-8); background:var(--color-surface); color:var(--color-ink); cursor:pointer; flex-shrink:0; }
 .manual-launch:focus-visible,.manual-close:focus-visible,.manual-topics button:focus-visible,.manual-index button:focus-visible { outline:var(--space-3) solid var(--color-focus); outline-offset:var(--space-2); }
 .console-header>strong,.console-task-heading>h2 { min-width:0; }
 .console-header .manual-launch { order:1; }

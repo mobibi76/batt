@@ -10,7 +10,7 @@ test('all tools stay in one workspace without legacy navigation',async({page})=>
 });
 test('import and sample download complete in control',async({page})=>{
  await start(page);await navigate(page,'셀 데이터');const download=page.waitForEvent('download');await page.getByRole('button',{name:'샘플 양식'}).click();expect((await download).suggestedFilename()).toContain('.csv');
- await page.locator('.upload-actions input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');await expect(page.getByRole('dialog')).toContainText('형식 검증 완료');await page.getByRole('button',{name:'전체 1개 등록'}).click();await step(page,'셀 재고');await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');await expect(page.getByRole('cell',{name:'XLSX-QA-001',exact:true})).toBeVisible();await shell(page);
+ await page.locator('.upload-actions input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');await expect(page.getByRole('dialog')).toContainText('형식 검증 완료');await page.getByRole('button',{name:'전체 1개 등록'}).click();await step(page,'셀 재고');await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');await expect(page.getByRole('cell',{name:'XLSX-QA-001 합성값',exact:true})).toBeVisible();await shell(page);
 });
 test('field inspections flow into independent control approval and reinspection revokes approval',async({page})=>{
  await start(page);await pack(page);await page.getByRole('button',{name:'판단 화면으로'}).click();await page.getByRole('button',{name:'확인·조치',exact:true}).click();await page.getByRole('button',{name:'첫 대상 확인'}).click();

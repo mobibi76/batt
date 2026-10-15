@@ -75,7 +75,7 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
         await reload();
     } setGroups(groups.filter(g => !g.cell_ids.some(id => approval.cell_ids.includes(id)))); setApproval(null); setToast('팩 조합을 확정했습니다. 검사이력을 등록할 수 있습니다.'); setContinuation({ kind: 'pack', packId: createdId }); }); }
     async function recordInspection(pack: Pack, kind: Inspection['kind'], result: Inspection['result'], note: string, resultKind: 'measured' | 'test' = 'test') { if (demo) {
-        setTests(rows => [{ evidence_kind: resultKind, created_by: 'demo-requester', confirmed_name: kind === 'aging' ? '체험 에이징 담당자' : '체험 최종검사 담당자', id: crypto.randomUUID(), pack_id: pack.id, kind, result, note, created_at: new Date().toISOString() }, ...rows]);
+        setTests(rows => [{ evidence_kind: 'test', created_by: 'demo-requester', confirmed_name: kind === 'aging' ? '체험 에이징 담당자' : '체험 최종검사 담당자', id: crypto.randomUUID(), pack_id: pack.id, kind, result, note, created_at: new Date().toISOString() }, ...rows]);
         setDemoRequests(rows => supersedeDemoRequests(rows, pack.id));
     }
     else {

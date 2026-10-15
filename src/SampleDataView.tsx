@@ -1,0 +1,19 @@
+import {useState} from 'react';
+import type {Cell} from '../supabase/functions/_shared/matching';
+import type {PrivateDataset} from './demoData';
+import DataValue from './DataValue';
+import './provenance.css';
+const fields=[['voltage_mv','전압','mV'],['resistance_mohm','내부저항','mΩ'],['capacity_mah','방전용량','mAh']] as const;
+export default function SampleDataView({dataset,cells,onClose}:{dataset?:PrivateDataset;cells:Cell[];onClose:()=>void}){
+ const [field,setField]=useState('voltage_mv');
+ const [tab,setTab]=useState('values'),[query,setQuery]=useState(''),[page,setPage]=useState(0);
+ const records=dataset?dataset.intake.rows:cells.map((c,i)=>({...c,channel:c.id,row_no:i+1,state:c.status}));
+ const rows=records.filter(r=>`${r.channel} ${r.id}`.toLowerCase().includes(query.toLowerCase()));
+ const index=Math.min(page,Math.max(0,rows.length-1)),row=rows[index],used=row?cells.find(c=>c.id===row.id):undefined;
+ return <section className="sample-data-view" aria-label="샘플 데이터 뷰"><div className="console-task-heading"><button className="secondary" onClick={onClose}>업무로 돌아가기</button><h2>샘플 데이터</h2></div><nav className="evidence-tabs sample-main-tabs" aria-label="샘플 데이터 구분"><button className={tab==='values'?'primary':'secondary'} onClick={()=>setTab('values')}>원자료·사용값</button><button className={tab==='source'?'primary':'secondary'} onClick={()=>setTab('source')}>출처·날짜</button></nav><nav className="evidence-tabs sample-field-tabs" aria-label="작은 화면 측정 항목">{fields.map(([key,label])=><button key={key} className={tab==='values'&&field===key?'primary':'secondary'} onClick={()=>{setField(key);setTab('values');}}>{label}</button>)}<button className={tab==='source'?'primary':'secondary'} onClick={()=>setTab('source')}>출처</button></nav>
+ {tab==='values'?<div className="sample-data-body"><label>채널·셀 검색<input value={query} onChange={e=>{setQuery(e.target.value);setPage(0);}}/></label><p className="sample-legend">{dataset?'주성산업 제공 데이터 기반':'전체 합성 데이터'} · <span className="data-origin-supplemented">시험 보완값</span>은 실측값이 아닙니다.</p>
+ {row?<><strong>채널 {row.channel} · {used?'체험 사용 중':dataset?'원자료 검토 전용':'합성 자료'}</strong><div className="sample-value-grid"><span>항목</span><span>원자료</span><span>체험 사용값</span>{fields.map(([key,label,unit])=><div className="sample-value-row" data-active={field===key} key={key}><strong>{label}<small> {unit}</small></strong><span>{dataset?row[key]??'결측':'원자료 없음'}</span><DataValue row={used||row} field={key}>{(used||row)[key]??'미검증'}</DataValue></div>)}</div></>:<p>검색 결과가 없습니다.</p>}
+ </div>:<div className="sample-data-body"><p>{dataset?'고객 제공 자료에서 전압(D열)·방전용량(AO열)을 정제했습니다. 고객의 실제 측정 원본성과 단위·시간대는 별도 확인 대상입니다.':'공개 체험용 합성 자료이며 고객 제공 데이터가 아닙니다.'}</p>{row&&<details><summary>식별자·날짜·보완 이유</summary><p>셀 ID: <DataValue row={used||row} field="id">{row.id}</DataValue></p><p>LOT: <DataValue row={used||row} field="lot">{used?.lot||'미확인'}</DataValue></p><p>사용 시각: <DataValue row={used||row} field="measured_at">{used?.measured_at||'시간대 미확인'}</DataValue></p><p>{dataset?'내부저항 0.42 mΩ는 업무 흐름 체험을 위한 고정 가상값입니다. 추정값이 아니며 저항 편차를 0으로 만듭니다. 임시 ID·가상 LOT·2000-01-01 시험 시각을 부여합니다. 보류 4행은 보완·매칭 대상에서 제외합니다.':'공개 체험의 모든 값은 기능 시연용으로 생성했습니다.'}</p></details>}{dataset&&<><p>제공일 미확인 · 다음은 파일 내부 메타정보의 UTC 시각입니다.</p>{dataset.files.map(f=><details key={f.sha256}><summary>{f.name}</summary><p>생성 {f.created||'없음'}<br/>수정 {f.modified||'없음'}</p><p className="sample-hash">SHA-256 {f.sha256}</p></details>)}<p>내부저항·바코드·LOT 누락은 원자료에 보존합니다. PoC는 기록된 조합의 산술 대조용이며 실행 알고리즘을 재현한 결과가 아닙니다. 시험 보완값으로 얻은 SOP·검사·승인 결과는 현장 성과로 집계하지 않습니다.</p></>}</div>}
+ {tab==='values'&&<div className="console-pager"><button className="secondary" disabled={!index} onClick={()=>setPage(index-1)}>이전 셀</button><span>{rows.length?index+1:0} / {rows.length}</span><button className="secondary" disabled={index+1>=rows.length} onClick={()=>setPage(index+1)}>다음 셀</button></div>}
+ </section>;
+}

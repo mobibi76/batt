@@ -27,7 +27,7 @@ test('imports XLSX and rejects malformed CSV before upload',async({page})=>{
  await expect(page.getByRole('dialog').getByText('형식 검증 완료')).toBeVisible();
  await page.getByRole('button',{name:'전체 1개 등록'}).click();
  await step(page,'셀 재고');await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');
- await expect(page.getByRole('cell',{name:'XLSX-QA-001',exact:true})).toBeVisible();
+ await expect(page.getByRole('cell',{name:'XLSX-QA-001 합성값',exact:true})).toBeVisible();
  await step(page,'측정 파일로 시작하세요');await page.locator('.upload-actions input[type=file]').setInputFiles({name:'bad.csv',mimeType:'text/csv',buffer:Buffer.from('id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\nBAD,LOT,nope,0.42,30000,2026-10-14')});
  await expect(page.getByRole('dialog').getByRole('button',{name:'전체 1개 등록'})).toBeDisabled();
 });

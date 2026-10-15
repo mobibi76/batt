@@ -25,6 +25,13 @@ try {
   if(sql.includes('public.review_evidence_group(')){sql=sql.replace('review_evidence_group($1,$2,$3,$4)','review_evidence_group_checked($1,$2,$3,$4,$5)');params=[...params,(await db.query('select revision from public.intake_batches where id=$1',[params[0]])).rows[0].revision];}
   if(sql.includes('approve_recorded_pack($1,$2,$3)'))sql=sql.replace('approve_recorded_pack($1,$2,$3)',"approve_recorded_pack($1,$2,$3,'fixture review')");
   const r=await db.query(sql,params);return Object.values(r.rows[0]||{})[0];};
+ await db.query("insert into public.private_demo_datasets(id,payload) values('test','{\"fixture\":true}')");
+ await identity(ids.pending);assert.equal(await q('select count(*) from public.private_demo_datasets'),0);
+ await identity(ids.operator);assert.equal(await q('select count(*) from public.private_demo_datasets'),1);
+ await assert.rejects(()=>db.query("update public.private_demo_datasets set payload='{}'"),/permission denied/);
+ await identity('', 'anon');await assert.rejects(()=>db.query('select * from public.private_demo_datasets'),/permission denied/);
+ await db.exec('reset role');await db.query("delete from public.private_demo_datasets where id='test'");
+ console.log('PASS: private demo samples deny anonymous/pending reads and authenticated mutations');
  assert.deepEqual(await q('select public.sop_v1()'),{version:SOP.version,cellCount:SOP.cellCount,limits:SOP.limits});
  const rows=Array.from({length:16},(_,i)=>({row_no:i+3,id:`TEST-${i}`,channel:String(i),voltage_mv:3300,resistance_mohm:null,capacity_mah:25000+i,measured_at:null,issues:['missing resistance'],state:'ready'}));
  const payload={name:'synthetic.csv',hash:'a'.repeat(64),source_kind:'synthetic',mapping_version:'test-v1',rows};

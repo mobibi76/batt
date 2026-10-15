@@ -1,6 +1,9 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --color-provenance-ink: #6743a5;
+  --color-provenance-surface: #f1eafa;
+  --size-private-demo-max: 900px;
   --research-history-chart-height: clamp(7rem, 20dvh, 12rem);
   --size-evidence-card-min: 220px;
   --radius-chip: 999px;

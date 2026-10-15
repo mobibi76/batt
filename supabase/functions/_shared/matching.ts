@@ -1,5 +1,5 @@
 import {SOP} from './sop.ts';
-export type Cell = { source_kind?:string; source_batch_id?:string;  id: string; lot: string; voltage_mv: number; resistance_mohm: number; capacity_mah: number; status: string; measured_at: string };
+export type Cell = { field_origins?:Partial<Record<string,'provided'|'supplemented'|'synthetic'>>; source_kind?:string; source_batch_id?:string;  id: string; lot: string; voltage_mv: number; resistance_mohm: number; capacity_mah: number; status: string; measured_at: string };
 export type Group = { run_id?:string; cell_ids: string[]; spreads: Record<string, number>; score: number; sop_version: string };
 const dimensions = SOP.dimensions;
 const limits = dimensions.map(k=>SOP.limits[k]);

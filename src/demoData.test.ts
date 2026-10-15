@@ -1,0 +1,7 @@
+import {describe,it,expect} from 'vitest';
+import {demoCellsFrom,originOf,validatePrivateDataset,type PrivateDataset} from './demoData';
+const dataset:PrivateDataset={version:1,files:[],verification:{valid:8,held:1,sequence_mean:7,poc_mean:7,improvement_percent:0,poc_two_criteria_pass:1,algorithm_reproduced:false},intake:{name:'synthetic-test',hash:'a'.repeat(64),source_kind:'reconstructed',mapping_version:'test',headers:[],warnings:[],rows:Array.from({length:9},(_,i)=>({row_no:i+3,id:`TMP-${i}`,channel:String(i),voltage_mv:3300+i/10,capacity_mah:i===8?null:25000+i,resistance_mohm:null,measured_at:null,issues:[],state:i===8?'held':'ready'}))}};
+describe('private customer-derived demo',()=>{
+ it('preserves source and missing values, isolates supplementary measurements and held rows',()=>{const before=structuredClone(dataset);const cells=demoCellsFrom(dataset);expect(cells).toHaveLength(8);expect(dataset).toEqual(before);expect(cells[0].capacity_mah).toBe(dataset.intake.rows[0].capacity_mah);expect(originOf(cells[0],'capacity_mah')).toBe('provided');expect(originOf(cells[0],'resistance_mohm')).toBe('supplemented');expect(cells.every(c=>c.source_kind==='synthetic'&&c.resistance_mohm===.42)).toBe(true);expect(dataset.intake.rows.every(c=>c.resistance_mohm===null)).toBe(true);});
+ it('rejects invalid private dataset measurements',()=>{const invalid=structuredClone(dataset);invalid.intake.rows[0].voltage_mv=NaN;expect(()=>validatePrivateDataset(invalid)).toThrow();});
+});

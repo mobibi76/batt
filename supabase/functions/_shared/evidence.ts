@@ -1,7 +1,7 @@
 import {SOP} from './sop.ts';
 // Measured values remain nullable. No synthetic replacement for missing resistance.
 export type SourceKind = 'measured' | 'reconstructed' | 'synthetic' | 'unknown';
-export type EvidenceCell = { row_no:number; lot?:string|null; id:string; channel:string; voltage_mv:number|null; resistance_mohm:number|null; capacity_mah:number|null; measured_at:string|null; issues:string[]; state:'ready'|'held'|'retest'|'used'; raw?:unknown };
+export type EvidenceCell = { field_origins?:Partial<Record<string,'provided'|'supplemented'|'synthetic'>>; row_no:number; lot?:string|null; id:string; channel:string; voltage_mv:number|null; resistance_mohm:number|null; capacity_mah:number|null; measured_at:string|null; issues:string[]; state:'ready'|'held'|'retest'|'used'; raw?:unknown };
 export const evidenceKeys = SOP.dimensions;
 export const evidenceLimits = SOP.limits;
 export function range(rows:EvidenceCell[],key:typeof evidenceKeys[number]):number|null {

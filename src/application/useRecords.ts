@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { sampleCells, type Profile, type Pack, type Inspection } from '../lib';
 import type { Cell } from '../../supabase/functions/_shared/matching';
 import { readRecords, readMembership } from '../data/workbenchRepository';
-export default function useRecords(owner: string | undefined, demo: boolean, onError: (message: string) => void) {
-    const [profile, setProfile] = useState<Profile | null>(null), [cells, setCells] = useState<Cell[]>(() => demo ? sampleCells() : []), [packs, setPacks] = useState<Pack[]>([]), [tests, setTests] = useState<Inspection[]>([]), [members, setMembers] = useState<Profile[]>([]);
+export default function useRecords(owner: string | undefined, demo: boolean, onError: (message: string) => void, seed?: Cell[]) {
+    const [profile, setProfile] = useState<Profile | null>(null), [cells, setCells] = useState<Cell[]>(() => demo ? seed ?? sampleCells() : []), [packs, setPacks] = useState<Pack[]>([]), [tests, setTests] = useState<Inspection[]>([]), [members, setMembers] = useState<Profile[]>([]);
     const [authLoading, setAuthLoading] = useState(!demo), [authError, setAuthError] = useState(''), [lastSync, setLastSync] = useState(''), [syncError, setSyncError] = useState(false), [revision, setRevision] = useState(0);
     const snapshotVersion = useRef<number | null>(null);
     const active = useRef(false), pending = useRef<Promise<void> | null>(null), controller = useRef<AbortController | null>(null), errorHandler = useRef(onError);

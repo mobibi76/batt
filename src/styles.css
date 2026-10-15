@@ -1740,6 +1740,11 @@ td,th {
 .icon-16 { width: var(--size-icon-16); height: var(--size-icon-16); }
 .inline-icon-label { display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--space-5); overflow-wrap: anywhere; }
 .inline-icon-label > svg { flex-shrink: 0; }
+.severson-summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12); }
+.severson-chart { display: block; width: 100%; height: auto; color: var(--color-ink-secondary); }
+.severson-chart text { fill: currentColor; font-family: inherit; font-size: var(--font-size-12); }
+.severson-axis { stroke: var(--color-border); }
+.severson-curve { fill: none; stroke: var(--color-brand); stroke-width: 2; vector-effect: non-scaling-stroke; }
 
 .icon-15 { width: var(--size-icon-15); height: var(--size-icon-15); }
 

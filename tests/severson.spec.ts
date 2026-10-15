@@ -1,0 +1,18 @@
+import {test,expect} from '@playwright/test';
+import {navigate,step} from './workspace';
+test('Severson capacity records retain continuation provenance and remain separate from matching',async({page})=>{
+ await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await navigate(page,'알고리즘 검증');await step(page,'Severson 열화 이력');
+ const panel=page.locator('.severson-explorer');await expect(panel).toContainText('140개 시험 기록 · 고유 셀 135개');
+ await panel.getByRole('radio',{name:'2017-06-30',exact:true}).check();
+ await panel.getByLabel('Severson 시험 기록 검색',{exact:true}).fill('이어 측정');
+ await panel.getByRole('radio',{name:/이어 측정/}).first().check();
+ await expect(panel.locator('.notice')).toContainText('새로운 독립 셀로 세지 않으며');
+ await expect(panel.getByRole('img')).toHaveAttribute('aria-label',/실제 사이클 번호가 아닌 기록 순번/);
+ const promise=page.waitForEvent('download');await panel.getByRole('button',{name:'선택 기록·출처 내려받기'}).click();const file=await promise;
+ const chunks=[];for await(const chunk of (await file.createReadStream())!)chunks.push(chunk);
+ const report=JSON.parse(Buffer.concat(chunks).toString('utf8').replace(/^\ufeff/,''));
+ expect(report.record.continuation_of).toBeTruthy();expect(report.record.capacity_mah.length).toBeGreaterThan(2);expect(report.record.voltage_mv).toBeUndefined();expect(report.scope).toContain('생산 적용 아님');expect(report.files.length).toBe(6);
+ await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await step(page,'1. 연구 데이터');await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();await expect(page.locator('.research-dataset')).toContainText('55셀');
+});

@@ -1,3 +1,4 @@
+import UserManual from './manual/UserManual';
 import { ChoiceChips } from './ChoiceChips';
 import TaskSteps from './TaskSteps';
 import FieldConfirmation from './FieldConfirmation';
@@ -53,5 +54,6 @@ export default function OperationsConsole(p:Props){
    {!recordPack&&activeView==='improve'&&<div className="console-focus"><h2>변경할 공정을 검증하세요</h2><p>가상 공정을 설계하고 시뮬레이션 결과를 검토 요청하세요.</p><p>개인 설계본과 운영 공정은 다릅니다. 가상 결과가 실제 품질을 보증하지 않습니다.</p><button className="primary" onClick={()=>p.onOpen('twin')}>공정 설계·시뮬레이션</button><button className="secondary" onClick={()=>p.onOpen('approvals')}>공정 제출본 검토</button></div>}
   </div>
   </div>{p.sampleView&&<div className="console-content">{p.sampleView}</div>}<footer className="console-footer"><div className="console-task-actions" hidden={!!p.sampleView}>{p.mode==='field'?<><button className="secondary" onClick={()=>p.onOpen('packs')}>팩·검사</button>{(p.demo||canConfirm(p.profile,'assembly'))&&<button className="secondary" onClick={()=>p.onOpen('matching')}>셀 매칭</button>}</>:<><button className="secondary" onClick={()=>p.onOpen('approvals')}>품질 승인</button><button className="secondary" onClick={()=>p.onOpen('cells')}>데이터 관리</button></>}</div><div className="console-task-actions">{!p.sampleView&&p.mode==='control'&&p.profile.role==='admin'&&<button className="text-button" onClick={()=>p.onOpen('members')}>권한 관리</button>}{p.onSampleData&&<button className="text-button" onClick={p.onSampleData}>샘플 데이터</button>}{p.onPrivateDemo&&<button className="text-button" onClick={p.onPrivateDemo}>고객 데이터 체험</button>}<button className="text-button" onClick={p.onLogout}>{p.privateDemo?'체험 종료':'로그아웃'}</button></div></footer>
+ <UserManual context={p.sampleView?'sample':recordPack?'inspection':p.task!=='overview'?p.task:activeView==='space'||activeView==='improve'?'twin':activeView==='intake'?'intake':activeView==='analysis'?'quality':p.mode==='field'?'field':'approvals'}/>
  </section>;
 }

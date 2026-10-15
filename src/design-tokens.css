@@ -1,6 +1,9 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --color-manual-dimmer: rgba(15,31,29,.66);
+  --size-manual-panel: 680px;
+  --size-manual-index: 280px;
   --size-decision-max: 800px;
   --control-width: 160px;
   --control-choice-width: 112px;

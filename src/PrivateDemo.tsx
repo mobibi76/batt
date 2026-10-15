@@ -1,3 +1,4 @@
+import UserManual from './manual/UserManual';
 import {useEffect,useState} from 'react';
 import type {Session} from '@supabase/supabase-js';
 import {supabase,number} from './lib';
@@ -17,7 +18,7 @@ export default function PrivateDemo({session,onExit}:{session:Session;onExit:()=
   return()=>{alive=false;controller.abort();clearInterval(timer);window.removeEventListener('focus',read);};
  },[session.user.id]);
  if(dataset&&mode)return <Workbench key={mode} session={session} demo onLeave={()=>setMode(null)} privateDemo={{dataset,mode,cells:mode==='workflow'?demoCellsFrom(dataset):[]}}/>;
- return <main className="private-demo-entry"><section className="panel"><h1>고객 데이터로 비공개 체험</h1><p>주성산업 제공 데이터 기반 · 승인된 사용자 전용 · 운영 데이터에 저장하지 않음</p><nav aria-label="체험 안내"><button className={tab==='start'?'primary':'secondary'} onClick={()=>setTab('start')}>체험 선택</button><button className={tab==='source'?'primary':'secondary'} onClick={()=>setTab('source')}>출처·제공 날짜</button><button className="secondary" onClick={onExit}>운영 화면으로</button></nav>
+ return <main className="private-demo-entry"><UserManual context="sample"/><section className="panel"><h1>고객 데이터로 비공개 체험</h1><p>주성산업 제공 데이터 기반 · 승인된 사용자 전용 · 운영 데이터에 저장하지 않음</p><nav aria-label="체험 안내"><button className={tab==='start'?'primary':'secondary'} onClick={()=>setTab('start')}>체험 선택</button><button className={tab==='source'?'primary':'secondary'} onClick={()=>setTab('source')}>출처·제공 날짜</button><button className="secondary" onClick={onExit}>운영 화면으로</button></nav>
  {error?<p role="alert">{error}</p>:!dataset?<p role="status">비공개 자료 접근 권한을 확인하고 있습니다.</p>:tab==='start'?<>
  <p>제공된 {dataset.intake.rows.length}행 중 비교 가능 {dataset.verification.valid}행 · 보류 {dataset.verification.held}행. 실제 측정 원본성·단위·시간대는 고객 확인 대상입니다.</p>
  <p><span className="data-origin-provided">고객 제공값</span>은 보존하고, <span className="data-value data-origin-supplemented">시험 보완값</span>은 색상·표식으로 구분합니다.</p>

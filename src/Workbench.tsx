@@ -1,3 +1,4 @@
+import UserManual from './manual/UserManual';
 import SampleDataView from './SampleDataView';
 import DataValue from './DataValue';
 import type {PrivateDataset} from './demoData';
@@ -131,7 +132,7 @@ export default function Workbench({ session, demo, onLeave, onPrivateDemo, priva
     if (authLoading && !demo)
         return <div className="loading"><LoaderCircle className="spin"/>작업 공간을 준비하고 있습니다.</div>;
     if (!demo && profile?.status !== 'approved')
-        return <main className="waiting-page"><ShieldCheck className="icon-48"/><h1>{profile ? statusNames[profile.status] : '계정 확인 필요'}</h1><p>{authError || '관리자가 사용 권한을 승인하면 작업 공간에 입장할 수 있습니다.'}</p><p className="muted">{session?.user.email}</p><button className="primary" onClick={() => window.location.reload()}>승인 상태 새로고침</button><button className="text-button" onClick={leave}>로그아웃</button></main>;
+        return <main className="waiting-page"><UserManual context="access"/><ShieldCheck className="icon-48"/><h1>{profile ? statusNames[profile.status] : '계정 확인 필요'}</h1><p>{authError || '관리자가 사용 권한을 승인하면 작업 공간에 입장할 수 있습니다.'}</p><p className="muted">{session?.user.email}</p><button className="primary" onClick={() => window.location.reload()}>승인 상태 새로고침</button><button className="text-button" onClick={leave}>로그아웃</button></main>;
     const filtered = cells.filter(c => `${c.id} ${c.lot}`.toLowerCase().includes(search.toLowerCase()));
     const chart = cells.slice(0, 48).map((c, i) => ({ name: i + 1, capacity: c.capacity_mah }));
     return <div className="app-shell console-shell"><OperationsConsole sampleView={sampleOpen?<SampleDataView dataset={privateDemo?.dataset} cells={cells} onClose={()=>setSampleOpen(false)}/>:undefined} onSampleData={demo?()=>setSampleOpen(true):undefined} onPrivateDemo={onPrivateDemo} privateDemo={!!privateDemo} demoLabel={privateDemo?(privateDemo.mode==='workflow'?'고객 제공값 + 시험 보완값 · 시험 결과':'고객 제공 원자료 · 결측 유지'):undefined} metricScope={metricScope} onMetricScope={setMetricScope} dataFocus={reviewBatch || reviewSeed || privateDemo?.mode==='raw' ? '고객 자료 검토' : privateDemo?'셀 재고':undefined} active task={tab} taskTitle={names[tab]} onLogout={leave} onReport={exportReport} key={activeProfile!.id} mode={workMode} onMode={switchWorkMode} profile={activeProfile!} demo={demo} packs={packs} tests={tests} requests={qualityIndex.rows} cells={cells.length} available={available.length} lastSync={lastSync} syncError={syncError} approvalError={qualityIndex.error} onPacks={(filter,scope)=>openPacks(filter,undefined,scope)} onOpen={setTab} onWork={openWork} onRecord={(pack,kind,result,note,resultKind)=>recordInspection(pack,kind,result,note,resultKind,false)}>

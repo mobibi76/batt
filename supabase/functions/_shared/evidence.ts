@@ -1,8 +1,9 @@
+import {SOP} from './sop.ts';
 // Measured values remain nullable. No synthetic replacement for missing resistance.
 export type SourceKind = 'measured' | 'reconstructed' | 'synthetic' | 'unknown';
 export type EvidenceCell = { row_no:number; lot?:string|null; id:string; channel:string; voltage_mv:number|null; resistance_mohm:number|null; capacity_mah:number|null; measured_at:string|null; issues:string[]; state:'ready'|'held'|'retest'|'used'; raw?:unknown };
-export const evidenceKeys = ['voltage_mv','resistance_mohm','capacity_mah'] as const;
-export const evidenceLimits = {voltage_mv:10,resistance_mohm:0.01,capacity_mah:500};
+export const evidenceKeys = SOP.dimensions;
+export const evidenceLimits = SOP.limits;
 export function range(rows:EvidenceCell[],key:typeof evidenceKeys[number]):number|null {
  const values=rows.map(r=>r[key]);
  return values.some(v=>v===null)?null:Number((Math.max(...values as number[])-Math.min(...values as number[])).toFixed(5));
@@ -53,5 +54,5 @@ export function analyzeEvidence(input:EvidenceCell[],excludeOutliers=false) {
  const alternatives=ranked(eligible).slice(0,3);
  let remaining=[...eligible];const proposed:EvidenceCell[][]=[];
  while(remaining.length>=8){const best=ranked(remaining)[0];if(!best)break;proposed.push(best);const ids=new Set(best.map(r=>r.id));remaining=remaining.filter(r=>!ids.has(r.id));}
- return {engine_version:'evidence-greedy-v3',sop_version:'JSI-SOP-v1',limits:evidenceLimits,exclude_outliers:excludeOutliers,input_count:input.length,eligible_count:eligible.length,input_snapshot:input,qc,sequence:summarize(sequence),recommended:summarize(proposed),alternatives:alternatives.map(g=>({ids:g.map(r=>r.id),score:Math.round((1-cost(g)/3)*100),reason:'동일 LOT 내 SOP 정규화 편차 합 최소 우선 · 미측정 항목은 점수에서 제외',...assess(g)})),elapsed_ms:performance.now()-started,scope:'LOT별 분리 편성. LOT 미확인 행은 동일 배치 내 시험 비교이며 현장 적합성 미확인. 동일 적격 셀 집합 비교. 사용·잔여 셀 차이 포함. 학습·생산 불량률·전역 최적성 검증 아님.'};
+ return {engine_version:'evidence-greedy-v3',sop_version:SOP.version,limits:evidenceLimits,exclude_outliers:excludeOutliers,input_count:input.length,eligible_count:eligible.length,input_snapshot:input,qc,sequence:summarize(sequence),recommended:summarize(proposed),alternatives:alternatives.map(g=>({ids:g.map(r=>r.id),score:Math.round((1-cost(g)/3)*100),reason:'동일 LOT 내 SOP 정규화 편차 합 최소 우선 · 미측정 항목은 점수에서 제외',...assess(g)})),elapsed_ms:performance.now()-started,scope:'LOT별 분리 편성. LOT 미확인 행은 동일 배치 내 시험 비교이며 현장 적합성 미확인. 동일 적격 셀 집합 비교. 사용·잔여 셀 차이 포함. 학습·생산 불량률·전역 최적성 검증 아님.'};
 }

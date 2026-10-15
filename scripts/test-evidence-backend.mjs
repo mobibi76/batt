@@ -55,6 +55,9 @@ try{
  const loadRows=Array.from({length:500},(_,i)=>({...rows[0],id:`${prefix}-LOAD-${i}`,row_no:i+1,lot:'LOAD',resistance_mohm:.42,capacity_mah:25000+i%100}));
  const loadBatch=await rpc(operator,'register_intake',{payload:{name:prefix+'-load.csv',hash:randomUUID().replaceAll('-','').repeat(2),source_kind:'synthetic',mapping_version:'load-test-v1',rows:loadRows},note:'Disposable 500-row bound test'});
  const load=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:loadBatch}}));assert.equal(load.result.input_count,500);assert.equal(load.result.recommended.groups.length,62);
+ const workspace=await rpc(operator,'read_workbench',{known_revision:null});assert.equal(workspace.profile.id,users[0]);assert.equal(workspace.members.length,0);assert.ok(workspace.packs.some(p=>p.id===pack&&p.pack_cells.length===8));
+ const unchanged=await rpc(operator,'read_workbench',{known_revision:workspace.revision});assert.equal(unchanged.changed,false);assert.equal(unchanged.cells,undefined);
+ console.log('PASS: deployed coherent workspace snapshot and unchanged-poll response');
  console.log('PASS: 500-row deployed Edge calculation; elapsed_ms='+Math.round(load.result.elapsed_ms)+' (elapsed, not CPU time)');
  console.log('PASS: deployed batch/standard Edge calculations, missing SOP block, stored runs, retest, pack lineage, independent approval and supersession');
 }catch(error){console.error('FAIL:',error.message);process.exitCode=1;}

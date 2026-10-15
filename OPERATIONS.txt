@@ -50,3 +50,17 @@ DB 백업에는 Storage 파일 바이너리가 포함되지 않는다. 파일 �
 실제 Supabase 백업 가용성 확인·전체 복원 훈련·백업 보존기간·RPO/RTO 합의는 미완료로 남긴다.
 고객 SOP·LOT 혼합 규칙·시험조건 확정 및 실제 사용자 검수도 별도 확인이 필요하다.
 이 항목을 소프트웨어 자동 테스트 통과로 대체하지 않는다.
+
+7. 구조 안정화 버전 배포
+DB 202610150005_workspace_snapshot / 202610150006_sop_contract를 먼저 적용한 후
+match-cells 및 analyze-batch Edge 함수를 배포하고 마지막에 웹을 배포한다.
+추가 DB API는 이전 웹과 호환된다. 웹 복구 기준은 237ced6이며 이전 웹으로 되돌릴 때 기존 기록을 되돌리지 않는다.
+SOP 계약 v1의 값은 변경하지 않는다. 새 기준은 버전 추가와 SQL/계산 계약 일치 시험을 요구한다.
+
+공개 접속 설정:
+- 빌드: VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, APP_BASE_PATH(기본 /batt/).
+- 배포 후: runtime-config.js의 window.JSI_CONFIG.supabaseUrl/publishableKey를 설정하면 빌드값보다 우선한다.
+- 루트 경로 서비스는 APP_BASE_PATH=/ 로 빌드한다.
+- 두 Edge 함수의 APP_ORIGIN은 새 웹 출처로 지정한다. Auth URL/redirect 설정도 별도로 맞춘다.
+- runtime-config.js는 공개 파일이다. service_role 등 비밀키를 넣지 않는다.
+이는 웹 환경 종속성 분리이며 전체 Supabase Docker 이관·복원 시험을 대체하지 않는다.

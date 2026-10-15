@@ -3,6 +3,7 @@ import {PGlite} from '@electric-sql/pglite';
 import {readFile,readdir} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {analyzeEvidence} from '../supabase/functions/_shared/evidence.ts';
+import {SOP} from '../supabase/functions/_shared/sop.ts';
 import {matchCells} from '../supabase/functions/_shared/matching.ts';
 const db=new PGlite();
 try {
@@ -24,6 +25,7 @@ try {
   if(sql.includes('public.review_evidence_group(')){sql=sql.replace('review_evidence_group($1,$2,$3,$4)','review_evidence_group_checked($1,$2,$3,$4,$5)');params=[...params,(await db.query('select revision from public.intake_batches where id=$1',[params[0]])).rows[0].revision];}
   if(sql.includes('approve_recorded_pack($1,$2,$3)'))sql=sql.replace('approve_recorded_pack($1,$2,$3)',"approve_recorded_pack($1,$2,$3,'fixture review')");
   const r=await db.query(sql,params);return Object.values(r.rows[0]||{})[0];};
+ assert.deepEqual(await q('select public.sop_v1()'),{version:SOP.version,cellCount:SOP.cellCount,limits:SOP.limits});
  const rows=Array.from({length:16},(_,i)=>({row_no:i+3,id:`TEST-${i}`,channel:String(i),voltage_mv:3300,resistance_mohm:null,capacity_mah:25000+i,measured_at:null,issues:['missing resistance'],state:'ready'}));
  const payload={name:'synthetic.csv',hash:'a'.repeat(64),source_kind:'synthetic',mapping_version:'test-v1',rows};
  await identity(ids.pending);
@@ -98,6 +100,12 @@ try {
  assert.equal(await q("select count(*) from cells where lot='MULTI' and status='held'"),8);
  await identity(ids.reviewer);await assert.rejects(()=>q('select public.inventory_review_targets($1)',[multiRows.map(c=>c.id)]),/권한/);await identity(ids.operator);
  assert.deepEqual(await q("select snapshot->'decision_context' from quality_requests where id=$1",[request]),snapshot.decision_context);
+ const firstSnapshot=await q('select public.read_workbench(null)');assert.ok(firstSnapshot.changed);assert.equal(firstSnapshot.cells.length,Number(await q('select count(*) from cells')));assert.equal(firstSnapshot.members.length,0);
+ const unchanged=await q('select public.read_workbench($1)',[firstSnapshot.revision]);assert.equal(unchanged.changed,false);assert.equal(unchanged.cells,undefined);
+ await q("select public.record_inspection($1,'final','pass','snapshot version test','test')",[pack]);
+ const refreshed=await q('select public.read_workbench($1)',[firstSnapshot.revision]);assert.equal(refreshed.changed,true);assert.ok(refreshed.revision>firstSnapshot.revision);assert.equal(refreshed.packs.find(p=>p.id===pack).pack_cells.length,8);
+ await identity(ids.pending);const denied=await q('select public.read_workbench(null)');assert.equal(denied.cells.length,0);assert.equal(denied.members.length,0);await identity(ids.admin);assert.equal((await q('select public.read_workbench(null)')).members.length,4);await identity(ids.operator);
+ console.log('PASS: consistent workspace snapshot, unchanged poll, invalidation and membership isolation');
  console.log('PASS: multi-batch retest, reviewer decision context, actor attribution and immutable approval evidence');
  console.log('PASS: unified standard upload, retained raw rows, inventory remeasurement and stale standard run rejection');
  console.log('PASS: permissions, immutable raw data, missing SOP, stale runs, retest, pack provenance, duplicate use, independent approval and supersession');

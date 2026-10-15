@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { matchCells } from '../_shared/matching.ts';
-const cors={'Access-Control-Allow-Origin':'https://mobibi76.github.io','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin'};
+const cors={'Access-Control-Allow-Origin':Deno.env.get('APP_ORIGIN')||'https://mobibi76.github.io','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin'};
 Deno.serve(async (req: Request)=>{
   const headers={...cors,'Content-Type':'application/json'};
   const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers});

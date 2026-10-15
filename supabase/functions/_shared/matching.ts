@@ -1,8 +1,9 @@
+import {SOP} from './sop.ts';
 export type Cell = { source_kind?:string; source_batch_id?:string;  id: string; lot: string; voltage_mv: number; resistance_mohm: number; capacity_mah: number; status: string; measured_at: string };
 export type Group = { run_id?:string; cell_ids: string[]; spreads: Record<string, number>; score: number; sop_version: string };
-const dimensions = ['voltage_mv', 'resistance_mohm', 'capacity_mah'] as const;
-const limits = [10, 0.01, 500];
-const scales = [1000, 100000, 1000];
+const dimensions = SOP.dimensions;
+const limits = dimensions.map(k=>SOP.limits[k]);
+const scales = SOP.scales;
 function ticks(c: Cell, d: number) { return Math.round(c[dimensions[d]] * scales[d]); }
 export function spreads(group: Cell[]) {
   return Object.fromEntries(dimensions.map((k,d) => [k, (Math.max(...group.map(c=>ticks(c,d)))-Math.min(...group.map(c=>ticks(c,d))))/scales[d]]));
@@ -40,7 +41,7 @@ export function matchCells(input: Cell[], count=3) {
     }
     if(!best) break;
     const ids=best.map(c=>c.id);
-    groups.push({cell_ids:ids,spreads:spreads(best),score:Math.round((1-bestCost/3)*100),sop_version:'JSI-SOP-v1'});
+    groups.push({cell_ids:ids,spreads:spreads(best),score:Math.round((1-bestCost/3)*100),sop_version:SOP.version});
     remaining=remaining.filter(c=>!ids.includes(c.id));
   }
   return {groups,remaining:remaining.length,method:'multi-order-greedy-v2',message:groups.length ? 'SOP 적합 추천 조합입니다. 전체 재고의 전역 최적해를 보장하지 않습니다.' : '탐색 범위에서 조합을 찾지 못했습니다. 조합이 불가능하다는 의미는 아닙니다.'};

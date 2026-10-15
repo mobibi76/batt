@@ -8,6 +8,7 @@ test('server run revision cannot be relabelled with the open batch revision',asy
  await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',async route=>{
   const u=new URL(route.request().url()),path=u.pathname;
   if(path.endsWith('/profiles'))return route.fulfill({json:{id:actor,display_name:'작업자',role:'operator',status:'approved',process_stages:['assembly']}});
+  if(path.endsWith('/read_workbench'))return route.fulfill({json:{profile:{id:actor,display_name:'작업자',role:'operator',status:'approved',process_stages:['assembly']},changed:true,revision:1,cells:[],packs:[],tests:[],members:[]}});
   if(path.endsWith('/intake_batches'))return route.fulfill({json:u.searchParams.get('id')?batch:[batch]});
   if(path.endsWith('/analyze-batch'))return route.fulfill({json:{id:'server-run',batch_revision:2,created_at:'2026-10-15T01:00:00Z',result:{input_count:1,eligible_count:1,qc:[],alternatives:[],recommended:{groups:[],unused:['SINGLE'],used:0,mean_capacity_spread:null},sequence:{groups:[],unused:['SINGLE'],used:0,mean_capacity_spread:null},scope:'synthetic',elapsed_ms:1}}});
   return route.fulfill({json:[]});
@@ -24,6 +25,7 @@ test('independent reviewer reads frozen matching and retest reasons without admi
  await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',async route=>{
   const u=new URL(route.request().url()),path=u.pathname;
   if(path.endsWith('/profiles'))return route.fulfill({json:{id:actor,display_name:'승인권자',role:'operator',status:'approved',quality_reviewer:true,process_stages:[]}});
+  if(path.endsWith('/read_workbench'))return route.fulfill({json:{profile:{id:actor,display_name:'승인권자',role:'operator',status:'approved',quality_reviewer:true,process_stages:[]},changed:true,revision:1,cells:[],packs:[pack],tests:[],members:[]}});
   if(path.endsWith('/packs'))return route.fulfill({json:[pack]});
   if(path.endsWith('/quality_requests'))return route.fulfill({json:u.searchParams.get('id')?request:[request],headers:{'content-range':'0-0/1'}});
   return route.fulfill({json:[]});

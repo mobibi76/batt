@@ -1,5 +1,6 @@
 import SeversonExplorer from './research/SeversonExplorer';
 import PretrainedExplorer from './research/PretrainedExplorer';
+import DataValidation from './research/DataValidation';
 import { ChoiceChips } from './ChoiceChips';
 import TaskSteps from './TaskSteps';
 ﻿import { useEffect, useRef, useState } from 'react';
@@ -50,6 +51,7 @@ export default function ResearchLab({userId,demo=false,canSave=false}:{userId:st
    <div className="research-body"><details><summary>조합별 셀 ID·적합 여부 확인 (첫 번째 반복)</summary>{report.results.flatMap(g=>g.results.map(r=><div key={g.cohort+r.algorithm}><h3>{g.cohort} · {algorithmNames[r.algorithm]}</h3>{r.trials[0].groups.length?r.trials[0].groups.map((p,i)=><p key={i}>{p.accepted?'적합':'조건 미충족'} · {p.ids.join(', ')}</p>):<p>탐색 범위에서 적합 조합을 찾지 못했습니다.</p>}</div>))}</details><p className="research-hash">데이터 SHA-256: {report.dataset_sha256}</p><p>적합은 연구용 편차 충족이며 실제 팩 검사 합격이 아닙니다. UConn Batch 3은 8셀로 조합 선택의 여지가 없습니다. 브라우저 성능에 따라 실행시간은 달라지며 탐색 방식은 전역 최적해나 불량률 감소를 보장하지 않습니다.</p></div>
   </section>}
   <section className="panel"><div className="section-head"><div><h2>4. 운영 적용 검토</h2><p>현재 단계: 현장 검증 필요 · 운영 알고리즘 미변경</p></div></div><div className="research-body"><p>보고서에는 원본 표본·출처·데이터 해시·알고리즘 버전·조건·조합별 결과가 포함됩니다. 이 결과를 근거로 다음 항목을 검증한 뒤 운영 후보를 결정합니다.</p><ul>{blockers.map(b=><li key={b}>{b}</li>)}</ul></div></section>
+  <section className="panel data-validation-panel" data-step="데이터 검증"><div className="section-head"><div><h2>데이터 검증</h2></div></div><DataValidation/></section>
   <section className="panel" data-step="공개 모델 추론"><div className="section-head"><div><h2>공개 모델 추론</h2><p>UConn 기존 학습 모델 · 용량 추정 재생</p></div></div><PretrainedExplorer/></section>
   <section className="panel" data-step="Severson 열화 이력"><div className="section-head"><div><h2>Severson 열화 이력</h2><p>공식 실측 요약 관찰 · UConn 조합 비교와 별도</p></div></div><SeversonExplorer/></section>
   <section className="panel"><div className="section-head"><div><h2>최근 실험</h2><p>{demo?'체험 기록은 현재 브라우저에 최대 10건 보관합니다.':'서버에 저장된 본인의 최근 실행 기록 10건을 표시합니다. 조회 권한은 새 실행을 저장하지 않습니다.'}</p></div></div><div className="research-body">{!history.length?<p>아직 실행한 실험이 없습니다.</p>:<div className="research-history">{history.map(r=><button className="secondary" key={r.id} onClick={()=>{setDataset(r.dataset);setLimits({...r.limits});setSeed(r.seed);setCohort('all');setReport(r);setError('');}} disabled={busy}>{new Date(r.created_at).toLocaleString('ko-KR')} · {r.dataset.title} · 시드 {r.seed}</button>)}</div>}</div></section>

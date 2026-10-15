@@ -4,6 +4,8 @@
 
 ## 탑재한 실측 자료
 
+`데이터 검증`은 Severson의 10·100사이클 수명 회귀 입력 요건과 사용자 CSV의 스키마·품질·시험 조건을 비교한다. [검사 규칙·범위·검수](DATA-VALIDATION.md)를 참고한다. 이 기능은 브라우저 검사·보고서 다운로드만 수행하며 아래 조합 비교의 서버 저장/최근 실험 대상에 포함되지 않는다.
+
 - 원본: Li, Tingkai et al. (2025), **UConn-MathWorks LFP/Gr Second-Life Battery Aging Dataset**, https://digitalcommons.lib.uconn.edu/reil_datasets/3/ — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 - 전처리 자료: Navidi, Sina et al. (2026), **SOC-agnostic rapid state-of-health estimation of lithium-ion batteries**, DOI https://doi.org/10.1016/j.apenergy.2026.128451.
 - 공식 연구진 저장소: https://github.com/REIL-UConn/SOC-Agnostic-Rapid-State-of-Health-Estimation-of-Lithium-Ion-Batteries — MIT 라이선스(이용허락 명칭이며 MIT 대학 데이터라는 의미가 아님); 저작권 및 허가문은 `public/research/UCONN-PROCESSED-LICENSE.txt`에 보존.

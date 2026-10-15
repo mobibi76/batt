@@ -1741,6 +1741,16 @@ td,th {
 .inline-icon-label { display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--space-5); overflow-wrap: anywhere; }
 .inline-icon-label > svg { flex-shrink: 0; }
 .severson-summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-12); }
+.severson-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,2fr); gap: var(--space-16); align-items: start; }
+.severson-selector, .severson-observation { min-width: 0; }
+.severson-picker-toggle { display: none; }
+@media(max-width:900px) {
+  .severson-layout { grid-template-columns: minmax(0,1fr); }
+  .severson-picker-toggle { display: inline-flex; margin-bottom: var(--space-12); }
+  .severson-selector { display: none; }
+  .severson-picker-open .severson-selector { display: block; }
+  .severson-picker-open .severson-observation { display: none; }
+}
 .severson-chart { display: block; width: 100%; height: auto; color: var(--color-ink-secondary); }
 .severson-chart text { fill: currentColor; font-family: inherit; font-size: var(--font-size-12); }
 .severson-axis { stroke: var(--color-border); }

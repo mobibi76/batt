@@ -14,5 +14,10 @@ test('Severson capacity records retain continuation provenance and remain separa
  const report=JSON.parse(Buffer.concat(chunks).toString('utf8').replace(/^\ufeff/,''));
  expect(report.record.continuation_of).toBeTruthy();expect(report.record.capacity_mah.length).toBeGreaterThan(2);expect(report.record.voltage_mv).toBeUndefined();expect(report.scope).toContain('생산 적용 아님');expect(report.files.length).toBe(6);
  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await expect(panel.getByRole('img')).toBeVisible();
+ await panel.getByRole('button',{name:'시험 선택',exact:true}).click();
+ await expect(panel.getByRole('img')).toBeHidden();
+ await panel.getByRole('radio',{name:/이어 측정/}).nth(1).check();
+ await expect(panel.getByRole('img')).toBeVisible();
  await step(page,'1. 연구 데이터');await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();await expect(page.locator('.research-dataset')).toContainText('55셀');
 });

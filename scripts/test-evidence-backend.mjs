@@ -4,6 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {createClient} from '@supabase/supabase-js';
+import {parseWorkspaceSnapshot} from '../src/data/workspaceSnapshot.ts';
 const ref='asfrsorbzmqhnwnxlxar',url=`https://${ref}.supabase.co`;
 let keys;try{keys=JSON.parse(execFileSync('cmd.exe',['/d','/s','/c',`node_modules\\.bin\\supabase.cmd projects api-keys --project-ref ${ref} --output json`],{encoding:'utf8',stdio:['pipe','pipe','pipe']}));}catch{throw Error('Cannot read deployment test credentials');}
 const options={auth:{persistSession:false,autoRefreshToken:false}};
@@ -56,7 +57,8 @@ try{
  const loadBatch=await rpc(operator,'register_intake',{payload:{name:prefix+'-load.csv',hash:randomUUID().replaceAll('-','').repeat(2),source_kind:'synthetic',mapping_version:'load-test-v1',rows:loadRows},note:'Disposable 500-row bound test'});
  const load=ok(await operator.functions.invoke('analyze-batch',{body:{batch_id:loadBatch}}));assert.equal(load.result.input_count,500);assert.equal(load.result.recommended.groups.length,62);
  const workspace=await rpc(operator,'read_workbench',{known_revision:null});assert.equal(workspace.profile.id,users[0]);assert.equal(workspace.members.length,0);assert.ok(workspace.packs.some(p=>p.id===pack&&p.pack_cells.length===8));
- const unchanged=await rpc(operator,'read_workbench',{known_revision:workspace.revision});assert.equal(unchanged.changed,false);assert.equal(unchanged.cells,undefined);
+ parseWorkspaceSnapshot(workspace,users[0],null);
+ const unchanged=await rpc(operator,'read_workbench',{known_revision:workspace.revision});assert.equal(unchanged.changed,false);assert.equal(unchanged.cells,undefined);parseWorkspaceSnapshot(unchanged,users[0],workspace.revision);
  console.log('PASS: deployed coherent workspace snapshot and unchanged-poll response');
  console.log('PASS: 500-row deployed Edge calculation; elapsed_ms='+Math.round(load.result.elapsed_ms)+' (elapsed, not CPU time)');
  console.log('PASS: deployed batch/standard Edge calculations, missing SOP block, stored runs, retest, pack lineage, independent approval and supersession');

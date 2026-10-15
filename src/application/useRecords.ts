@@ -18,8 +18,12 @@ export default function useRecords(owner: string | undefined, demo: boolean, onE
             return;
         }
         const signal = controller.current!.signal;
+        const request = new AbortController();
+        const cancel = () => request.abort();
+        signal.addEventListener('abort',cancel,{once:true});
+        const timeout = setTimeout(()=>request.abort(),10000);
         const work = (async () => { try {
-            const data = await readRecords(owner, signal, snapshotVersion.current);
+            const data = await readRecords(owner, request.signal, snapshotVersion.current);
             if (signal.aborted || !active.current)
                 return;
             setProfile(data.profile);
@@ -38,10 +42,10 @@ export default function useRecords(owner: string | undefined, demo: boolean, onE
             if (signal.aborted || !active.current)
                 return;
             setSyncError(true);
-            errorHandler.current((e as {
+            errorHandler.current(request.signal.aborted?'조회가 10초 안에 완료되지 않았습니다. 자동으로 다시 확인합니다.':(e as {
                 message: string;
             }).message || '조회 실패');
-        } })();
+        } finally {clearTimeout(timeout);signal.removeEventListener('abort',cancel);} })();
         pending.current = work;
         try {
             await work;

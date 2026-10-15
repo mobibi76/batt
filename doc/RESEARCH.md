@@ -1,12 +1,12 @@
 ﻿# 공개 데이터 알고리즘 검증 모드
 
-운영 셀·팩·검사 DB에 쓰지 않는 브라우저 연구 공간이다. 승인된 사용자(관리자/작업자/조회자)와 합성 데이터 체험 사용자가 접근할 수 있다. 사용자는 자료를 고르고 연구용 허용 편차와 시드를 정한 뒤 알고리즘을 비교한다. 최근 10개 보고서는 사용자 ID별 브라우저 localStorage에 보관한다. 다른 PC와 동기화하지 않으며 브라우저 저장소를 지우면 사라진다. JSON 내려받기로 원본 표본과 결과를 보존할 수 있다.
+운영 셀·팩·검사 DB에 쓰지 않는 브라우저 연구 공간이다. 승인된 사용자(관리자/작업자/조회자)와 합성 데이터 체험 사용자가 접근할 수 있다. 사용자는 자료를 고르고 연구용 허용 편차와 시드를 정한 뒤 알고리즘을 비교한다. 체험 보고서는 사용자 ID별 브라우저 localStorage에 최근 10개를 보관하며 다른 PC와 동기화하지 않는다. 실제 로그인 사용자는 권한에 따라 서버에 실행 보고서를 저장하고 본인의 최근 10개를 조회한다. 조회 권한은 새 실행을 서버에 저장하지 않는다. JSON 내려받기로 원본 표본과 결과를 보존할 수 있다.
 
 ## 탑재한 실측 자료
 
 - 원본: Li, Tingkai et al. (2025), **UConn-MathWorks LFP/Gr Second-Life Battery Aging Dataset**, https://digitalcommons.lib.uconn.edu/reil_datasets/3/ — CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
 - 전처리 자료: Navidi, Sina et al. (2026), **SOC-agnostic rapid state-of-health estimation of lithium-ion batteries**, DOI https://doi.org/10.1016/j.apenergy.2026.128451.
-- 공식 연구진 저장소: https://github.com/REIL-UConn/SOC-Agnostic-Rapid-State-of-Health-Estimation-of-Lithium-Ion-Batteries — MIT; 저작권 및 허가문은 `public/research/UCONN-PROCESSED-LICENSE.txt`에 보존.
+- 공식 연구진 저장소: https://github.com/REIL-UConn/SOC-Agnostic-Rapid-State-of-Health-Estimation-of-Lithium-Ion-Batteries — MIT 라이선스(이용허락 명칭이며 MIT 대학 데이터라는 의미가 아님); 저작권 및 허가문은 `public/research/UCONN-PROCESSED-LICENSE.txt`에 보존.
 - 원본 대학 다운로드가 403을 반환하여 연구진의 공개 `data/ecm_stat_features.zip` 수치 CSV를 사용했다. 원본 논문의 모델 코드는 실행하거나 복제하지 않았다.
 - 제공 자료 전체 108셀과 이번 표본을 구분한다. 이번 버전은 Batch 1–3, RPT=0, SOC 45–55%에서 배치/셀당 SOC 50%에 가장 가까운 펄스 하나만 선택한 **55셀(23/24/8)**이다. Batch 4–5는 전처리 조건 차이가 있어 포함하지 않는다.
 - 전압: `V_meas_str`의 첫 샘플 ×1000 (mV). 원본 전처리상 펄스 직전 전압.
@@ -42,8 +42,14 @@ node scripts/fetch_uconn.mjs
 
 검증 CSV: `id,cohort,voltage_mv,resistance_mohm,capacity_mah,soc_pct` (SOC 선택). 8–300개 독립 셀, 2MB 이하. 출처·라이선스·측정 조건을 입력해야 한다. 단위·물리 셀의 동일성·cohort 비교 가능성은 원자료와 대조해야 한다. 사용자 CSV는 출처가 독립 검증된 데이터로 표시하지 않는다.
 
-Severson은 동일 측정 시점과 조건의 셀별 요약을 전처리하여 이 스키마로 가져올 수 있다. 아직 원본을 탑재한 것은 아니다. 24V 8직렬 실사용 데이터와 AI Hub 결함 이미지는 다른 연구 과제(시계열 이상탐지·영상 검사)이며 이 조합 엔진에는 연결하지 않았다.
+Severson 데이터는 활용 후보이며 현재 미탑재다. 전용 다운로드·전처리·연결은 미구현이다. 초기 구현 기록에는 관련성이 없거나 불필요하여 제외했다는 판단이 없다. 필요한 전압·저항·용량의 존재와 측정 시점·조건을 확인한 후 연구 CSV로 변환해야 한다. 수명·열화 연구와 관련성이 있지만 현장 팩 불량 라벨을 대신하지 않는다. 원 논문: https://www.nature.com/articles/s41560-019-0356-8 . 24V 8직렬 실사용 데이터와 AI Hub 결함 이미지는 다른 연구 과제(시계열 이상탐지·영상 검사)이며 이 조합 엔진에는 연결하지 않았다.
 
 보고서는 입력 전체와 데이터 SHA-256, 소스 버전, 엔진 버전, 조건, 시드, 반복별 조합·편차·판정·시간을 포함한다. 운영 적용은 현장 독립 LOT 비교, 실제 팩 검사 라벨, 측정법과 제품 규격의 적합성, 운영 서버 SOP 재검증을 거쳐 별도 변경으로 진행한다. 검증 모드의 버튼으로 운영 알고리즘을 바꾸지 않는다.
 
 검증: `npm test` 및 `npm run test:e2e`. 재현성, 셀 중복 방지, 조건 상한, 다른 배치의 혼합 차단, 잘못된 입력 차단, 파일 내보내기와 이력 복구, 운영 지표 격리를 포함한다.
+
+## 2026-10-15 재확인
+
+현재 기본 제공 공개 표본은 UConn 전처리 자료 기반 55셀뿐이다. 연구진 CSV에서 재추출한 내용과 앱 표본이 일치함을 확인했다. 대학 원시 계측부터 전처리 전체를 재현했다는 뜻은 아니다. 같은 배치라도 SOC·시험 그룹이 다르고 온도 정보가 없어 조건의 완전한 일치를 보장하지 않는다.
+
+기본 연구 상한 10mV / 5mΩ / 60mAh에서 각 배치 전체 편차가 상한보다 작아 모든 8셀 조합이 통과한다. 기본 시드 20261014와 이어지는 4개 시드에서 세 알고리즘 모두 배치별 2/3/1개 조합이 적합하다. 적합률만으로 우열을 주장할 수 없으며 미배정 셀·개별 편차를 함께 비교해야 한다. Batch 3은 8셀뿐이라 조합 선택의 여지가 없다. 적합 판정은 연구용 편차 충족이며 실제 팩 검사 합격이 아니다.

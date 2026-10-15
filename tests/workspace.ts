@@ -1,5 +1,7 @@
 import type {Page} from '@playwright/test';
 export async function step(page:Page,name:string){
+ const purpose=name==='데이터 검증'?'데이터 준비 검증':['공개 모델 추론','Severson 열화 이력'].includes(name)?'연구 모델·열화 관찰':/^\d\.|최근 실험/.test(name)?'조합 비교':null;
+ if(purpose&&await page.getByRole('navigation',{name:'업무 목적'}).isVisible())await page.getByRole('navigation',{name:'업무 목적'}).getByRole('button',{name:purpose,exact:true}).click();
  const tools=page.getByRole('button',{name:'작업 도구',exact:true});
  if(await tools.isVisible())await tools.click();
  const nav=page.locator('.visible-task-tabs:visible').last();

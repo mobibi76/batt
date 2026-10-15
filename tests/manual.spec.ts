@@ -1,3 +1,4 @@
+import {prepareInspection} from './inspection';
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 test('requested help preserves login input and DOCS shares scenarios, search and print',async({page})=>{
@@ -26,7 +27,7 @@ test('manual links open without production data access',async({page})=>{await pa
 test('inspection guidance preserves an unsaved memo and does not submit it',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('HELP-DRAFT');await page.getByLabel('조합 검토 사유',{exact:true}).fill('안내 상태 보존 검증');
  await page.getByRole('button',{name:'사용 안내',exact:true}).click();await page.keyboard.press('Escape');await expect(page.getByLabel('팩 일련번호')).toHaveValue('HELP-DRAFT');
- await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();await page.getByRole('button',{name:'판단 화면으로'}).click();await page.getByRole('button',{name:'검사 확인·기록'}).click();await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await page.getByRole('textbox',{name:'검사 메모',exact:true}).fill('저장하지 않은 관찰 내용');await page.setViewportSize({width:320,height:480});
+ await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();await page.getByRole('button',{name:'판단 화면으로'}).click();await page.getByRole('button',{name:'검사 확인·기록'}).click();await prepareInspection(page);await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await prepareInspection(page,true);await page.getByRole('textbox',{name:'검사 메모',exact:true}).fill('저장하지 않은 관찰 내용');await page.setViewportSize({width:320,height:480});
  await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('#manual-title')).toContainText('현장 검사');await page.screenshot({path:'.local/manual-small.png'});await page.getByRole('button',{name:'업무로 돌아가기'}).click();await expect(page.getByRole('textbox',{name:'검사 메모',exact:true})).toHaveValue('저장하지 않은 관찰 내용');await expect(page.getByRole('button',{name:'검사 결과 저장',exact:true})).toBeVisible();
 });
 

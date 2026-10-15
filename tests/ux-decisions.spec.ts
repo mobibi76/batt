@@ -1,0 +1,24 @@
+import {test,expect,type Page} from '@playwright/test';
+import {navigate,step} from './workspace';
+import {prepareInspection} from './inspection';
+async function demo(page:Page){await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();}
+async function create(page:Page){await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합 1');await page.getByRole('button',{name:'조합 검토 · 확정'}).click();await page.getByLabel('팩 일련번호').fill('UX-REVIEW');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 업무 검토');await page.getByRole('button',{name:'확인 및 팩 구성'}).click();}
+
+test('operational inspection requires explicit evidence and verdict, and retains a failed save',async({page})=>{
+ const id='11111111-1111-4111-8111-111111111111',profile={id,role:'operator',status:'approved',display_name:'합성 최종검사 담당',process_stages:['final']};
+ const pack={id:'ux-pack',serial_no:'UX-OPERATION',source_kind:'synthetic',created_at:'2026-10-16T00:00:00Z',pack_cells:Array.from({length:8},(_,i)=>({cell_id:'C'+i,position:i}))};
+ await page.addInitScript(id=>localStorage.setItem('sb-asfrsorbzmqhnwnxlxar-auth-token',JSON.stringify({access_token:'test-only',refresh_token:'test-only',expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user:{id,aud:'authenticated',role:'authenticated'}})),id);
+ await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',r=>{const path=new URL(r.request().url()).pathname;if(path.endsWith('/profiles'))return r.fulfill({json:profile});if(path.endsWith('/read_workbench'))return r.fulfill({json:{profile,changed:true,revision:1,cells:[],packs:[pack],tests:[{id:'aging',pack_id:pack.id,kind:'aging',result:'pass',evidence_kind:'test',created_at:'2026-10-16T01:00:00Z'}],members:[]}});if(path.endsWith('/record_inspection'))return r.fulfill({status:400,json:{message:'synthetic connection failure'}});return r.fulfill({json:[]});});
+ await page.goto('/batt/');await page.getByRole('button',{name:'검사 확인·기록'}).click();const next=page.getByRole('button',{name:'검사 메모·저장으로'});await expect(next).toBeDisabled();
+ await expect(page.getByRole('radiogroup',{name:'판정',exact:true}).locator('input:checked')).toHaveCount(0);await expect(page.getByRole('radiogroup',{name:'현장 검사 근거'}).locator('input:checked')).toHaveCount(0);
+ await page.getByRole('radio',{name:'합격',exact:true}).check();await expect(next).toBeDisabled();await page.getByRole('radio',{name:'시험 검사',exact:true}).check();await next.click();await page.getByRole('textbox',{name:'검사 메모',exact:true}).fill('보존할 시험 관찰');await page.getByRole('button',{name:'검사 결과 저장'}).click();await expect(page.getByRole('alert')).toContainText('입력 유지');await expect(page.getByRole('textbox',{name:'검사 메모',exact:true})).toHaveValue('보존할 시험 관찰');
+});
+
+test('field and pack history use the same explicit inspection editor',async({page})=>{
+ await demo(page);await create(page);await page.getByRole('button',{name:'이 팩 검사로 이어가기'}).click();await expect(page.getByRole('button',{name:'검사 메모·저장으로'})).toBeDisabled();await prepareInspection(page,true);await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await expect(page.locator('.inspection-list')).toContainText('합격');await page.getByRole('button',{name:'검사 기록',exact:true}).click();await expect(page.getByRole('button',{name:'검사 메모·저장으로'})).toBeDisabled();await page.getByRole('button',{name:'닫기',exact:true}).click();await page.getByRole('button',{name:'현장',exact:true}).click();await page.getByRole('textbox',{name:'담당 팩 번호 찾기'}).fill('UX-REVIEW');await expect(page.locator('.console-target')).toContainText('UX-REVIEW');await page.getByRole('button',{name:'검사 확인·기록'}).click();await expect(page.getByRole('radio',{name:'최종검사',exact:true})).toBeChecked();await expect(page.getByRole('button',{name:'검사 메모·저장으로'})).toBeDisabled();
+});
+
+test('import then matching keeps candidates readable and uses actual candidate numbers',async({page})=>{
+ await demo(page);await navigate(page,'셀 데이터');await page.locator('.upload-actions input[type=file]').setInputFiles({name:'ux.csv',mimeType:'text/csv',buffer:Buffer.from('id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\nUX-CELL,UX,3300,0.42,30000,2026-10-16T00:00:00Z')});await page.getByRole('button',{name:'전체 1개 등록'}).click();await navigate(page,'셀 매칭');await expect(page.locator('.workflow-continuation')).toHaveCount(0);await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합 1');await expect(page.locator('.candidate:visible')).toContainText('RECOMMENDATION 01');
+ for(const [width,height] of [[1366,768],[390,844]]){await page.setViewportSize({width,height});expect(await page.locator('.task-step-panel:visible').evaluate(e=>e.clientHeight)).toBeGreaterThan(250);await expect(page.getByRole('button',{name:'조합 검토 · 확정'})).toBeInViewport({ratio:1});}await page.screenshot({path:'.local/ux-matching-improved.png'});
+});

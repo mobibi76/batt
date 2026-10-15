@@ -14,14 +14,13 @@ type Props = {
     setTests: Setter<Inspection[]>;
     reload: () => Promise<void>;
     setToast: Setter<string>;
-    selectedPack: Pack | null;
     setContinuation: Setter<{
         kind: 'cells' | 'pack';
         packId?: string;
     } | null>;
     setDemoRequests: Setter<Approval[]>;
 };
-export default function useProductionWorkflow({ demo, cells, setCells, packs, setPacks, setTests, reload, setToast, selectedPack, setContinuation, setDemoRequests }: Props) {
+export default function useProductionWorkflow({ demo, cells, setCells, packs, setPacks, setTests, reload, setToast, setContinuation, setDemoRequests }: Props) {
     const available = cells.filter(c => c.status === 'available');
     const [busy, setBusy] = useState(false), [reviewReason, setReviewReason] = useState('');
     const [uploadSource, setUploadSource] = useState('synthetic');
@@ -82,8 +81,6 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
         await production.inspect(pack.id, kind, result, note, resultKind);
         await reload();
     } if (notify) setToast('검사 결과를 기록했습니다.'); }
-    async function inspect(e: FormEvent<HTMLFormElement>) { e.preventDefault(); if (!selectedPack)
-        return; const f = new FormData(e.currentTarget); await action(() => recordInspection(selectedPack, String(f.get('kind')) as Inspection['kind'], String(f.get('result')) as Inspection['result'], String(f.get('note')), String(f.get('evidence_kind')) as 'measured' | 'test')); }
     async function review(id: string, status: string, role = 'operator') { await action(async () => { await production.reviewMember(id, status, role); await reload(); setToast('사용자 권한을 변경했습니다.'); }); }
-    return { uploadSource, setUploadSource, lot, setLot, count, setCount, groups, setGroups, matchMessage, elapsed, upload, setUpload, approval, setApproval, reviewReason, setReviewReason, busy, action, importUpload, runMatch, approve, recordInspection, inspect, review };
+    return { uploadSource, setUploadSource, lot, setLot, count, setCount, groups, setGroups, matchMessage, elapsed, upload, setUpload, approval, setApproval, reviewReason, setReviewReason, busy, action, importUpload, runMatch, approve, recordInspection, review };
 }

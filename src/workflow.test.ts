@@ -34,3 +34,9 @@ it('reinspection improves the latest rate without erasing first-pass failures',(
  expect(firstPassSummary([pack],tests)).toEqual({tested:1,failed:1,rate:100});expect(qualitySummary([pack],tests).rate).toBe(0);
  expect(firstPassSummary([],tests).rate).toBeNull();expect(qualitySummary([],tests).rate).toBeNull();
 });
+it('metric links retain the latest final result instead of mixing in aging failures',()=>{
+ const agingFail=packSignal(pack,[test('a','aging','fail'),test('f','final','pass')],[]);
+ expect(matchesPack(agingFail,'failed')).toBe(true);expect(matchesPack(agingFail,'final_failed')).toBe(false);expect(matchesPack(agingFail,'final_recorded')).toBe(true);
+ const finalFail=packSignal(pack,[test('f','final','fail')],[]);expect(matchesPack(finalFail,'final_failed')).toBe(true);
+ const retest=packSignal(pack,[test('f','final','fail'),test('r','final','pass','2026-10-02')],[]);expect(matchesPack(retest,'final_failed')).toBe(false);expect(matchesPack(packSignal(pack,[],[]),'final_recorded')).toBe(false);
+});

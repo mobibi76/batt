@@ -54,3 +54,13 @@ button, .file-button, .twin-import, .choice-chip span {
 @media(max-width:899px) {
  .studio-command-bar .studio-commands { flex:0 0 100%; }
 }
+/* Allocate compact footer space by control count so words remain readable. */
+@media(max-width:700px) {
+ .console-footer .console-task-actions { flex:2; }
+ .console-footer .console-task-actions:has(> :nth-child(3)) { flex:3; }
+ .console-footer .console-task-actions:has(> :nth-child(4)) { flex:4; }
+}
+@media(max-width:700px) {
+ .console-footer .console-task-actions button { padding-block:var(--space-4); }
+}
+.studio-command-bar .twin-actions:has(> :nth-child(3)) { flex:3; }

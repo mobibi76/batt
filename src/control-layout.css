@@ -1,5 +1,10 @@
 /* Shared sizing across operational, research, approval and demo screens.
    Text links and icon-only controls retain their semantic compact geometry. */
+/* Prefer spaces between Korean words; only split an oversized token as a fallback. */
+button, .file-button, .twin-import, .choice-chip span {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
 .primary:not(.full), .secondary:not(.full), .small-button {
   width: min(100%, var(--control-width));
   max-width: 100%;

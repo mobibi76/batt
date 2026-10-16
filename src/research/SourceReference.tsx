@@ -13,6 +13,6 @@ export default function SourceReference({id,children}:{id:ReferenceId;children:R
  }catch(e){setError(e instanceof Error?e.message:'보관 자료를 불러오지 못했습니다.');}finally{clearTimeout(timer);setBusy(false);}}
  return <div className="source-reference" data-reference-id={id}><a href={entry.source_url} target="_blank" rel="noreferrer">{children}</a><details><summary>{entry.title} · 앱 내 보관 자료</summary><p>{entry.scope}</p><p>확인일 {archive.verified_on} · {archive.version}</p>{evidence&&<p>{(id==='severson-code'?evidence.code.facts:evidence.paper.facts).join(' ')}</p>}
   <div className="workflow-actions"><button className="secondary" onClick={()=>download(`JSI_출처근거_${id}.json`,JSON.stringify({archive_version:archive.version,verified_on:archive.verified_on,policy:archive.policy,...entry,...(evidence?{evidence}:{})},null,2),'application/json')}>출처·보관 범위 내려받기</button>{entry.assets.map(asset=><button key={asset.path} className="secondary" disabled={busy} onClick={()=>void getAsset(asset)}>{asset.label}</button>)}</div>
-  {error&&<p role="alert">{error} 위 출처 요약은 계속 확인할 수 있습니다.</p>}<p className="muted">외부 사이트에 접속하지 않고 보관 내용을 확인합니다. 파일은 앱 서버에서 받으며 해시를 대조합니다. 보관본이 없는 원문 전체를 복구할 수 있는 기능은 아닙니다.</p>
+  {error&&<p role="alert">{error} 위 출처 요약은 계속 확인할 수 있습니다.</p>}<p className="muted">앱에 보관된 자료를 확인합니다. 파일이 원본과 같은지 검사하며, 보관되지 않은 원문은 제공하지 않습니다.</p>
  </details></div>;
 }

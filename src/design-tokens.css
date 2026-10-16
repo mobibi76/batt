@@ -30,8 +30,8 @@
   --color-ink-secondary: #4c6355;
   --color-ink-muted: #607367;
   --color-ink-faint: #637569;
-  --color-brand: #137b60;
-  --color-brand-hover: #0c684e;
+  --color-brand: var(--color-sidebar-active);
+  --color-brand-hover: var(--color-sidebar);
   --color-sidebar: #102d25;
   --color-surface: #ffffff;
   --color-canvas: #f5f7f5;
@@ -42,7 +42,7 @@
   --color-border-subtle: #edf1e7;
   --color-border-strong: #a4b6a9;
   --color-border-accent: #d4e4c7;
-  --color-focus: #3b8e70;
+  --color-focus: #66816a;
   --color-success-surface: #e9f4eb;
   --color-success-ink: #21653c;
   --color-warning-surface: #f9f1dc;
@@ -56,7 +56,7 @@
   --color-sidebar-faint: #86a28f;
   --color-sidebar-active: #2a4d39;
   --color-sidebar-accent: #b6ce86;
-  --color-chart-line: #16836d;
+  --color-chart-line: var(--color-sidebar-active);
   --color-chart-grid: #e8eeeb;
   --color-chart-label: #52616c;
   --font-body: 'Pretendard Variable', 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
@@ -265,4 +265,23 @@
   --twin-viewport-height: 490px;
   --twin-viewport-mobile-height: 360px;
   --twin-card-min-width: 155px;
+}
+
+/* Keep the established login artwork and palette independent of workbench accents. */
+.auth-page {
+  --color-ink-secondary: #6f8064;
+  --color-ink-muted: #8b988e;
+  --color-ink-faint: #a1ad96;
+  --color-brand: #137b60;
+  --color-brand-hover: #0c684e;
+  --color-border: #e4eae5;
+  --color-border-strong: #dce4de;
+  --color-focus: #83cbb1;
+  --color-success-ink: #438357;
+  --color-warning-ink: #9c7b32;
+  --color-danger-ink: #b35f4e;
+  --color-neutral-ink: #7c887f;
+  --color-chart-line: #16836d;
+  --color-chart-label: #82908a;
+  color:var(--color-ink);
 }

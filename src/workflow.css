@@ -35,3 +35,12 @@
 .data-freshness.stale { background:var(--color-warning-surface); color:var(--color-warning-ink); }
 .quality-priorities .outcome-card { padding:var(--space-16); }
 .quality-priorities .outcome-card h2 { margin-top:0; }
+
+.pack-workspace .workflow-filter { display:grid; gap:var(--space-12); }
+.pack-filter-summary { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-8); }
+.pack-result-count { margin-left:auto; white-space:nowrap; font-weight:var(--weight-semibold); }
+.pack-workspace .choice-field { width:100%; min-width:0; }
+.pack-workspace .choice-chips { grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); }
+.pack-workspace .choice-chip span { height:100%; }
+.pack-empty { margin:0; padding:var(--space-22) var(--panel-padding-inline); border-top:1px solid var(--color-border); color:var(--color-ink-secondary); }
+@media(max-width:700px) { .pack-workspace .choice-chips { grid-template-columns:repeat(2,minmax(0,1fr)); } }

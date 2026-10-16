@@ -65,6 +65,24 @@ button, .file-button, .twin-import, .choice-chip span {
 }
 .studio-command-bar .twin-actions:has(> :nth-child(3)) { flex:3; }
 
+/* Filter groups own a row; generic choice sizing must not collapse their parent. */
+.pack-workspace .choice-field .choice-chips { grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr)); }
+.approval-workspace .approval-filters { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); align-items:start; }
+.approval-filters .approval-check { grid-column:1/-1; justify-self:start; }
+.approval-workspace .approval-toolbar { align-items:center; gap:var(--space-12); }
+.approval-toolbar > div:has(> .choice-field) { flex:0 1 420px; }
+.approval-toolbar .choice-field .choice-chips { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.approval-toolbar .choice-field .choice-chip { width:100%; }
+.approval-toolbar .choice-field .choice-chip span { height:100%; }
+@media(max-width:700px) {
+ .pack-workspace .choice-field .choice-chips { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .approval-workspace .approval-filters { grid-template-columns:minmax(0,1fr); }
+ .approval-workspace .approval-toolbar { padding:var(--space-8); }
+ .approval-toolbar > div:has(> .choice-field) { flex-basis:100%; }
+ .approval-toolbar .approval-actions { width:100%; }
+ .approval-toolbar .approval-actions > button { margin-left:auto; }
+}
+
 /* Keep navigation and actions aligned without squeezing their labels. */
 .console-header > .manual-launch { margin-left:auto; }
 .console-pager > span, .choice-pages > span { flex-shrink:0; white-space:nowrap; text-align:center; }
@@ -77,3 +95,12 @@ button, .file-button, .twin-import, .choice-chip span {
  .operations-console .console-footer .console-task-actions:has(> :nth-child(4)) { flex-grow:4; }
  .operations-console .console-footer button { padding-inline:var(--space-4); }
 }
+
+.research-scope summary { cursor:pointer; font-weight:var(--weight-semibold); }
+.research-scope > div { min-width:0; }
+.research-scope details > p { margin-bottom:0; }
+
+.modal > .section-head > h2 { flex:1; min-width:0; }
+.modal > .section-head > .manual-launch { order:1; }
+.modal > .section-head > button:not(.manual-launch) { order:2; }
+.pack-modal-view .inspection-embedded { justify-content:flex-start; padding-top:var(--space-16); }

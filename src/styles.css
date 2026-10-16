@@ -1124,6 +1124,7 @@ textarea {
   padding:var(--space-55) 0
 }
 .auth-copy h1 {
+  color:var(--color-surface-muted);
   font-size:var(--font-size-43);
   line-height:var(--leading-1_45);
   font-weight:var(--weight-medium);
@@ -1267,6 +1268,7 @@ textarea {
   padding-left:12%
 }
 .auth-copy h1 {
+  color:var(--color-surface-muted);
   font-size:var(--font-size-52)
 }
 
@@ -1318,6 +1320,7 @@ td,th {
   padding:var(--space-35)
 }
 .auth-copy h1 {
+  color:var(--color-surface-muted);
   font-size:var(--font-size-36)
 }
 .cell-tiles {

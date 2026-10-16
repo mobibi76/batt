@@ -9,6 +9,7 @@ test('field and control replace content without scrolling across display sizes',
   for(const mode of ['현장','관제']){await page.getByRole('button',{name:mode,exact:true}).click();for(const button of await page.getByRole('navigation',{name:'작업 선택'}).getByRole('button').all()){
    await button.click();expect(await page.evaluate(()=>({x:document.documentElement.scrollWidth<=innerWidth,y:document.documentElement.scrollHeight<=innerHeight}))).toEqual({x:true,y:true});
    expect(await page.locator('.console-content').evaluate(e=>e.scrollHeight<=e.clientHeight+1)).toBe(true);
+   for(const status of await page.locator('.console-pager > span:visible').all())expect(await status.evaluate(e=>getComputedStyle(e).whiteSpace)).toBe('nowrap');
   }}
  }
  await page.getByRole('button',{name:'현장',exact:true}).click();await expect(page.getByRole('button',{name:'최종 품질',exact:true})).toHaveCount(0);

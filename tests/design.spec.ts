@@ -50,3 +50,32 @@ test('login hero stays readable against the brightest green background',async({p
    await expect(process.locator('[aria-pressed=true]')).toHaveCount(0);
   }
  });
+
+for(const width of [1366,390])test('content spacing and gutters at '+width,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ for(const [task,panel,body] of [['품질 리포트','.outcome-review','.workbench-body'],['알고리즘 검증','.research-lab .task-step-panel:visible > .panel','.research-body'],['품질·공정 승인함','.task-step-panel:visible > .panel','.approval-submit']]) {
+  await navigate(page,task);
+  if(task==='품질 리포트')await step(page,'품질 비교');
+  if(task==='품질·공정 승인함')await step(page,'새 검토 요청');
+  const root=page.locator(panel).first(), content=root.locator(body).first();
+  await expect(content).toBeVisible();
+  const spacing=await content.evaluate(el=>{const children=[...el.children].filter(c=>c.getBoundingClientRect().height>0);return children.slice(1).map((c,i)=>c.getBoundingClientRect().top-children[i].getBoundingClientRect().bottom);});
+  for(const gap of spacing)expect(gap).toBeGreaterThanOrEqual(12);
+  const heading=await root.locator('.section-head h2').first().boundingBox();
+  const first=await content.locator(':scope > *').first().boundingBox();
+  expect(Math.abs(heading!.x-first!.x)).toBeLessThanOrEqual(1);
+  await page.screenshot({path:'.local/spacing-'+task+'-'+width+'.png'});
+  const details=content.locator('details').first();
+  if(await details.count()){await details.locator('summary').first().click();await page.screenshot({path:'.local/spacing-open-'+task+'-'+width+'.png'});}
+ }
+ await navigate(page,'알고리즘 검증');await step(page,'2. 비교 조건');
+ if(width===390){const gaps=await page.locator('.research-controls').evaluate(el=>[...el.children].slice(1).map((c,i)=>c.getBoundingClientRect().top-el.children[i].getBoundingClientRect().bottom));for(const gap of gaps)expect(gap).toBeGreaterThanOrEqual(12);}
+ await page.screenshot({path:'.local/spacing-research-form-'+width+'.png'});
+});
+
+test('expanded field reference leaves customer import reachable',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');
+ await page.getByText('실제 공정과 품질 기준 확인 · 2026-10-16',{exact:true}).click();
+ const upload=page.getByRole('button',{name:'고객 측정 파일 가져오기',exact:true});await upload.scrollIntoViewIfNeeded();await expect(upload).toBeInViewport();
+ await page.screenshot({path:'.local/spacing-expanded-evidence-scroll.png'});
+});

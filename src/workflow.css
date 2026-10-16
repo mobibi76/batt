@@ -53,3 +53,15 @@
 .pack-process button small { color:var(--color-ink-secondary); font-size:12px; }
 .operations-console .pack-process button[aria-pressed=true] { border-color:var(--color-brand); background:var(--color-surface-accent); box-shadow:inset 3px 0 var(--color-brand); }
 @media(max-width:700px) { .pack-process ol { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } }
+
+/* Keep comparison controls, results and supporting details on one spacing rhythm. */
+.console-task-body .outcome-review > .section-head { padding:16px; }
+.outcome-review > .workbench-body { display:grid; gap:16px; padding:0 16px 16px; }
+.console-task-body .outcome-review .context-line { margin:0; }
+.outcome-review .outcome-comparison { gap:16px; }
+.outcome-review .outcome-comparison article { padding:16px; }
+.outcome-review .outcome-comparison p { margin:12px 0 0; }
+.outcome-review .progressive { margin:0; border-top:1px solid var(--color-border); }
+.outcome-review .progressive > summary { padding:16px 0 0; }
+.outcome-review .progressive[open] > summary { padding-bottom:16px; margin-bottom:16px; }
+.outcome-review .progressive > p { margin:0 0 16px; }

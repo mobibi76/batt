@@ -7,7 +7,7 @@ export const walkthroughs=captures as Record<string,ManualCapture[]>;
 export default function ManualArticle({scenario,print=false}:{scenario:ManualScenario;print?:boolean}){
  const frames=walkthroughs[scenario.id]||[],guide=guidance[scenario.id];
  return <article className="manual-article"><h2>{scenario.title}</h2>
- <p className="manual-note">화면 예시 · {manualVersion} · 실제 앱을 합성 자료로 조작한 캡처입니다. 고객 측정값·실제 계정은 포함하지 않습니다. 번호는 각 화면마다 1부터 시작합니다.</p>
+ <p className="manual-note">화면 예시 · {manualVersion} · 현재 앱을 가상 업무 자료 또는 공개 연구 자료로 조작한 캡처입니다. 자료 구분은 각 화면에 표시합니다. 고객 측정값·실제 계정은 포함하지 않습니다. 번호는 각 화면마다 1부터 시작합니다.</p>
  <dl className="manual-facts"><div><dt>담당자</dt><dd>{scenario.role}</dd></div><div><dt>시작 조건</dt><dd>{scenario.start}</dd></div>{guide&&<div><dt>진입 위치</dt><dd>{guide.entry}</dd></div>}</dl>
  {!print&&<nav className="manual-outline" aria-label="이 업무의 상세 순서">{frames.map((frame,i)=><button type="button" key={frame.image} onClick={e=>e.currentTarget.closest('article')?.querySelector(`[data-manual-step="${i}"]`)?.scrollIntoView({block:'start'})}>{i+1}. {frame.title}</button>)}</nav>}
  <h3>화면으로 따라 하기</h3>

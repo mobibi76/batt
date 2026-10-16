@@ -66,8 +66,14 @@ jobs:
         with:
           name: verified-build-input
           path: dist
-      - name: Install browser
-        run: npx playwright install --with-deps chrome
+      - name: Use runner Chrome or install if missing
+        timeout-minutes: 3
+        run: |
+          if [ -x /opt/google/chrome/chrome ]; then
+            /opt/google/chrome/chrome --version
+          else
+            npx playwright install --with-deps chrome
+          fi
       - name: Check title and access screens
         if: needs.build.outputs.scope == 'hero'
         run: |

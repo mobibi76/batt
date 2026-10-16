@@ -1,3 +1,4 @@
+import {fieldSteps} from '../process';
 export type Kind = 'scanner' | 'meter' | 'bench' | 'welder' | 'cycler' | 'inspection';
 export type Tag = { key:string; label:string; unit:string; nominal:number; high:number|null };
 export type Device = { id:string; kind:Kind; name:string; model:string; x:number; z:number; rotation:number; cycle:number; tags:Tag[] };
@@ -75,4 +76,12 @@ export function step(l:Layout,old:Simulation,now:string):Simulation {
  }
  if(s.tick%3===1)for(const d of l.devices.filter(d=>d.kind==='scanner'&&!l.links.some(e=>e.to===d.id))){const m=s.machines[d.id];if(m.queue.length<8)m.queue.push(s.nextJob++);}
  s.events=s.events.slice(0,100);return s;
+}
+
+/** Operational process diagram from the meeting; positions are schematic, not surveyed. */
+export function fieldLayout():Layout {
+ const positions=[[-6,-3],[0,-3],[6,-3],[6,3],[0,3],[-6,3]];
+ const shapes:Kind[]=['cycler','bench','bench','meter','bench','inspection'];
+ const devices:Device[]=fieldSteps.map((step,i)=>({id:step.id,kind:shapes[i],name:step.name,model:'주성산업 현행 공정 · 개념 배치',x:positions[i][0],z:positions[i][1],rotation:0,cycle:1,tags:[]}));
+ return {version:1,source:'simulation',devices,links:devices.slice(1).map((d,i)=>({from:devices[i].id,to:d.id}))};
 }

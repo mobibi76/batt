@@ -5,7 +5,7 @@ import {download,number} from './lib';
 
 export function FieldProcessReference(){return <details className="progressive"><summary>실제 공정과 품질 기준 확인 · 2026-10-16</summary>
  <ol>{fieldCriteria.process.map(p=><li key={p}>{p}</li>)}</ol>
- <p>데이터 설비는 충방전·모듈·최종검사 3개입니다. 모듈 검사는 기존 에이징 기록과 별도이며 에이징 합격으로 대체할 수 없습니다.</p>
+ <p>데이터 설비는 충방전·모듈·최종검사 3개입니다. 새 팩은 모듈 검사·케이싱 확인·최종검사 순서로 기록합니다. 기존 에이징 이력은 기존 팩에서 보존합니다.</p>
  <p>PoC 조합: 용량 차 ≤500mAh, OCV 차 ≤10mV. 내부저항은 원자료에 없고 방전평균전압은 저항 실측값이 아닙니다. SOP v2는 사용자 확인에 따라 용량·전압 두 항목을 판정하며 저항은 참고값으로 보존합니다.</p>
  <p>확인 필요: {fieldCriteria.unresolved.join(' / ')}. 현재 검사 Pass/Fail와 품질 승인 이력만으로 출하 규격 충족을 자동 판정하지 않습니다.</p>
 <h4>추가로 알고 싶은 정보 · 안정성과 수명</h4><p>이번 편성 목표는 통과 팩 수입니다. AO열 용량과 OCV 편차, 장비 오류는 조회할 수 있으나 현재 파일에는 팩의 반복 충방전 이력·사용 중 고장·열 특성 데이터가 없어 팩 안정성이나 잔여 수명을 산출하지 않습니다. 모듈·출하검사와 사용 이력을 팩 ID로 연결해 추가 분석할 항목입니다.</p>

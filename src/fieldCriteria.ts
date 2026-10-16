@@ -1,3 +1,4 @@
+import {fieldSteps} from './process';
 import {packByYield} from '../supabase/functions/_shared/packing';
 import type {EvidenceCell} from '../supabase/functions/_shared/evidence';
 
@@ -6,7 +7,7 @@ export const fieldCriteria = {
  version:'JSI-FIELD-REVIEW-20261016',
  poc:{capacitySpread:500,voltageSpread:10,source:'PoC_셀매칭_결과.xlsx · 1_결과요약!A9'},
  practice:{capacitySpread:100,source:'2026-10-16 회의록 · 공정 데이터 현황 / 미결 사항 · 50~100mAh 재확인 대상'},
- process:['충방전 셀 전수검사 (128채널)','용량별 보관·8셀 선정','8S1P 모듈 검사 (케이싱 전)','케이싱 후 최종 출하검사'],
+ process:fieldSteps.map(step=>step.name),
  unresolved:['개별 셀 용량·전압 합격 범위','모듈 부하검사 항목·한계값','케이싱 후 검사 장비 항목·시험 조건과 원자료 연결','출하 목표 평균 용량과 승인 기준표 버전'],
 } as const;
 type Row=Pick<EvidenceCell,'id'|'capacity_mah'|'voltage_mv'>;

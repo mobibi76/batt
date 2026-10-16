@@ -16,7 +16,7 @@ export function parseWorkspaceSnapshot(value:unknown,owner:string,previous:numbe
  for(const key of ['cells','packs','tests','members'])if(!Array.isArray(value[key])||!value[key].every(identified))return fail();
  if(value.cells.some((c:any)=>typeof c.lot!=='string'||!['available','held','used'].includes(c.status)||!['voltage_mv','resistance_mohm','capacity_mah'].every(k=>(k==='resistance_mohm'&&c[k]===null)||(typeof c[k]==='number'&&Number.isFinite(c[k])))))return fail();
  if(value.packs.some((p:any)=>typeof p.serial_no!=='string'||!Array.isArray(p.pack_cells)||p.pack_cells.some((c:any)=>!object(c)||typeof c.cell_id!=='string'||!Number.isInteger(c.position))))return fail();
- if(value.tests.some((t:any)=>typeof t.pack_id!=='string'||!['aging','final'].includes(t.kind)||!['pass','fail'].includes(t.result)||typeof t.created_at!=='string'))return fail();
+ if(value.tests.some((t:any)=>typeof t.pack_id!=='string'||!['aging','module','casing','final'].includes(t.kind)||!['pass','fail'].includes(t.result)||typeof t.created_at!=='string'))return fail();
  if(p.status!=='approved'&&['cells','packs','tests','members'].some(k=>value[k].length))return fail();
  if(p.role!=='admin'&&value.members.length)return fail();
  return value as WorkspaceSnapshot;

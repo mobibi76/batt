@@ -41,7 +41,7 @@ try{
  ok(await operator.from('research_runs').insert({id:randomUUID(),created_by:users[0],report:{scope:'synthetic browser research persistence test'}}));
  assert.equal(ok(await operator.from('research_runs').select('id')).length,1);
  assert.equal(ok(await reviewer.from('research_runs').select('id')).length,0);
- for(const kind of ['aging','final'])await rpc(operator,'record_inspection',{target_pack:pack,test_kind:kind,test_result:'pass',test_note:'synthetic QA',result_kind:'test'});
+ for(const kind of ['module','casing','final'])await rpc(operator,'record_inspection',{target_pack:pack,test_kind:kind,test_result:'pass',test_note:'synthetic QA',result_kind:'test'});
  const request=await rpc(operator,'submit_quality_request',{request_kind:'pack',target_pack:pack,request_title:'',request_message:'synthetic independent approval',twin_layout:null});
  const reviewContext=await rpc(reviewer,'pack_decision_context',{target_pack:pack});assert.equal(reviewContext.reviews[0].reason,'synthetic full SOP review');assert.ok(reviewContext.events.some(e=>e.actor_name));assert.equal(ok(await reviewer.from('audit_logs').select('id')).length,0);
  await rpc(reviewer,'decide_quality_request',{request_id:request,decision:'approved',review_note:'synthetic workflow only'});

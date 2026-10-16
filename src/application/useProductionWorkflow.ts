@@ -1,3 +1,4 @@
+import {inspectionNames,inspectionOrder,processChecks} from '../process';
 import { useState, type FormEvent, type Dispatch, type SetStateAction } from 'react';
 import { production } from './productionCommands';
 import { matchCells, type Cell, type Group } from '../../supabase/functions/_shared/matching';
@@ -11,6 +12,7 @@ type Props = {
     setCells: Setter<Cell[]>;
     packs: Pack[];
     setPacks: Setter<Pack[]>;
+    tests: Inspection[];
     setTests: Setter<Inspection[]>;
     reload: () => Promise<void>;
     setToast: Setter<string>;
@@ -20,7 +22,7 @@ type Props = {
     } | null>;
     setDemoRequests: Setter<Approval[]>;
 };
-export default function useProductionWorkflow({ demo, cells, setCells, packs, setPacks, setTests, reload, setToast, setContinuation, setDemoRequests }: Props) {
+export default function useProductionWorkflow({ demo, cells, setCells, packs, setPacks, tests, setTests, reload, setToast, setContinuation, setDemoRequests }: Props) {
     const available = cells.filter(c => c.status === 'available');
     const [busy, setBusy] = useState(false), [reviewReason, setReviewReason] = useState('');
     const [uploadSource, setUploadSource] = useState('synthetic');
@@ -64,7 +66,7 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
             throw new Error('이미 사용한 팩 번호입니다.');
         if (approval.cell_ids.some(id => !available.some(c => c.id === id)))
             throw new Error('이미 사용한 셀이 있습니다.');
-        const pack: Pack = { source_kind: 'synthetic', created_by: 'demo-requester', confirmed_name: '체험 공정 담당자', id: crypto.randomUUID(), serial_no: serial, created_at: new Date().toISOString(), pack_cells: approval.cell_ids.map((cell_id, i) => ({ cell_id, position: i + 1 })) };
+        const pack: Pack = { process_version:'field-v1', source_kind: 'synthetic', created_by: 'demo-requester', confirmed_name: '체험 공정 담당자', id: crypto.randomUUID(), serial_no: serial, created_at: new Date().toISOString(), pack_cells: approval.cell_ids.map((cell_id, i) => ({ cell_id, position: i + 1 })) };
         createdId = pack.id;
         setPacks([pack, ...packs]);
         setCells(cells.map(c => approval.cell_ids.includes(c.id) ? { ...c, status: 'used' } : c));
@@ -73,8 +75,13 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
         createdId = await production.confirm(approval, serial, reviewReason);
         await reload();
     } setGroups(groups.filter(g => !g.cell_ids.some(id => approval.cell_ids.includes(id)))); setApproval(null); setContinuation({ kind: 'pack', packId: createdId }); }); }
-    async function recordInspection(pack: Pack, kind: Inspection['kind'], result: Inspection['result'], note: string, resultKind: 'measured' | 'test' = 'test', notify = true) { if (demo) {
-        setTests(rows => [{ evidence_kind: 'test', created_by: 'demo-requester', confirmed_name: kind === 'aging' ? '체험 에이징 담당자' : '체험 최종검사 담당자', id: crypto.randomUUID(), pack_id: pack.id, kind, result, note, created_at: new Date().toISOString() }, ...rows]);
+    async function recordInspection(pack: Pack, kind: Inspection['kind'], result: Inspection['result'], note: string, resultKind: 'measured' | 'test' = 'test', notify = true) {
+        if(pack.process_version==='field-v1'){
+            const order=inspectionOrder(pack),index=order.indexOf(kind),checks=processChecks(pack,tests);
+            if(index<0||order.slice(0,index).some(k=>checks[k]?.result!=='pass'))throw Error('앞선 공정 확인을 먼저 완료하세요. 모듈 검사 → 케이싱 → 최종검사 순서입니다.');
+        }
+        if (demo) {
+        setTests(rows => [{ evidence_kind: 'test', created_by: 'demo-requester', confirmed_name: '체험 '+inspectionNames[kind]+' 담당자', id: crypto.randomUUID(), pack_id: pack.id, kind, result, note, created_at: new Date().toISOString() }, ...rows]);
         setDemoRequests(rows => supersedeDemoRequests(rows, pack.id));
     }
     else {

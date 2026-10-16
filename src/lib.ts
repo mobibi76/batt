@@ -1,11 +1,12 @@
+import {inspectionOrder,processChecks} from './process';
 import {deployment} from './environment';
 import { createClient } from '@supabase/supabase-js';
 import Papa from 'papaparse';
 import type { Cell } from '../supabase/functions/_shared/matching';
 export const supabase=createClient(deployment.supabaseUrl,deployment.publishableKey);
 export type Profile={id:string;email:string;display_name:string;role:'admin'|'operator'|'viewer';status:'pending'|'approved'|'rejected'|'suspended';created_at:string;quality_reviewer?:boolean;process_stages?:('assembly'|'aging'|'final')[]};
-export type Pack={source_kind?:string;matching_run_id?:string;created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
-export type Inspection={evidence_kind?:'measured'|'test'|'unknown';created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'final';result:'pass'|'fail';note:string;created_at:string};
+export type Pack={process_version?:'legacy'|'field-v1';source_kind?:string;matching_run_id?:string;created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
+export type Inspection={evidence_kind?:'measured'|'test'|'unknown';created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'module'|'casing'|'final';result:'pass'|'fail';note:string;created_at:string};
 export const number=(v:number|null|undefined,d=0)=>v==null?'미측정':v.toLocaleString('ko-KR',{maximumFractionDigits:d});
 export const date=(v:string)=>new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 export function sampleCells():Cell[] {
@@ -49,17 +50,14 @@ export function qualitySummary(packs:Pack[],tests:Inspection[]) {
   const latest=new Map<string,Inspection>();
   [...tests].filter(t=>t.kind==='final'&&packs.some(p=>p.id===t.pack_id)).sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id.localeCompare(b.id)).forEach(t=>latest.set(t.pack_id,t));
   const failed=[...latest.values()].filter(t=>t.result==='fail').length;
-  const linked=packs.filter(p=>p.pack_cells?.length===8 && latest.has(p.id) && tests.some(t=>t.pack_id===p.id&&t.kind==='aging')).length;
+  const linked=packs.filter(p=>p.pack_cells?.length===8&&inspectionOrder(p).every(k=>!!processChecks(p,tests)[k])).length;
   return {tested:latest.size,failed,rate:latest.size?100*failed/latest.size:null,linked,linkRate:packs.length?100*linked/packs.length:null};
 }
 
 export function inspectionQueues(packs: Pack[], tests: Inspection[]) {
-  const aging = new Set(tests.filter(t => t.kind === 'aging').map(t => t.pack_id));
-  const final = new Set(tests.filter(t => t.kind === 'final').map(t => t.pack_id));
-  return {
-    aging: packs.filter(p => !aging.has(p.id)).length,
-    final: packs.filter(p => aging.has(p.id) && !final.has(p.id)).length,
-  };
+  const queue={aging:0,module:0,casing:0,final:0};
+  for(const pack of packs){const checks=processChecks(pack,tests);if(pack.process_version!=='field-v1'){if(!checks.aging)queue.aging++;else if(!checks.final)queue.final++;continue;}const next=inspectionOrder(pack).find(k=>!checks[k]||checks[k]?.result==='fail');if(next)queue[next]++;}
+  return queue;
 }
 
 export type MetricScope='measured'|'test'|'all';

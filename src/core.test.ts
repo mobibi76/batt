@@ -20,7 +20,7 @@ describe('inspection queues',()=>{
   it('counts missing records once per pack, including final-before-aging records',()=>{
     const packs=['a','b','c','d'].map(id=>({id,serial_no:id,created_at:'',pack_cells:[]}));
     const tests=[['b','aging'],['b','aging'],['c','final'],['d','aging'],['d','final']].map(([pack_id,kind],i)=>({id:String(i),pack_id,kind:kind as 'aging'|'final',result:'fail' as const,note:'',created_at:'2026-10-14'}));
-    expect(inspectionQueues(packs,tests)).toEqual({aging:2,final:1});
-    expect(inspectionQueues([],[])).toEqual({aging:0,final:0});
+    expect(inspectionQueues(packs,tests)).toEqual({aging:2,module:0,casing:0,final:1});
+    expect(inspectionQueues([],[])).toEqual({aging:0,module:0,casing:0,final:0});
   });
 });

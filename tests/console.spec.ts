@@ -2,16 +2,15 @@ import {prepareInspection} from './inspection';
 import {choose} from './chips';
 import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
-test('production quality and research retain navigation across display sizes',async({page})=>{
+for(const [width,height] of [[1366,768],[1024,600],[768,1024],[1920,1080],[320,480]])test(`production quality and research retain navigation at ${width}x${height}`,async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- for(const [width,height] of [[1366,768],[1024,600],[768,1024],[1920,1080],[320,480]]){
+
   await page.setViewportSize({width,height});
   for(const mode of ['생산','품질','연구']){await page.getByRole('button',{name:mode,exact:true}).click();for(const label of await page.getByRole('navigation',{name:'작업 선택'}).getByRole('button').allTextContents()){
    await page.getByRole('navigation',{name:'작업 선택'}).getByRole('button',{name:label,exact:true}).click();expect(await page.evaluate(()=>({x:document.documentElement.scrollWidth<=innerWidth,y:document.documentElement.scrollHeight<=innerHeight}))).toEqual({x:true,y:true});
    expect(await page.locator('.console-content').evaluate(e=>e.scrollHeight<=e.clientHeight+1),`${width}x${height} ${mode}/${label}`).toBe(true);
    for(const status of await page.locator('.console-pager > span:visible').all())expect(await status.evaluate(e=>getComputedStyle(e).whiteSpace)).toBe('nowrap');
   }}
- }
  await page.getByRole('button',{name:'생산',exact:true}).click();await expect(page.getByRole('button',{name:'품질 현황',exact:true})).toHaveCount(0);
  await expect(page.getByRole('button',{name:'가상 실행',exact:true})).toHaveCount(0);
 });

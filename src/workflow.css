@@ -44,3 +44,12 @@
 .pack-workspace .choice-chip span { height:100%; }
 .pack-empty { margin:0; padding:var(--space-22) var(--panel-padding-inline); border-top:1px solid var(--color-border); color:var(--color-ink-secondary); }
 @media(max-width:700px) { .pack-workspace .choice-chips { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+.pack-process { border-top:1px solid var(--color-border); padding-top:16px; }
+.pack-process h3 { margin:0 0 12px; font-size:13px; }
+.pack-process ol { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; list-style:none; margin:0; padding:0; }
+.pack-process li { min-width:0; }
+.operations-console .pack-process button { display:flex; flex-direction:column; align-items:flex-start; gap:6px; width:100%; height:100%; padding:12px; text-align:left; border:1px solid var(--color-border); border-radius:var(--radius-8); background:var(--color-surface); color:var(--color-ink); }
+.pack-process button small { color:var(--color-ink-secondary); font-size:12px; }
+.operations-console .pack-process button[aria-pressed=true] { border-color:var(--color-brand); background:var(--color-surface-accent); box-shadow:inset 3px 0 var(--color-brand); }
+@media(max-width:700px) { .pack-process ol { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } }

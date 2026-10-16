@@ -35,6 +35,6 @@ test('next work selects the unresolved inspection then hands the same pack to qu
   await prepareInspection(page);await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await expect(page.getByRole('button',{name:'검사 결과 저장',exact:true})).toBeInViewport({ratio:1});await prepareInspection(page,true);await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await page.setViewportSize({width:1366,height:768});
  }
  await expect(page.getByRole('button',{name:'검사 확인·기록',exact:true})).toHaveCount(0);await page.getByRole('button',{name:'품질 검토 요청',exact:true}).click();await expect(page.getByRole('radiogroup',{name:'품질 검토 대상 팩'}).getByRole('radio',{name:'NEXT-WORK'})).toBeChecked();
- await navigate(page,'운영 현황');await page.getByRole('button',{name:/검사 연결률/}).click();await expect(page.getByRole('radiogroup',{name:'확인할 품질 상태'}).locator('input[value="unlinked"]')).toBeChecked();await expect(page.getByText('현재 조건에 해당하는 팩이 없습니다.',{exact:true})).toBeVisible();
+ await navigate(page,'운영 현황');await page.getByRole('button',{name:/검사 연결률/}).click();await expect(page.getByRole('radiogroup',{name:'조회 조건 · 품질 기록 관리'}).locator('input[value="unlinked"]')).toBeChecked();await expect(page.getByText('현재 조건에 해당하는 팩이 없습니다.',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'전체 팩 보기',exact:true}).click();await expect(page.getByRole('row').filter({hasText:'NEXT-WORK'})).toBeVisible();
 });

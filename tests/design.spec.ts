@@ -33,3 +33,20 @@ test('login hero stays readable against the brightest green background',async({p
   const fg=luminance(rgb(getComputedStyle(el).color));const bg=getComputedStyle(document.querySelector('.auth-story')!).backgroundImage.match(/rgb\([^)]+\)/)![0];const background=luminance(rgb(bg));return (Math.max(fg,background)+.05)/(Math.min(fg,background)+.05);
  });expect(contrast).toBeGreaterThanOrEqual(4.5);
 });
+
+ test('pack query filters are separate from the shared ordered process',async({page})=>{
+  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+  for(const mode of ['생산','품질']) {
+   await page.getByRole('button',{name:mode,exact:true}).click();
+   await page.getByRole('navigation',{name:'작업 선택'}).getByRole('button',{name:mode==='생산'?'팩 진행 이력':'검사·조치 이력',exact:true}).click();
+   const queries=page.locator('.workflow-filter .choice-field');
+   await expect(queries.getByText('전체 팩',{exact:true})).toBeVisible();
+   for(const name of ['불합격 확인','검사 이력 미연결','기존 에이징 기록 대기']) await expect(queries.getByText(name,{exact:true})).toHaveCount(mode==='품질'?1:0);
+   const process=page.getByRole('list',{name:'팩 공정 진행 순서'});
+   await expect(process.getByRole('button')).toHaveText(['1 · 품질 업무모듈 검사 대기','2 · 생산 업무케이싱 확인 대기','3 · 품질 업무최종검사 기록 대기','4 · 생산 업무품질 검토 요청 가능','5 · 품질 업무최종 승인 대기','6 · 품질 업무품질 승인 완료']);
+   await process.getByRole('button',{name:'모듈 검사 대기',exact:true}).click();
+   await expect(process.getByRole('button',{name:'모듈 검사 대기',exact:true})).toHaveAttribute('aria-pressed','true');
+   await queries.getByText('전체 팩',{exact:true}).click();
+   await expect(process.locator('[aria-pressed=true]')).toHaveCount(0);
+  }
+ });

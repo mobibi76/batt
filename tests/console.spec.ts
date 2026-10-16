@@ -21,7 +21,7 @@ test('field confirmation uses existing pack data and does not perform quality ap
  await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await page.getByRole('button',{name:'생산 작업',exact:true}).click();await expect(page.locator('.console-target')).toContainText('FIELD-001');
  await page.getByRole('button',{name:'검사 확인·기록'}).click();await choose(page,'판정','fail');await prepareInspection(page);await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await prepareInspection(page,true);await page.getByLabel('검사 메모',{exact:true}).fill('검사 조건 확인');await prepareInspection(page,true);await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();await expect(page.locator('.console-target')).toContainText('모듈 검사 불합격');
  await page.getByRole('navigation',{name:'작업 선택'}).getByRole('button',{name:'팩 진행 이력',exact:true}).click();await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await expect(page.locator('.console-target')).toContainText('FIELD-001');
- await page.getByRole('button',{name:'품질',exact:true}).click();await page.getByRole('button',{name:'품질 현황',exact:true}).click();await expect(page.locator('.console-decision')).toContainText('판단 대상이 없습니다');
+ await page.getByRole('button',{name:'품질',exact:true}).click();await page.getByRole('button',{name:'품질 현황',exact:true}).click();await expect(page.locator('.console-target')).toContainText('FIELD-001');await expect(page.locator('.console-target')).toContainText('모듈 검사 불합격');
 });
 
 test('next work selects the unresolved inspection then hands the same pack to quality review',async({page})=>{

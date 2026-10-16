@@ -5,7 +5,7 @@ import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
  await page.goto('/batt/');
  await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- await page.getByRole('button',{name:'공정 흐름',exact:true}).click();
+
  await expect(page.locator('.console-scene canvas')).toBeVisible();
  await navigate(page,'셀 매칭');
  await page.getByRole('button',{name:'조합 추천',exact:true}).click();

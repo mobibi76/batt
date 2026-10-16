@@ -4,4 +4,5 @@ import App from './App';
 import './styles.css';
 import './typography.css';
 import './control-layout.css';
+import './visual-hierarchy.css';
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);

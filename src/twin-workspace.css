@@ -10,9 +10,9 @@
 .studio-tool-picker button { flex:1; }
 .studio-tool-picker button { min-width:0; }
 .studio-panels { flex:1; }
-.studio-panel { height:100%; overflow:auto; padding:var(--space-8); }
+.studio-panel { height:100%; overflow:auto; padding:12px; }
 .studio-panel[hidden] { display:none; }
-.studio-panel>.panel,.studio-panel>.panel>.panel { border:0; margin:0; }
+.studio-panel>.panel,.studio-panel>.panel>.panel { border:0; margin:0; border-radius:0; overflow:visible; }
 .studio-panel .section-head { padding:0 0 var(--space-8); }
 .studio-panel .section-head h2 { font-size:var(--font-size-13); }
 .studio-panel .section-head:not(:has(button)) { display:none; }
@@ -84,3 +84,21 @@
 .twin-studio { overflow:auto; }
 .twin-studio .twin-actions { grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); }
 .twin-studio .twin-actions > button,.twin-studio .twin-import { word-break:keep-all; overflow-wrap:normal; }
+
+/* The inspector owns its rounded frame; inner panels must not clip controls. */
+.console-task-body .studio-panel .section-head { flex-direction:column; align-items:stretch; gap:12px; }
+.studio-panel .section-head > button { width:100%; }
+.studio-panel .twin-actions { align-items:stretch; gap:8px; }
+.studio-panel .twin-actions > button { height:100%; }
+.operations-console .studio-panel .twin-actions > .file-picker { width:100%; }
+.operations-console .studio-panel .twin-actions > .file-picker > button { flex:1; }
+.studio-panel .twin-library-items { grid-auto-rows:minmax(48px,auto); }
+.studio-panel .twin-help { margin:12px 0 0; }
+.studio-panel .editor-tabs { margin-bottom:12px; }
+.studio-panel .editor-actions { margin-top:16px; }
+
+.studio-panel .twin-actions:has(> .file-picker) { grid-template-columns:1fr; grid-auto-rows:minmax(48px,auto); }
+.studio-panel .twin-panel-body > form { display:grid; gap:16px; }
+.studio-panel .twin-panel-body > form > label,
+.studio-panel .twin-panel-body > form > p { margin:0; }
+.studio-panel .twin-panel-body > form > button { width:100%; }

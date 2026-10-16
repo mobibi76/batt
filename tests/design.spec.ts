@@ -79,3 +79,14 @@ test('expanded field reference leaves customer import reachable',async({page})=>
  const upload=page.getByRole('button',{name:'고객 측정 파일 가져오기',exact:true});await upload.scrollIntoViewIfNeeded();await expect(upload).toBeInViewport();
  await page.screenshot({path:'.local/spacing-expanded-evidence-scroll.png'});
 });
+
+for(const width of [1366,1024,390])test('studio tools retain clear edges and aligned actions at '+width,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'공정 관리');
+ for(const tab of ['장비 블록','선택 장비 · 데이터 정의','저장·가져오기','공정 검토 요청']){
+  await step(page,tab);const panel=page.locator('.studio-panel:visible');
+  const edges=await panel.evaluate(el=>{const r=el.getBoundingClientRect();return [...el.querySelectorAll('button')].filter(e=>e.getBoundingClientRect().width>0).map(e=>{const b=e.getBoundingClientRect();return {left:b.left-r.left,right:r.right-b.right};});});
+  for(const edge of edges){expect(edge.left).toBeGreaterThanOrEqual(11);expect(edge.right).toBeGreaterThanOrEqual(11);}
+  if(tab==='저장·가져오기'){const boxes=await panel.locator('.twin-actions > button').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {top:r.top,height:r.height};}));expect(Math.abs(boxes[0].height-boxes[1].height)).toBeLessThanOrEqual(1);expect(boxes[1].top-boxes[0].top-boxes[0].height).toBeGreaterThanOrEqual(8);}
+  await panel.screenshot({path:'.local/studio-'+tab+'-'+width+'.png'});
+ }
+});

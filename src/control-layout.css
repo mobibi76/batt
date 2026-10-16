@@ -104,3 +104,8 @@ button, .file-button, .twin-import, .choice-chip span {
 .modal > .section-head > .manual-launch { order:1; }
 .modal > .section-head > button:not(.manual-launch) { order:2; }
 .pack-modal-view .inspection-embedded { justify-content:flex-start; padding-top:var(--space-16); }
+
+.studio-panel .twin-actions:has(.twin-connect-label) { display:flex; flex-direction:column; align-items:stretch; }
+.studio-panel .twin-connect-label { width:100%; }
+.studio-panel .twin-connect-label .choice-chips { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.studio-panel .twin-actions:has(.twin-connect-label) > button { width:100%; }

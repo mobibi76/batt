@@ -35,7 +35,7 @@ async function inspectSteps(page:Page,screen:string){
 for(const width of [320,390,768,1366])test(`control labels keep Korean words together at ${width}`,async({page})=>{
  test.setTimeout(120000);await page.setViewportSize({width,height:844});await page.goto('/batt/');await page.evaluate(()=>document.fonts.ready);
  const issues=await inspect(page,'로그인');await page.getByRole('button',{name:'사용 권한 신청',exact:true}).click();issues.push(...await inspect(page,'가입'));
- await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
  for(const mode of ['생산','품질','연구']){
   await page.getByRole('button',{name:mode,exact:true}).click();
   const tabs=page.locator('.console-tabs button');

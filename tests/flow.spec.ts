@@ -4,7 +4,7 @@ import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
  await page.goto('/batt/');
- await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
 
  await expect(page.locator('.console-scene canvas')).toBeVisible();
  await navigate(page,'셀 매칭');
@@ -23,7 +23,7 @@ test('demo process map follows approval and inspection records',async({page})=>{
 });
 test('imports XLSX and rejects malformed CSV before upload',async({page})=>{
  await page.goto('/batt/');
- await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
  await navigate(page,'셀 매칭');await navigate(page,'셀 데이터');
  await page.locator('.upload-actions input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');
  await expect(page.getByRole('dialog').getByText('형식 검증 완료')).toBeVisible();

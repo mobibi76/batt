@@ -5,6 +5,7 @@ import Auth from './Auth';
 import Workbench from './Workbench';
 import PrivateDemo from './PrivateDemo';
 export default function App() {
+    const [demoFromFile,setDemoFromFile]=useState(false);
     const [privateOwner,setPrivateOwner]=useState<string|null>(null);
     const [session, setSession] = useState<Session | null>(null), [demo, setDemo] = useState(false), [loading, setLoading] = useState(true), [error, setError] = useState(''), [epoch, setEpoch] = useState(0);
     useEffect(() => {
@@ -26,7 +27,7 @@ export default function App() {
     if (loading && !demo)
         return <div className="loading">작업 공간을 준비하고 있습니다.</div>;
     if (!session && !demo)
-        return <>{error && <p role="alert">{error}</p>}<Auth onDemo={() => { setError(''); setDemo(true); setEpoch(v => v + 1); }}/></>;
+        return <>{error && <p role="alert">{error}</p>}<Auth onDemo={(fromFile=false) => { setDemoFromFile(fromFile); setError(''); setDemo(true); setEpoch(v => v + 1); }}/></>;
     if(privateOwner&&session?.user.id===privateOwner)return <PrivateDemo key={privateOwner} session={session} onExit={()=>{setPrivateOwner(null);setEpoch(v=>v+1);}}/>;
-    return <Workbench onPrivateDemo={session&&!demo?()=>setPrivateOwner(session.user.id):undefined} key={`${demo ? 'demo' : session!.user.id}:${epoch}`} session={session} demo={demo} onLeave={() => void leave()}/>;
+    return <Workbench demoFromFile={demo&&demoFromFile} onPrivateDemo={session&&!demo?()=>setPrivateOwner(session.user.id):undefined} key={`${demo ? 'demo' : session!.user.id}:${epoch}`} session={session} demo={demo} onLeave={() => void leave()}/>;
 }

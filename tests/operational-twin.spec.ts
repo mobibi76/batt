@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 test('shared field keeps camera, process and pack through production and quality',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
  const canvas=page.locator('.operational-scene canvas');await expect(canvas).toBeVisible();await canvas.evaluate(e=>e.setAttribute('data-retained','yes'));
  await expect(page.locator('.scene-label')).toHaveCount(6);
  await page.locator('[data-scene-stage="assembly"]').click();await expect(page.locator('.floor-context-heading')).toContainText('8셀 조합');
@@ -13,11 +13,11 @@ test('shared field keeps camera, process and pack through production and quality
 });
 test('operational process remains usable when WebGL is unavailable',async({page})=>{
  await page.addInitScript(()=>{const original=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(...args:Parameters<typeof original>){if(String(args[0]).includes('webgl'))return null;return original.apply(this,args);} as typeof original;});
- await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await expect(page.locator('.twin-render-error')).toContainText('공정 이름을 선택');await page.locator('[data-scene-stage="storage"]').click();await expect(page.locator('.floor-context-heading')).toContainText('용량별 분류·보관');await page.getByRole('button',{name:'셀 재고 확인'}).click();await expect(page.getByPlaceholder('셀 ID 또는 LOT 검색')).toBeVisible();
+ await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();await expect(page.locator('.twin-render-error')).toContainText('공정 이름을 선택');await page.locator('[data-scene-stage="storage"]').click();await expect(page.locator('.floor-context-heading')).toContainText('용량별 분류·보관');await page.getByRole('button',{name:'셀 재고 확인'}).click();await expect(page.getByPlaceholder('셀 ID 또는 LOT 검색')).toBeVisible();
 });
 
 test('small field fits every stage and moves between process and work',async({page})=>{
- await page.setViewportSize({width:320,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await expect(page.locator('.operational-scene canvas')).toBeVisible();
+ await page.setViewportSize({width:320,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();await expect(page.locator('.operational-scene canvas')).toBeVisible();
  await expect.poll(async()=>page.locator('.scene-label').evaluateAll(es=>es.every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth;}))).toBe(true);
  await page.locator('[data-scene-stage="storage"]').click();await expect(page.getByRole('button',{name:'셀 재고 확인',exact:true})).toBeInViewport();await page.getByRole('button',{name:'공정 전체 보기 ↑'}).click();await expect(page.locator('.floor-briefing')).toBeInViewport();
 });

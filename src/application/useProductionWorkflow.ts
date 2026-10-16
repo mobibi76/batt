@@ -49,7 +49,7 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
         return; await action(async () => { if (demo) {
         if (upload.cells.some(c => cells.some(x => x.id === c.id)))
             throw new Error('이미 등록된 셀 ID가 있습니다.');
-        setCells([...cells, ...upload.cells.map(c => ({ ...c, source_kind: uploadSource }))]);
+        setCells([...cells, ...upload.cells.map(c => ({ ...c, source_kind: 'synthetic' }))]);
     }
     else {
         await production.importCells(upload.intake, uploadSource, upload.cells);

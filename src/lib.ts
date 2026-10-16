@@ -16,6 +16,12 @@ const fields=['id','lot','voltage_mv','resistance_mohm','capacity_mah','measured
 export function download(name:string,body:string,type='text/csv;charset=utf-8') {
   const url=URL.createObjectURL(new Blob(['\ufeff'+body],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+export function demoMeasurementCsv(withError=false) {
+ const rows=sampleCells().map(c=>Object.fromEntries(fields.map(k=>[k,c[k]])));
+ if(withError)rows[0].capacity_mah='';
+ return Papa.unparse(rows);
+}
+export function downloadDemoMeasurements(withError=false) { download(withError?'기능시연_충방전_용량누락.csv':'기능시연_충방전_측정값.csv',demoMeasurementCsv(withError)); }
 export function template() { download('셀등록_양식.csv',Papa.unparse(sampleCells().slice(0,16).map(c=>Object.fromEntries(fields.map(k=>[k,c[k]]))))); }
 export function validateRows(rows:Record<string,unknown>[]): {cells:Cell[];errors:string[]} {
   const errors:string[]=[]; const cells:Cell[]=[];const ids=new Set<string>();

@@ -202,3 +202,7 @@
 .console-task-body .evidence-body .evidence-tabs { padding:0; }
 .console-task-body .evidence-body label { margin:0; }
 .console-task-body .task-shared .workflow-continuation { margin:0; }
+
+.demo-process-guide { padding:16px; border-bottom:1px solid var(--color-border); }
+.demo-process-guide p { margin:8px 0 12px; font-size:13px; line-height:1.6; color:var(--color-ink-secondary); }
+.demo-quick { margin:12px 0; }

@@ -11,15 +11,12 @@ export async function step(page:Page,name:string){
  await nav.getByRole('button',{name:value,exact:true}).click();
 }
 export async function navigate(page:Page,name:string){
- await page.locator('button:visible').filter({hasText:/^(관제|판단 화면으로)$/}).first().waitFor();
- if(!await page.getByRole('button',{name:'관제',exact:true}).isVisible())await page.getByRole('button',{name:'판단 화면으로'}).click();
- await page.getByRole('button',{name:name==='셀 매칭'?'현장':'관제',exact:true}).click();
+ if(!await page.getByRole('button',{name:'품질',exact:true}).isVisible())await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();
+ const mode=['셀 매칭','셀 데이터'].includes(name)?'생산':['공정 관리','알고리즘 검증'].includes(name)?'연구':'품질';
+ await page.getByRole('button',{name:mode,exact:true}).click();
  if(name==='운영 현황')return;
- const direct:Record<string,string>={'셀 매칭':'셀 매칭','셀 데이터':'데이터 관리','품질·공정 승인함':'품질 승인','사용자 관리':'권한 관리'};
- if(direct[name]){await page.locator('.console-footer').getByRole('button',{name:direct[name],exact:true}).click();return;}
- if(name==='팩 · 검사이력'){await page.getByRole('button',{name:'데이터 인입',exact:true}).click();await page.getByRole('button',{name:'누락 검사 확인'}).click();await page.getByRole('button',{name:'전체 팩 보기',exact:true}).click();return;}
- if(name==='공정 관리'){await page.getByRole('button',{name:'공정 개선',exact:true}).click();await page.getByRole('button',{name:'공정 설계·시뮬레이션'}).click();return;}
- await page.getByRole('button',{name:'분석·보고',exact:true}).click();await page.getByRole('button',{name:'초도·판단 근거',exact:true}).click();
- await page.getByRole('button',{name:name==='알고리즘 검증'?'알고리즘 검증':'비교 근거 확인',exact:true}).click();
+ if(name==='사용자 관리'){await page.getByRole('button',{name:'권한 관리',exact:true}).click();return;}
+ const labels:Record<string,string>={'셀 매칭':'8셀 조합','셀 데이터':'셀 검사·재고','팩 · 검사이력':'검사·조치 이력','품질·공정 승인함':'품질 승인','공정 관리':'공정 설계·시뮬레이션','알고리즘 검증':'데이터·AI 검증','품질 리포트':'분석·보고'};
+ await page.getByRole('navigation',{name:'작업 선택'}).getByRole('button',{name:labels[name],exact:true}).click();
  if(name==='품질 리포트')await step(page,'품질 리포트');
 }

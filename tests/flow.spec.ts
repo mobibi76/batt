@@ -5,7 +5,7 @@ import {test,expect} from '@playwright/test';
 test('demo process map follows approval and inspection records',async({page})=>{
  await page.goto('/batt/');
  await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- await page.getByRole('button',{name:'공정 공간',exact:true}).click();
+ await page.getByRole('button',{name:'공정 흐름',exact:true}).click();
  await expect(page.locator('.console-scene canvas')).toBeVisible();
  await navigate(page,'셀 매칭');
  await page.getByRole('button',{name:'조합 추천',exact:true}).click();
@@ -16,9 +16,10 @@ test('demo process map follows approval and inspection records',async({page})=>{
  await navigate(page,'팩 · 검사이력');
  await page.getByRole('button',{name:'상세 조회'}).click();
  await prepareInspection(page,true);await page.getByRole('button',{name:'검사 결과 저장'}).click();
+ await choose(page,'검사 구분','casing');await prepareInspection(page,true);await page.getByRole('button',{name:'검사 결과 저장'}).click();
  await choose(page,'검사 구분','final');
  await prepareInspection(page,true);await page.getByRole('button',{name:'검사 결과 저장'}).click();
- await expect(page.locator('.inspection-list .badge').filter({hasText:'합격'})).toHaveCount(2);
+ await expect(page.locator('.inspection-list .badge').filter({hasText:'합격'})).toHaveCount(3);
 });
 test('imports XLSX and rejects malformed CSV before upload',async({page})=>{
  await page.goto('/batt/');

@@ -54,12 +54,9 @@
  .studio-command-bar .mode-switch button { padding:var(--space-8); font-size:var(--font-size-12); flex:1; white-space:nowrap; }
  .studio-command-bar .twin-toolbar { width:100%; min-width:0; flex-wrap:wrap; }
 }
-.operations-console:has(.twin-studio) { grid-template-rows:auto auto minmax(0,1fr) auto; }
-.operations-console:has(.twin-studio)>.console-tabs { display:none; }
+
 @media(max-height:650px) {
- .operations-console:has(.twin-studio) { grid-template-rows:auto minmax(0,1fr); }
- .operations-console:has(.twin-studio)>.console-header,
- .operations-console:has(.twin-studio)>.console-footer { display:none; }
+
  .studio-panel .twin-form-grid { gap:0 var(--space-8); }
  .studio-panel .twin-form-grid input { margin-top:var(--space-4); }
  .studio-panel .twin-tag code { display:none; }
@@ -81,3 +78,9 @@
  .studio-panel .twin-tag code { display:none; }
  .studio-panel .twin-form-grid label { margin-bottom:var(--space-4); }
 }
+
+.studio-panel button { word-break:keep-all; overflow-wrap:normal; }
+
+.twin-studio { overflow:auto; }
+.twin-studio .twin-actions { grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr)); }
+.twin-studio .twin-actions > button,.twin-studio .twin-import { word-break:keep-all; overflow-wrap:normal; }

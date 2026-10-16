@@ -5,8 +5,8 @@ for(const [width,height] of [[1366,768],[1024,600],[768,1024],[390,844]])test(`s
  const canvas=await page.locator('.studio-scene canvas').elementHandle();
  for(const tool of ['장비 블록','선택 장비 · 데이터 정의']){
   await step(page,tool);await expect(page.locator('.studio-panel:visible')).toHaveCount(1);
-  if(tool==='선택 장비 · 데이터 정의')for(const tab of ['장비','배치·주기','수치 태그']){await page.getByRole('button',{name:tab,exact:true}).click();expect(await page.locator('.studio-panel:visible').evaluate(e=>e.scrollHeight<=e.clientHeight+1)).toBe(true);}
-  else expect(await page.locator('.studio-panel:visible').evaluate(e=>e.scrollHeight<=e.clientHeight+1)).toBe(true);
+  if(tool==='선택 장비 · 데이터 정의')for(const tab of ['장비','배치·주기','수치 태그']){await page.getByRole('button',{name:tab,exact:true}).click();expect(await page.locator('.studio-panel:visible').evaluate(e=>e.scrollWidth<=e.clientWidth+1 && getComputedStyle(e).overflowY==='auto')).toBe(true);}
+  else expect(await page.locator('.studio-panel:visible').evaluate(e=>e.scrollWidth<=e.clientWidth+1 && getComputedStyle(e).overflowY==='auto')).toBe(true);
   expect(await canvas!.evaluate(e=>e===document.querySelector('.studio-scene canvas'))).toBe(true);
   if(width>=900){const a=await page.locator('.studio-scene').boundingBox(),b=await page.locator('.studio-inspector').boundingBox();expect(a!.x+a!.width).toBeLessThanOrEqual(b!.x);expect(Math.abs(a!.y-b!.y)).toBeLessThan(1);}
  }

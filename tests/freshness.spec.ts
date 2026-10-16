@@ -12,10 +12,10 @@ test('registered records refresh automatically and failed refresh is visibly sta
  });
  await page.clock.install();await page.goto('/batt/');await expect(page.locator('.console-source')).toContainText('기록 조회');
  await expect(page.getByRole('navigation').getByRole('button',{name:'사용자 관리'})).toHaveCount(0);
- await page.getByRole('button',{name:'관제',exact:true}).click();await page.getByRole('button',{name:'데이터 인입',exact:true}).click();await page.clock.fastForward(16000);
- await expect(page.locator('.console-focus')).toContainText('0/1팩');
+ await page.getByRole('button',{name:'품질',exact:true}).click();await page.clock.fastForward(16000);
+ await expect(page.locator('.console-quality-summary')).toContainText('0/1팩');
  fail=true;await page.clock.fastForward(16000);
  await expect(page.locator('.console-source')).toContainText('갱신 실패 · 이전 조회본');
- await expect(page.locator('.console-focus')).toContainText('0/1팩');
+ await expect(page.locator('.console-quality-summary')).toContainText('0/1팩');
  fail=false;await page.clock.fastForward(16000);await expect(page.locator('.console-source')).toContainText('기록 조회');
 });

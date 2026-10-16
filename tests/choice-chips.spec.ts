@@ -1,11 +1,8 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 import {choose} from './chips';
-test('all tasks use visible chips and equipment can be selected and cleared',async({page})=>{
+test('all task choices remain visible without dropdown menus',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();
- await page.getByRole('button',{name:'관제',exact:true}).click();await page.getByRole('button',{name:'전체 공정',exact:true}).click();
- const equipment=page.getByRole('radiogroup',{name:'공정 장비 선택'}).getByRole('radio',{name:'셀 충방전 검사',exact:true});
- await equipment.locator('..').click();await expect(equipment).toBeChecked();await equipment.locator('..').click();await expect(equipment).not.toBeChecked();
  for(const task of ['운영 현황','셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){await navigate(page,task);await expect(page.locator('select')).toHaveCount(0);}
 });
 test('large LOT choices are searchable and paginated while preserving selection',async({page})=>{

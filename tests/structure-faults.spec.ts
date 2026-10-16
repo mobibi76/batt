@@ -23,9 +23,9 @@ for(const fault of ['missing-packs','old-revision','timeout'])test(`operational 
   return route.fulfill({json:[]});
  });
  try{
-  await page.clock.install();await page.goto('/batt/');await page.getByRole('button',{name:'관제',exact:true}).click();await page.getByRole('button',{name:'데이터 인입',exact:true}).click();await expect(page.locator('.console-focus')).toContainText('0/1팩');
+  await page.clock.install();await page.goto('/batt/');await page.getByRole('button',{name:'품질',exact:true}).click();await expect(page.locator('.console-quality-summary')).toContainText('0/1팩');
   mode=fault;await page.clock.fastForward(16000);await expect.poll(()=>reads).toBe(2);if(fault==='timeout')await page.clock.fastForward(11000);
-  await expect(page.locator('.console-source')).toContainText('갱신 실패');await expect(page.locator('.console-focus')).toContainText('0/1팩');expect(errors).toEqual([]);
-  mode='normal';await page.clock.fastForward(16000);await expect.poll(()=>reads).toBeGreaterThan(2);await expect(page.locator('.console-source')).not.toContainText('갱신 실패');await expect(page.locator('.console-focus')).toContainText('0/1팩');
+  await expect(page.locator('.console-source')).toContainText('갱신 실패');await expect(page.locator('.console-quality-summary')).toContainText('0/1팩');expect(errors).toEqual([]);
+  mode='normal';await page.clock.fastForward(16000);await expect.poll(()=>reads).toBeGreaterThan(2);await expect(page.locator('.console-source')).not.toContainText('갱신 실패');await expect(page.locator('.console-quality-summary')).toContainText('0/1팩');
  }finally{release();}
 });

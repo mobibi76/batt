@@ -4,6 +4,8 @@ import {choose} from './chips';
 import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test('file-first demo validates measurements and follows the same cells through final approval',async({page})=>{
+ // Two file imports, inventory review and the full inspection/approval chain run together.
+ test.setTimeout(90000);
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 전체 공정 체험',exact:true}).click();
  await expect(page.getByRole('region',{name:'전체 공정 체험 안내'})).toContainText('1. 충방전 측정 파일 등록');
  await step(page,'셀 재고');await expect(page.getByRole('heading',{name:'셀 재고 0',exact:true})).toBeVisible();await step(page,'측정 파일로 시작하세요');

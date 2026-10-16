@@ -6,7 +6,7 @@ import {test,expect} from '@playwright/test';
 test('file-first demo validates measurements and follows the same cells through final approval',async({page})=>{
  // Two file imports, inventory review and the full inspection/approval chain run together.
  test.setTimeout(90000);
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 전체 공정 체험',exact:true}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();
  await expect(page.getByRole('region',{name:'전체 공정 체험 안내'})).toContainText('1. 충방전 측정 파일 등록');
  await step(page,'셀 재고');await expect(page.getByRole('heading',{name:'셀 재고 0',exact:true})).toBeVisible();await step(page,'측정 파일로 시작하세요');
  for(const invalid of [true,false]){
@@ -36,8 +36,24 @@ test('file-first demo validates measurements and follows the same cells through 
 });
 
 test('file-first entry remains usable on a small screen',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 전체 공정 체험',exact:true}).click();
+ await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();
  await expect(page.getByRole('button',{name:'가상 측정 파일 받기',exact:true})).toBeInViewport();
  await page.getByRole('button',{name:'파일 가져오기',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('button',{name:'파일 가져오기',exact:true})).toBeInViewport();
  await page.screenshot({path:'.local/demo-file-start-mobile.png'});
+});
+
+for(const width of [1366,390])test(`single demo entry can skip file registration at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.goto('/batt/');
+ await expect(page.locator('.auth-form').getByRole('button',{name:/체험/})).toHaveCount(1);
+ await page.screenshot({path:`.local/demo-single-login-${width}.png`});
+ await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();
+ await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).scrollIntoViewIfNeeded();
+ await page.screenshot({path:`.local/demo-single-start-${width}.png`});
+ await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'셀 재고 128',exact:true})).toBeVisible();
+ await expect(page.getByRole('cell',{name:'DEMO-0001 합성값',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true})).toHaveCount(0);
+ await page.getByRole('button',{name:'이 셀로 8셀 조합',exact:true}).click();
+ await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');
+ await expect(page.getByRole('button',{name:'조합 검토 · 확정'}).first()).toBeVisible();
 });

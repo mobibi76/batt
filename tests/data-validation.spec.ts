@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 test('data validation explains the reference, identifies gaps and exports isolated evidence',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();await navigate(page,'알고리즘 검증');await step(page,'데이터 검증');
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'알고리즘 검증');await step(page,'데이터 검증');
  const panel=page.locator('.data-validation');await expect(panel).toContainText('10·100사이클');await panel.getByRole('button',{name:'내 데이터 검사',exact:true}).click();
  await panel.getByRole('button',{name:'누락이 있는 합성 예제로 확인'}).click();await expect(panel).toContainText('합성 예제 · 실측 아님');await expect(panel).toContainText('공통 전압 좌표');
  const pending=page.waitForEvent('download');await panel.getByRole('button',{name:'보고서',exact:true}).click();const file=await pending;const chunks=[];for await(const c of (await file.createReadStream())!)chunks.push(c);

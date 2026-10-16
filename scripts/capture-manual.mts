@@ -17,7 +17,7 @@ const catalog:Record<string,any[]>=JSON.parse(await readFile(catalogPath,'utf8')
 const browser=await chromium.launch({channel:'chrome',headless:true});let p:Page;
 async function fresh(){if(p)await p.context().close();const ctx=await browser.newContext({viewport:{width:1366,height:900},locale:'ko-KR',timezoneId:'Asia/Seoul'});p=await ctx.newPage();p.setDefaultTimeout(10000);await p.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());}
 const button=(name:string)=>p.getByRole('button',{name,exact:true});
-async function demo(){await fresh();await p.goto(origin+'/batt/');await button('등록된 가상 셀로 빠른 체험').click();}
+async function demo(){await fresh();await p.goto(origin+'/batt/');await button('가상 데이터로 공정 체험').click();await button('예시 셀로 다음 단계').click();await button('생산 홈').click();}
 async function save(){await writeFile(catalogPath,JSON.stringify(catalog,null,2)+'\n');}
 async function snap(scenario:string,key:string,title:string,items:[Locator,string][],result:string,note='합성 체험 데이터 · 실제 생산·고객 자료 아님'){
  if(audit){await auditHelp(p,`${scenario}/${key}`);return;}
@@ -33,15 +33,15 @@ async function snap(scenario:string,key:string,title:string,items:[Locator,strin
  (catalog[scenario]??=[]).push({image,title,actions:items.map(i=>i[1]),result,note,width:1366,height:900});await save();console.log(`${scenario}/${key}`);
 }
 async function access(){catalog.access=[];await fresh();await p.route('**/auth/v1/signup*',r=>r.fulfill({json:{user:{id:'11111111-1111-4111-8111-111111111111',email:'operator@example.com',aud:'authenticated',role:'authenticated'},session:null}}));await p.goto(origin+'/batt/');
- await snap('access','login','로그인과 가입 신청의 시작 위치',[[p.locator('.auth-form form'),'승인된 계정은 회사 이메일과 비밀번호를 입력한 후 로그인합니다. 예시 이메일은 operator@example.com이며 실제 계정이 아닙니다.'],[button('사용 권한 신청'),'처음 사용하는 직원은 사용 권한 신청을 누릅니다.'],[button('등록된 가상 셀로 빠른 체험'),'계정 없이 연습하려면 합성 데이터 체험을 엽니다. 고객 데이터는 포함되지 않습니다.']],'가입 신청을 선택하면 이름 입력란이 추가됩니다.');
+ await snap('access','login','로그인과 가입 신청의 시작 위치',[[p.locator('.auth-form form'),'승인된 계정은 회사 이메일과 비밀번호를 입력한 후 로그인합니다. 예시 이메일은 operator@example.com이며 실제 계정이 아닙니다.'],[button('사용 권한 신청'),'처음 사용하는 직원은 사용 권한 신청을 누릅니다.'],[button('가상 데이터로 공정 체험'),'계정 없이 연습하려면 합성 데이터 체험을 엽니다. 고객 데이터는 포함되지 않습니다.']],'가입 신청을 선택하면 이름 입력란이 추가됩니다.');
  await button('사용 권한 신청').click();await p.getByLabel('이름',{exact:true}).fill('연습 작업자');await p.getByLabel('이메일',{exact:true}).fill('operator@example.com');await p.getByLabel('비밀번호',{exact:true}).fill('ManualExampleOnly!2026');
  await snap('access','signup','가입 신청 입력 예시',[[p.getByLabel('이름',{exact:true}),'이름에 실제 담당자를 식별할 수 있는 이름을 입력합니다. 이 캡처의 연습 작업자는 가상 인물입니다.'],[p.getByLabel('이메일',{exact:true}),'회사에서 사용할 이메일을 입력합니다. 예시 주소를 실제 가입에 사용하지 않습니다.'],[button('가입 신청'),'본인이 정한 비밀번호를 입력하고 가입 신청을 누릅니다.']],'신청 접수 후에도 관리자 승인이 필요하며, 이메일 인증 요청이 있으면 먼저 완료합니다.');
  await button('가입 신청').click();await expect(p.getByRole('status')).toContainText('접수');
  await snap('access','received','신청 접수 후 확인할 상태',[[p.getByRole('status'),'접수 안내를 확인합니다. 접수 완료가 사용 승인 완료를 뜻하지 않습니다.'],[p.locator('.auth-switch button'),'관리자 승인 후 로그인으로 돌아가 본인 계정으로 접속합니다.']],'승인된 구성원만 업무 화면을 사용할 수 있습니다. 승인 대기·이용 중지는 관리자에게 문의합니다.','합성 계정 · 로컬 접수 응답 예시 · 실제 가입 없음');}
 async function work(){for(const id of ['cells','matching','field','inspection','packs','approvals','intake','quality'])catalog[id]=[];
- await fresh();await p.goto(origin+'/batt/');await button('가상 데이터로 전체 공정 체험').click();
+ await fresh();await p.goto(origin+'/batt/');await button('가상 데이터로 공정 체험').click();
  await snap('cells','file-first','빈 재고에서 전체 공정 체험 시작',[[p.getByRole('region',{name:'전체 공정 체험 안내'}),'가상 측정 파일을 내려받습니다. 용량 누락 오류 파일은 등록 차단을 연습하는 자료입니다.'],[p.locator('.upload-actions .file-button'),'다운로드한 CSV를 선택하고 검증 후 등록합니다. 재고는 처음에 비어 있습니다.']],'등록 후 용량별 재고 확인에서 LOT·용량과 보류 상태를 검토한 뒤 같은 셀로 8셀 팩을 만듭니다. 모든 수치는 기능 시연용 가상값입니다.');
- await demo();await navigate(p,'셀 데이터');await snap('cells','start','표준 측정 파일 가져오기',[[button('샘플 양식'),'생산의 셀 검사·재고에서 샘플 양식을 내려받아 컬럼과 단위를 확인합니다.'],[p.locator('.upload-actions .file-button'),'파일 가져오기에서 CSV 또는 XLSX를 선택합니다. 표준 양식은 셀 ID·LOT·전압 mV·저항 mΩ·용량 mAh·측정 시각을 사용합니다.']],'파일 선택 후 등록 전에 형식 검증 창이 열립니다. 결측 자료는 고객 자료 검토 경로를 사용합니다.');
+ await demo();await navigate(p,'셀 데이터');await step(p,'측정 파일로 시작하세요');await snap('cells','start','표준 측정 파일 가져오기',[[button('샘플 양식'),'생산의 셀 검사·재고에서 샘플 양식을 내려받아 컬럼과 단위를 확인합니다.'],[p.locator('.upload-actions .file-button'),'파일 가져오기에서 CSV 또는 XLSX를 선택합니다. 표준 양식은 셀 ID·LOT·전압 mV·저항 mΩ·용량 mAh·측정 시각을 사용합니다.']],'파일 선택 후 등록 전에 형식 검증 창이 열립니다. 결측 자료는 고객 자료 검토 경로를 사용합니다.');
  const csv='id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at\nMANUAL-CELL-001,MANUAL-LOT,3300,0.42,30000,2026-10-16T09:00:00+09:00';await p.locator('.upload-actions input[type=file]').setInputFiles({name:'manual-synthetic.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
  await snap('cells','check','등록 전 형식·단위·출처 검토',[[p.getByRole('dialog').locator('table'),'행별 측정값과 오류 유무를 확인합니다. 0.42는 mΩ 단위의 합성 예시이며 임의로 결측을 채우는 기준값이 아닙니다.'],[button('전체 1개 등록'),'검증 결과와 출처를 확인한 뒤 전체 1개 등록을 누릅니다. 오류가 있으면 원본을 수정하고 다시 불러옵니다.']],'등록이 완료되면 셀 재고에서 같은 셀 ID를 찾을 수 있습니다.');
  await button('전체 1개 등록').click();await step(p,'셀 재고');await p.getByPlaceholder('셀 ID 또는 LOT 검색').fill('MANUAL-CELL-001');

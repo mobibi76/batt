@@ -11,7 +11,7 @@ test('requested help preserves login input and DOCS shares scenarios, search and
  await page.getByRole('button',{name:'DOCS 닫기'}).click();await expect(page.getByLabel('이메일',{exact:true})).toHaveValue('draft@example.com');await expect(page.getByRole('button',{name:'사용 안내',exact:true})).toBeFocused();
 });
 test('help and docs fit small and large displays and return to the same work',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  for(const [width,height] of [[1366,768],[390,844],[320,480]]){
   await page.setViewportSize({width,height});await page.getByRole('button',{name:'사용 안내',exact:true}).click();
   await expect(page.getByRole('button',{name:'설명 닫기'})).toBeInViewport({ratio:1});await expect(page.getByRole('button',{name:'업무로 돌아가기'})).toBeInViewport({ratio:1});
@@ -25,14 +25,14 @@ test('help and docs fit small and large displays and return to the same work',as
 test('manual links open without production data access',async({page})=>{await page.goto('/batt/#docs/research');await expect(page.getByRole('dialog')).toBeVisible();await expect(page.locator('.manual-reading')).toContainText('Severson');await page.getByRole('button',{name:'DOCS 닫기'}).click();await expect(page.getByLabel('이메일',{exact:true})).toBeVisible();});
 
 test('inspection guidance preserves an unsaved memo and does not submit it',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('HELP-DRAFT');await page.getByLabel('조합 검토 사유',{exact:true}).fill('안내 상태 보존 검증');
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('HELP-DRAFT');await page.getByLabel('조합 검토 사유',{exact:true}).fill('안내 상태 보존 검증');
  await page.getByRole('button',{name:'사용 안내',exact:true}).click();await page.keyboard.press('Escape');await expect(page.getByLabel('팩 일련번호')).toHaveValue('HELP-DRAFT');
  await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await page.getByRole('button',{name:'검사 확인·기록'}).click();await prepareInspection(page);await page.getByRole('button',{name:'검사 메모·저장으로'}).click();await prepareInspection(page,true);await page.getByRole('textbox',{name:'검사 메모',exact:true}).fill('저장하지 않은 관찰 내용');await page.setViewportSize({width:320,height:480});
  await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('#manual-title')).toContainText('현장 검사');await page.screenshot({path:'.local/manual-small.png'});await page.getByRole('button',{name:'업무로 돌아가기'}).click();await expect(page.getByRole('textbox',{name:'검사 메모',exact:true})).toHaveValue('저장하지 않은 관찰 내용');await expect(page.getByRole('button',{name:'검사 결과 저장',exact:true})).toBeVisible();
 });
 
 test('help stays reachable when the twin header changes with viewport size',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();await navigate(page,'공정 관리');
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'공정 관리');
  for(const [width,height] of [[1366,768],[320,480],[1366,768]]){await page.setViewportSize({width,height});await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('#manual-title')).toContainText('공정 공간');await page.keyboard.press('Escape');}
 });
 
@@ -66,7 +66,7 @@ test('closing DOCS cancels pending print preparation instead of printing the wor
 });
 
 test('help targets the selected action, does not highlight the approval toolbar, and follows resizing',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await page.getByRole('button',{name:'샘플 데이터',exact:true}).click();
  await page.getByRole('button',{name:'사용 안내',exact:true}).click();
  const topics=page.getByRole('navigation',{name:'설명할 항목'});
@@ -81,7 +81,7 @@ test('help targets the selected action, does not highlight the approval toolbar,
 });
 
 test('inspection highlight includes evidence, kind and judgement, and can reveal the underlying area',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('HELP-BOUNDS');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 강조 영역 검사');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await page.getByRole('button',{name:'검사 확인·기록'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('HELP-BOUNDS');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 강조 영역 검사');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await page.getByRole('button',{name:'검사 확인·기록'}).click();
  await page.getByRole('button',{name:'사용 안내',exact:true}).click();await page.getByRole('button',{name:'실측·시험 및 판정 구분',exact:true}).click();
  for(const name of ['현장 검사 근거','검사 구분','판정']){
   await expect.poll(async()=>{const a=await page.getByRole('radiogroup',{name,exact:true}).boundingBox(),b=await page.locator('.manual-spotlight').boundingBox();return !!a&&!!b&&b.x<=a.x+1&&b.y<=a.y+1&&b.x+b.width>=a.x+a.width-1&&b.y+b.height>=a.y+a.height-1;}).toBe(true);

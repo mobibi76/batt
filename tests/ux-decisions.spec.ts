@@ -1,7 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {navigate,step} from './workspace';
 import {prepareInspection} from './inspection';
-async function demo(page:Page){await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();}
+async function demo(page:Page){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();}
 async function create(page:Page){await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합 1');await page.getByRole('button',{name:'조합 검토 · 확정'}).click();await page.getByLabel('팩 일련번호').fill('UX-REVIEW');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 업무 검토');await page.getByRole('button',{name:'확인 및 팩 구성'}).click();}
 
 test('operational inspection requires explicit evidence and verdict, and retains a failed save',async({page})=>{

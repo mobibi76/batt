@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 test('Severson capacity records retain continuation provenance and remain separate from matching',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'등록된 가상 셀로 빠른 체험'}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await navigate(page,'알고리즘 검증');await step(page,'Severson 열화 이력');
  const panel=page.locator('.severson-explorer');await expect(panel).toContainText('140개 시험 기록 · 고유 셀 135개');
  await panel.getByRole('radio',{name:'2017-06-30',exact:true}).check();

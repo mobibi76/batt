@@ -59,6 +59,7 @@
 .floor-work-panel .console-task-heading { background:transparent; flex-wrap:wrap; }
 .floor-work-panel .console-task-heading h2 { font-size:14px; }
 .floor-work-panel .console-task-heading .text-button { width:auto; }
+.floor-work-panel .console-task-heading .workspace-expand { margin-left:auto; flex-shrink:0; }
 .floor-work-panel .console-confirmation { overflow:auto; justify-content:flex-start; }
 .floor-work-panel .console-confirmation > * { flex-shrink:0; }
 .operational-workspace.expanded { grid-template-columns:1fr; }
@@ -66,7 +67,7 @@
 .floor-console:has(.console-confirmation) { grid-template-rows:auto auto auto minmax(0,1fr) auto; }
 .floor-console:has(.console-confirmation) > .console-tabs,.floor-console:has(.console-confirmation) > .console-footer { display:flex; }
 .floor-console .research-entry-grid article,.floor-console .research-home aside { border:0; border-radius:0; background:none; padding:20px 0; border-top:1px solid var(--color-border); }
-.floor-return { display:none; }
+.operations-console.floor-console .floor-return { display:none; }
 @media(max-width:1100px) { .operational-workspace { grid-template-columns:minmax(0,1fr) 320px; } .floor-context { padding:18px; } .floor-briefing { padding:16px; } .floor-briefing h1 { font-size:19px; } .scene-annotations .scene-label { width:118px; } .scene-label strong { font-size:12px; } }
 @media(max-width:800px) {
  .floor-console .console-header > strong small { display:none; }
@@ -75,7 +76,7 @@
  .operational-workspace { display:flex; flex-direction:column; overflow:auto; }
  .floor-scene { flex-shrink:0; height:500px; }
  .floor-work-panel { border-left:0; border-top:1px solid var(--color-border); flex-shrink:0; }
- .floor-return { display:block; margin-bottom:16px; padding:0; }
+ .operations-console.floor-console .floor-return { display:block; margin-bottom:16px; padding:0; }
  .floor-context { height:auto; overflow:visible; }
  .floor-briefing { padding:12px 8px 0; }
  .floor-briefing h1 { font-size:17px; }
@@ -86,7 +87,7 @@
  .operational-workspace.has-task,.operational-workspace.has-record { overflow:hidden; }
  .operational-workspace.has-task .floor-scene,.operational-workspace.has-record .floor-scene { display:none; }
  .operational-workspace.has-task .floor-work-panel,.operational-workspace.has-record .floor-work-panel { flex:1; min-height:0; height:100%; }
- .workspace-expand { display:none; }
+ .operations-console.floor-console .workspace-expand { display:none; }
  .floor-console:has(.console-confirmation) { grid-template-rows:auto auto minmax(0,1fr); }
  .floor-console:has(.console-confirmation) > .console-tabs,.floor-console:has(.console-confirmation) > .console-footer { display:none; }
 }

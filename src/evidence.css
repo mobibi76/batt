@@ -3,7 +3,7 @@
 .evidence-workspace > .section-head { flex-shrink: 0; }
 .evidence-workspace > .section-head p { display: none; }
 .evidence-workspace > .notice { margin: var(--space-4) var(--space-12); padding: var(--space-8); flex-shrink: 0; }
-.evidence-tabs { display: flex; flex-wrap: wrap; gap: var(--space-8); padding: var(--space-12) var(--space-16); }
+.evidence-tabs { display: flex; flex-wrap: wrap; gap: var(--space-8); padding: var(--space-12); }
 .evidence-workspace > .evidence-tabs { flex-shrink: 0; }
 .evidence-body { display: grid; grid-auto-rows: max-content; align-content: start; gap: var(--space-8); padding: var(--space-12); min-width: 0; min-height: 0; flex: 1; overflow: auto; }
 .evidence-body p { margin: 0; }

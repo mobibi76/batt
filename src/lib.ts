@@ -6,7 +6,7 @@ export const supabase=createClient(deployment.supabaseUrl,deployment.publishable
 export type Profile={id:string;email:string;display_name:string;role:'admin'|'operator'|'viewer';status:'pending'|'approved'|'rejected'|'suspended';created_at:string;quality_reviewer?:boolean;process_stages?:('assembly'|'aging'|'final')[]};
 export type Pack={source_kind?:string;matching_run_id?:string;created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
 export type Inspection={evidence_kind?:'measured'|'test'|'unknown';created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'final';result:'pass'|'fail';note:string;created_at:string};
-export const number=(v:number,d=0)=>v.toLocaleString('ko-KR',{maximumFractionDigits:d});
+export const number=(v:number|null|undefined,d=0)=>v==null?'미측정':v.toLocaleString('ko-KR',{maximumFractionDigits:d});
 export const date=(v:string)=>new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 export function sampleCells():Cell[] {
   return Array.from({length:128},(_,i)=>({id:`DEMO-${String(i+1).padStart(4,'0')}`,lot:`DEMO-LOT-${Math.floor(i/32)+1}`,voltage_mv:3300+Math.floor(i/32)*4+(i%8)*0.6,resistance_mohm:Number((0.42+Math.floor(i/32)*0.003+(i%8)*0.0004).toFixed(5)),capacity_mah:30000+Math.floor(i/32)*120+(i%8)*18,source_kind:'synthetic',status:'available',measured_at:'2026-10-14T00:00:00Z'}));
@@ -23,11 +23,11 @@ export function validateRows(rows:Record<string,unknown>[]): {cells:Cell[];error
     const prefix=`${i+2}행`; const id=String(r.id??'').trim(),lot=String(r.lot??'').trim();
     if(!id||!lot||id.length>80||lot.length>80) errors.push(`${prefix}: 셀 ID와 LOT를 80자 이내로 입력하세요.`);
     if(ids.has(id)) errors.push(`${prefix}: 셀 ID가 중복됩니다 (${id}).`);ids.add(id);
-    const nums=['voltage_mv','resistance_mohm','capacity_mah'].map(k=>Number(r[k]));
-    if(nums.some((n,j)=>!Number.isFinite(n)||n<=0||n>=[10000,1000,1000000][j]||Math.abs(n*[1000,100000,1000][j]-Math.round(n*[1000,100000,1000][j]))>0.00001)) errors.push(`${prefix}: 측정값의 범위·단위·소수점 자릿수를 확인하세요.`);
+    const nums=['voltage_mv','resistance_mohm','capacity_mah'].map(k=>k==='resistance_mohm'&&(r[k]==null||String(r[k]).trim()==='')?null:Number(r[k]));
+    if(nums.some((n,j)=>(n===null?j!==1:!Number.isFinite(n)||n<=0||n>=[10000,1000,1000000][j]||Math.abs(n*[1000,100000,1000][j]-Math.round(n*[1000,100000,1000][j]))>0.00001))) errors.push(`${prefix}: 측정값의 범위·단위·소수점 자릿수를 확인하세요.`);
     const rawDate=String(r.measured_at??'');
     if(!/^\d{4}-\d{2}-\d{2}T.*(Z|[+-]\d{2}:\d{2})$/.test(rawDate)||!Number.isFinite(Date.parse(rawDate))) errors.push(`${prefix}: 측정일시는 시간대가 있는 ISO 형식이어야 합니다.`);
-    cells.push({id,lot,voltage_mv:nums[0],resistance_mohm:nums[1],capacity_mah:nums[2],status:'available',measured_at:rawDate});
+    cells.push({id,lot,voltage_mv:nums[0]!,resistance_mohm:nums[1],capacity_mah:nums[2]!,status:'available',measured_at:rawDate});
   });return {cells,errors};
 }
 export async function readFile(file:File) {

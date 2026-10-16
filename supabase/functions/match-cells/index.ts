@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import {SOP} from '../_shared/sop.ts';
 import { matchCells } from '../_shared/matching.ts';
 const cors={'Access-Control-Allow-Origin':Deno.env.get('APP_ORIGIN')||'https://mobibi76.github.io','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin'};
 Deno.serve(async (req: Request)=>{
@@ -24,7 +25,7 @@ Deno.serve(async (req: Request)=>{
     const start=performance.now();
     const result=matchCells(data||[],body.count??3);
     const admin=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
-    const saved=await admin.rpc('commit_standard_run',{actor:user.id,output:{...result,input_snapshot:data,parameters:{lot:body.lot||null,count:body.count??3},sop_version:'JSI-SOP-v1',elapsed_ms:performance.now()-start}});
+    const saved=await admin.rpc('commit_standard_run',{actor:user.id,output:{...result,input_snapshot:data,parameters:{lot:body.lot||null,count:body.count??3},sop_version:SOP.version,elapsed_ms:performance.now()-start}});
     if(saved.error)throw saved.error;
     return reply({...result,groups:result.groups.map(g=>({...g,run_id:saved.data})),run_id:saved.data});
   } catch(e) { return reply({error:e instanceof Error?e.message:'매칭 요청을 처리할 수 없습니다.'},400); }

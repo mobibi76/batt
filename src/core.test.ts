@@ -4,7 +4,7 @@ import {sampleCells,validateRows,qualitySummary,inspectionQueues} from './lib';
 describe('SOP matching invariants',()=>{
   it('returns disjoint groups of eight satisfying each hard constraint',()=>{const cells=sampleCells();const r=matchCells(cells,10);expect(r.groups.length).toBe(10);const ids=r.groups.flatMap(g=>g.cell_ids);expect(new Set(ids).size).toBe(ids.length);for(const g of r.groups){expect(g.cell_ids).toHaveLength(8);expect(fits(cells.filter(c=>g.cell_ids.includes(c.id)))).toBe(true);}});
   it('does not use held cells or invent missing cells',()=>{const cells=sampleCells().slice(0,8);cells[0].status='held';expect(matchCells(cells).groups).toHaveLength(0);});
-  it('rejects just-outside resistance boundary',()=>{const cells=sampleCells().slice(0,8).map(c=>({...c,resistance_mohm:0.42}));cells[7].resistance_mohm=0.43001;expect(matchCells(cells).groups).toHaveLength(0);cells[7].resistance_mohm=0.43;expect(matchCells(cells).groups).toHaveLength(1);});
+  it('does not use legacy resistance limits for v2 approval',()=>{const cells=sampleCells().slice(0,8).map(c=>({...c,resistance_mohm:0.42}));cells[7].resistance_mohm=0.43001;expect(matchCells(cells).groups).toHaveLength(1);cells[7].resistance_mohm=0.43;expect(matchCells(cells).groups).toHaveLength(1);});
   it('rejects duplicate IDs and oversized workloads',()=>{const c=sampleCells();expect(()=>matchCells([c[0],c[0]])).toThrow();expect(()=>matchCells(Array(501).fill(c[0]))).toThrow();});
 });
 describe('import validation',()=>{

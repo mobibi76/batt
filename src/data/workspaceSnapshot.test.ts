@@ -14,3 +14,9 @@ it('accepts access revocation only with empty operational records',()=>{
  const revoked={...valid,profile:{...profile,status:'suspended'},revision:null};expect(parseWorkspaceSnapshot(revoked,'owner',10)).toEqual(revoked);
  expect(()=>parseWorkspaceSnapshot({...revoked,packs:[{id:'p',serial_no:'p',pack_cells:[]}]},'owner',10)).toThrow();
 });
+
+it('accepts explicit missing IR in v2 but rejects missing or invalid required measurements',()=>{
+ const cell={id:'c',lot:'L',status:'available',voltage_mv:3300,capacity_mah:25000,resistance_mohm:null};
+ expect(parseWorkspaceSnapshot({...valid,cells:[cell]},'owner',null).changed).toBe(true);
+ for(const patch of [{voltage_mv:null},{capacity_mah:null},{resistance_mohm:undefined},{resistance_mohm:'0.42'}])expect(()=>parseWorkspaceSnapshot({...valid,cells:[{...cell,...patch}]},'owner',null)).toThrow();
+});

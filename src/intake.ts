@@ -19,7 +19,7 @@ export function parseIntake(sheet:unknown[][],name:string,hash:string):Intake {
   const values=[voltage,resistance,capacity];
   values.forEach((v,j)=>{if(v!==null&&(!Number.isFinite(v)||v<=0||v>=[10000,1000,1000000][j]||Math.abs(v*[1000,100000,1000][j]-Math.round(v*[1000,100000,1000][j]))>.00001)){issues.push(['전압','내부저항','용량'][j]+' 값·정밀도 오류');values[j]=null;}});
   [voltage,resistance,capacity]=values;
-  if(resistance===null)issues.push('내부저항 미측정 · 전체 SOP 미검증');
+  if(resistance===null)issues.push('내부저항 미측정 · 참고 항목 (SOP v2 판정 제외)');
   if(voltage===null||capacity===null)issues.push('전압 또는 방전용량 미완료');
   const equipmentError=grading&&row.some(v=>String(v).includes('CurrentError'));
   if(equipmentError)issues.push('장비 CurrentError');

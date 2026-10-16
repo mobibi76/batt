@@ -32,7 +32,7 @@ try {
  await identity('', 'anon');await assert.rejects(()=>db.query('select * from public.private_demo_datasets'),/permission denied/);
  await db.exec('reset role');await db.query("delete from public.private_demo_datasets where id='test'");
  console.log('PASS: private demo samples deny anonymous/pending reads and authenticated mutations');
- assert.deepEqual(await q('select public.sop_v1()'),{version:SOP.version,cellCount:SOP.cellCount,limits:SOP.limits});
+ assert.deepEqual(await q('select public.sop_v2()'),{version:SOP.version,cellCount:SOP.cellCount,limits:Object.fromEntries(SOP.requiredDimensions.map(k=>[k,SOP.limits[k]]))});
  const rows=Array.from({length:16},(_,i)=>({row_no:i+3,id:`TEST-${i}`,channel:String(i),voltage_mv:3300,resistance_mohm:null,capacity_mah:25000+i,measured_at:null,issues:['missing resistance'],state:'ready'}));
  const payload={name:'synthetic.csv',hash:'a'.repeat(64),source_kind:'synthetic',mapping_version:'test-v1',rows};
  await identity(ids.pending);
@@ -49,12 +49,12 @@ try {
  let output=analyzeEvidence(rows);
  await assert.rejects(()=>q('select public.commit_matching_run($1,1,$2,$3)',[batch,ids.operator,output]),/permission/);
  await identity(ids.operator,'service_role');let run=await q('select public.commit_matching_run($1,1,$2,$3)',[batch,ids.operator,output]);
- await identity(ids.operator);await assert.rejects(()=>q('select public.approve_evidence_pack($1,$2,$3,$4)',[run,rows.slice(0,8).map(r=>r.id),'UNVERIFIED','reason']),/SOP/);
- for(const row of rows.slice(0,8))await q('select public.review_evidence($1,$2,$3,$4,$5)',[batch,row.id,'ready','synthetic retest',{voltage_mv:3300,resistance_mohm:.42,capacity_mah:25000,measured_at:'2026-10-15T09:00:00+09:00'}]);
+ await identity(ids.operator);await assert.rejects(()=>q('select public.approve_evidence_pack($1,$2,$3,$4)',[run,rows.slice(0,8).map(r=>r.id),'UNVERIFIED','reason']),/시간대/);
+ for(const row of rows.slice(0,8))await q('select public.review_evidence($1,$2,$3,$4,$5)',[batch,row.id,'ready','synthetic retest',{voltage_mv:3300,resistance_mohm:null,capacity_mah:25000,measured_at:'2026-10-15T09:00:00+09:00'}]);
  await assert.rejects(()=>q('select public.approve_evidence_pack($1,$2,$3,$4)',[run,rows.slice(0,8).map(r=>r.id),'STALE','reason']),/최신 자료/);
  const b=(await db.query('select * from public.intake_batches where id=$1',[batch])).rows[0];
  await assert.rejects(()=>q("select public.review_evidence_checked($1,$2,'held','stale',1,null)",[batch,rows[0].id]),/변경/);
- assert.equal(b.original_rows[0].resistance_mohm,null);assert.equal(b.rows[0].resistance_mohm,.42);assert.equal(await q('select count(*) from public.evidence_events'),8);
+ assert.equal(b.original_rows[0].resistance_mohm,null);assert.equal(b.rows[0].resistance_mohm,null);assert.equal(await q('select count(*) from public.evidence_events'),8);
  output=analyzeEvidence(b.rows);
  await identity(ids.operator,'service_role');run=await q('select public.commit_matching_run($1,$2,$3,$4)',[batch,b.revision,ids.operator,output]);
  await identity(ids.operator);
@@ -82,7 +82,9 @@ try {
  await q("select public.import_cells_with_source($1,'fixture','synthetic')",[canonical]);
  const standard=matchCells(canonical);
  await identity(ids.operator,'service_role');const standardRun=await q('select public.commit_standard_run($1,$2)',[ids.operator,{...standard,input_snapshot:canonical}]);
- await identity(ids.operator);const standardPack=await q('select public.approve_recorded_pack($1,$2,$3)',[canonical.map(c=>c.id),'STANDARD-PACK',standardRun]);
+ const oldStandardRun=await q('select public.commit_standard_run($1,$2)',[ids.operator,{...standard,sop_version:'JSI-SOP-v1',input_snapshot:canonical}]);
+ await identity(ids.operator);await assert.rejects(()=>q('select public.approve_recorded_pack($1,$2,$3)',[canonical.map(c=>c.id),'OLD-SOP',oldStandardRun]),/SOP v2/);
+ const standardPack=await q('select public.approve_recorded_pack($1,$2,$3)',[canonical.map(c=>c.id),'STANDARD-PACK',standardRun]);
  assert.equal(await q('select matching_run_id from public.packs where id=$1',[standardPack]),standardRun);
  await q('insert into public.research_runs(id,report) values($1,$2)',['20000000-0000-4000-8000-000000000001',{scope:'test research'}]);
  await identity(ids.reviewer);assert.equal(await q('select count(*) from public.research_runs'),0);

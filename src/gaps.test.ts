@@ -10,7 +10,7 @@ it('retains physical row positions after blanks and never infers timezone for Ex
 });
 it('finds fully measured groups despite interleaved missing resistance without cell reuse',()=>{
  const input=Array.from({length:16},(_,i)=>({...fixture(i),resistance_mohm:i%2?null:.42}));const r=analyzeEvidence(input);
- expect(r.alternatives[0].status).toBe('pass');expect(r.recommended.groups.map(g=>g.status)).toEqual(['pass','unverified']);
+ expect(r.alternatives[0].status).toBe('pass');expect(r.recommended.groups.map(g=>g.status)).toEqual(['pass','pass']);
  expect(new Set(r.recommended.groups.flatMap(g=>g.ids)).size).toBe(16);
 });
 it('flags departures with zero IQR but never compares distinct LOT baselines',()=>{

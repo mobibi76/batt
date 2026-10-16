@@ -25,7 +25,7 @@ end $$;
 select set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222',true);
 select public.import_cells_with_source((select jsonb_agg(jsonb_build_object('id','RLS-TEST-'||i,'lot','RLS-TEST','voltage_mv',3300,'resistance_mohm',0.42,'capacity_mah',30000,'measured_at','2026-10-14T00:00:00Z')) from generate_series(1,8) i),'transactional test','synthetic');
 reset role;
-insert into public.matching_runs(id,batch_revision,created_by,result) values('44444444-4444-4444-8444-444444444444',1,'22222222-2222-4222-8222-222222222222',jsonb_build_object('input_snapshot',(select jsonb_agg(to_jsonb(c)) from public.cells c where id like 'RLS-TEST-%'),'groups',jsonb_build_array(jsonb_build_object('cell_ids',(select jsonb_agg('RLS-TEST-'||i) from generate_series(1,8) i)))));
+insert into public.matching_runs(id,batch_revision,created_by,result) values('44444444-4444-4444-8444-444444444444',1,'22222222-2222-4222-8222-222222222222',jsonb_build_object('sop_version','JSI-SOP-v2','input_snapshot',(select jsonb_agg(to_jsonb(c)) from public.cells c where id like 'RLS-TEST-%'),'groups',jsonb_build_array(jsonb_build_object('cell_ids',(select jsonb_agg('RLS-TEST-'||i) from generate_series(1,8) i)))));
 set local role authenticated;
 select public.approve_recorded_pack(array(select 'RLS-TEST-'||i from generate_series(1,8) i),'RLS-TEST-PACK','44444444-4444-4444-8444-444444444444','test review');
 do $$ begin

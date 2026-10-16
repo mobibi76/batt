@@ -1,12 +1,12 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
-test('incomplete customer data stays unverified, records retest and preserves comparison evidence',async({page})=>{
+test('v2 retains missing IR, recommends field groups, records retest and preserves evidence',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'샘플 데이터로 체험하기'}).click();await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');
  const csv=['id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at',...Array.from({length:24},(_,i)=>`EVID-${i},FIXTURE,${i===0?3200:3300+i%3},,${25000+i*10},2026-10-15T09:00:00+09:00`)].join('\n');
  await page.locator('.evidence-workspace input[type=file]').setInputFiles({name:'synthetic-evidence.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
  await page.getByRole('radiogroup',{name:'고객 자료 출처'}).getByRole('radio',{name:'합성 시험자료',exact:true}).check();
  await page.getByLabel('측정 조건·가공 설명').fill('합성 시험 데이터 · 미측정 저항을 보간하지 않음');await page.getByRole('button',{name:'원자료 배치 등록',exact:true}).click();
- await expect(page.locator('.evidence-workspace')).toContainText('미검증');await page.getByRole('button',{name:'조합 비교',exact:true}).click();await page.getByRole('button',{name:'배치 조합 비교 실행'}).click();await page.getByRole('button',{name:'대안 선택',exact:true}).click();await expect(page.locator('.evidence-workspace')).toContainText('전체 SOP 미검증');
+ await page.getByRole('button',{name:'현장 기준',exact:true}).click();await expect(page.locator('.evidence-workspace')).toContainText('후보 2팩 (16셀)');await expect(page.getByLabel('용량 차 검토 목표 (mAh)')).toHaveValue('500');await page.getByLabel('용량 차 검토 목표 (mAh)').selectOption('50');await expect(page.locator('.evidence-workspace')).toContainText('후보 0팩');await page.getByRole('button',{name:'조합 비교',exact:true}).click();await page.getByRole('button',{name:'배치 조합 비교 실행'}).click();await page.getByRole('button',{name:'대안 선택',exact:true}).click();await expect(page.locator('.evidence-workspace')).toContainText('전체 SOP 적합');
  await page.getByRole('button',{name:'이 후보 검토'}).first().click();await expect(page.getByRole('button',{name:'서버 검증 후 팩 구성'})).toBeDisabled();
  await page.getByLabel('후보 검토 사유').fill('내부저항 재측정 필요');await page.getByRole('button',{name:'조합 재검사 요청',exact:true}).click();await expect(page.locator('.evidence-workspace')).toContainText('자료 변경 전 결과');
  await page.getByRole('button',{name:'실행·처리 이력',exact:true}).click();await expect(page.locator('.evidence-workspace tbody tr')).toHaveCount(8);

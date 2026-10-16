@@ -1,3 +1,4 @@
+import {packByYield} from './packing.ts';
 import {SOP} from './sop.ts';
 // Measured values remain nullable. No synthetic replacement for missing resistance.
 export type SourceKind = 'measured' | 'reconstructed' | 'synthetic' | 'unknown';
@@ -10,8 +11,8 @@ export function range(rows:EvidenceCell[],key:typeof evidenceKeys[number]):numbe
 }
 export function assess(rows:EvidenceCell[]) {
  const spreads=Object.fromEntries(evidenceKeys.map(k=>[k,range(rows,k)])) as Record<typeof evidenceKeys[number],number|null>;
- const failed=evidenceKeys.filter(k=>spreads[k]!==null&&spreads[k]!>evidenceLimits[k]);
- const missing=evidenceKeys.filter(k=>spreads[k]===null);
+ const failed=SOP.requiredDimensions.filter(k=>spreads[k]!==null&&spreads[k]!>evidenceLimits[k]);
+ const missing=SOP.requiredDimensions.filter(k=>spreads[k]===null);
  return {spreads,failed,missing,status:failed.length?'fail':missing.length?'unverified':'pass'};
 }
 function quantile(xs:number[],p:number){const pos=(xs.length-1)*p,lo=Math.floor(pos);return xs[lo]+(xs[Math.ceil(pos)]-xs[lo])*(pos-lo);}
@@ -32,27 +33,8 @@ export function analyzeEvidence(input:EvidenceCell[],excludeOutliers=false) {
  const summarize=(groups:EvidenceCell[][])=>({groups:groups.map(g=>({ids:g.map(r=>r.id),...assess(g)})),used:groups.length*8,unused:eligible.filter(r=>!groups.some(g=>g.some(x=>x.id===r.id))).map(r=>r.id),mean_capacity_spread:groups.length?groups.reduce((n,g)=>n+range(g,'capacity_mah')!,0)/groups.length:null});
  const cohorts=[...new Set(eligible.map(r=>r.lot||''))].map(lot=>eligible.filter(r=>(r.lot||'')===lot));
  const sequence=cohorts.flatMap(rows=>Array.from({length:Math.floor(rows.length/8)},(_,i)=>rows.slice(i*8,i*8+8)));
- const cost=(g:EvidenceCell[])=>evidenceKeys.reduce((n,k)=>n+(range(g,k)??0)/evidenceLimits[k],0);
- function candidates(rows:EvidenceCell[]){
-  const found=new Map<string,EvidenceCell[]>();
-  for(const key of evidenceKeys){
-   if(rows.some(r=>r[key]===null))continue;
-   const sorted=[...rows].sort((a,b)=>a[key]!-b[key]!||a.id.localeCompare(b.id));
-   for(let i=0;i+7<sorted.length;i++){
-    const group=[sorted[i]];
-    for(let j=i+1;j<sorted.length&&group.length<8;j++){
-     if(sorted[j][key]!-sorted[i][key]!>evidenceLimits[key])break;
-     if((sorted[j].lot||'')===(group[0].lot||'')&&!assess([...group,sorted[j]]).failed.length)group.push(sorted[j]);
-    }
-    if(group.length===8)found.set(group.map(r=>r.id).sort().join('|'),group);
-   }
-  }
-  return [...found.values()].map(group=>({group,missing:Number(assess(group).status!=='pass'),cost:cost(group),key:group.map(r=>r.id).join()})).sort((a,b)=>a.missing-b.missing||a.cost-b.cost||a.key.localeCompare(b.key)).map(x=>x.group);
- }
- // Missing measurements remain unverified in every candidate.
- const ranked=(rows:EvidenceCell[])=>{const complete=rows.filter(r=>evidenceKeys.every(k=>r[k]!==null));const verified=candidates(complete);return verified.length||complete.length===rows.length?verified:candidates(rows);};
- const alternatives=ranked(eligible).slice(0,3);
- let remaining=[...eligible];const proposed:EvidenceCell[][]=[];
- while(remaining.length>=8){const best=ranked(remaining)[0];if(!best)break;proposed.push(best);const ids=new Set(best.map(r=>r.id));remaining=remaining.filter(r=>!ids.has(r.id));}
- return {engine_version:'evidence-greedy-v3',sop_version:SOP.version,limits:evidenceLimits,exclude_outliers:excludeOutliers,input_count:input.length,eligible_count:eligible.length,input_snapshot:input,qc,sequence:summarize(sequence),recommended:summarize(proposed),alternatives:alternatives.map(g=>({ids:g.map(r=>r.id),score:Math.round((1-cost(g)/3)*100),reason:'동일 LOT 내 SOP 정규화 편차 합 최소 우선 · 미측정 항목은 점수에서 제외',...assess(g)})),elapsed_ms:performance.now()-started,scope:'LOT별 분리 편성. LOT 미확인 행은 동일 배치 내 시험 비교이며 현장 적합성 미확인. 동일 적격 셀 집합 비교. 사용·잔여 셀 차이 포함. 학습·생산 불량률·전역 최적성 검증 아님.'};
+ const cost=(g:EvidenceCell[])=>SOP.requiredDimensions.reduce((n,k)=>n+(range(g,k)??0)/evidenceLimits[k],0);
+ const proposed=packByYield(eligible);
+ const alternatives=proposed.slice(0,3);
+ return {engine_version:'evidence-yield-v1',sop_version:SOP.version,limits:evidenceLimits,exclude_outliers:excludeOutliers,input_count:input.length,eligible_count:eligible.length,input_snapshot:input,qc,sequence:summarize(sequence),recommended:summarize(proposed),alternatives:alternatives.map(g=>({ids:g.map(r=>r.id),score:Math.round((1-cost(g)/SOP.requiredDimensions.length)*100),reason:'동일 LOT·SOP 충족 후보를 용량·전압 편차 합으로 추천 · 저항 참고',...assess(g)})),elapsed_ms:performance.now()-started,scope:'LOT별 분리 편성. LOT 미확인 행은 동일 배치 내 시험 비교이며 현장 적합성 미확인. 최대 5가지 탐색 중 통과 팩 수 우선, 동률은 편차 합 비교. 동일 적격 셀 집합 비교. 사용·잔여 셀 차이 포함. 학습·생산 불량률·전역 최적성 검증 아님.'};
 }

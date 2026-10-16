@@ -89,3 +89,7 @@
  .approval-decision .approval-actions { gap:var(--space-4); }
  .approval-decision .approval-actions > button { padding:var(--space-4); }
 }
+
+.approval-next { display:none; }
+.approval-detail > .workflow-actions { flex-shrink:0; padding:var(--space-8); gap:var(--space-8); }
+@media(max-width:800px) { .approval-next { display:block; margin-top:var(--space-16); width:100%; } }

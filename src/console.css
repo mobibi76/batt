@@ -208,3 +208,10 @@
 
 
 @media(max-width:600px){.demo-process-guide .workflow-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px}.demo-process-guide .workflow-actions>.text-button{grid-column:1/-1;justify-self:start;min-height:40px}}
+/* On short phones, instructions and the task share one scroll area. */
+@media(max-width:600px) and (max-height:700px) {
+ .console-task-body:has(.demo-process-guide) { overflow:auto; }
+ .console-task-body:has(.demo-process-guide) > .task-steps { height:auto; min-height:100%; }
+ .console-task-body:has(.demo-process-guide) > .task-steps > .task-step-body { flex:none; }
+ .console-task-body:has(.demo-process-guide) > .task-steps > .task-step-body > .task-step-panel { height:auto; overflow:visible; }
+}

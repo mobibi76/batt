@@ -10,7 +10,6 @@ import { readIntake } from './intake';
 import RunEvidence from './RunEvidence';
 import EvidenceWorkspace, { sourceNames, resultNames } from './EvidenceWorkspace';
 import { ChoiceChips } from './ChoiceChips';
-import usePageSize from './usePageSize';
 import { modeForTask, type Tab } from './workModes';
 import OperationsConsole, { type WorkMode } from './OperationsConsole';
 import './workflow.css';
@@ -176,5 +175,18 @@ function Stat({ label, value, unit, note, icon }: {
 function CellTable({ cells, onReview }: {
     cells: Cell[];
     onReview?: (id: string) => void;
-}) { const size = usePageSize(); const [page, setPage] = useState(0); const current = Math.min(page, Math.max(0, Math.ceil(cells.length / size) - 1)); if (!cells.length)
-    return <Empty title="표시할 셀 데이터가 없습니다" body="측정 파일을 등록하거나 검색 조건을 변경하세요."/>; return <><div className="table-wrap"><table><thead><tr><th>셀 ID</th><th>LOT</th><th className="numeric">전압 <small>mV</small></th><th className="numeric">내부저항 <small>mΩ</small></th><th className="numeric">용량 <small>mAh</small></th><th>상태</th>{onReview && <th>검토</th>}</tr></thead><tbody>{cells.slice(current * size, (current + 1) * size).map(c => <tr key={c.id}><td className="mono strong"><DataValue row={c} field="id">{c.id}</DataValue></td><td className="mono"><DataValue row={c} field="lot">{c.lot}</DataValue></td><td className="numeric"><DataValue row={c} field="voltage_mv">{number(c.voltage_mv, 3)}</DataValue></td><td className="numeric"><DataValue row={c} field="resistance_mohm">{number(c.resistance_mohm, 5)}</DataValue></td><td className="numeric"><DataValue row={c} field="capacity_mah">{number(c.capacity_mah, 3)}</DataValue></td><td><Badge tone={c.status === 'available' ? 'green' : 'gray'}>{c.status === 'available' ? '매칭 가능' : c.status === 'used' ? '사용 완료' : '보류'}</Badge></td>{onReview && <td><button className="text-button" disabled={c.status === 'used'} onClick={() => onReview(c.id)}>측정 검토</button></td>}</tr>)}</tbody></table></div><div className="console-pager"><button className="secondary" disabled={current === 0} onClick={() => setPage(current - 1)}>이전 셀</button><span>{current + 1} / {Math.ceil(cells.length / size)}</span><button className="secondary" disabled={(current + 1) * size >= cells.length} onClick={() => setPage(current + 1)}>다음 셀</button></div></>; }
+}) {
+ const size = 6;
+ const [page, setPage] = useState(0);
+ const current = Math.min(page, Math.max(0, Math.ceil(cells.length / size) - 1));
+ if (!cells.length) return <Empty title="표시할 셀 데이터가 없습니다" body="측정 파일을 등록하거나 검색 조건을 변경하세요."/>;
+ return <><div className="table-wrap cell-inventory"><table role="table" aria-label="셀 측정값과 재고 상태"><thead role="rowgroup"><tr role="row"><th>셀 ID</th><th className="numeric">용량 <small>mAh</small></th><th>상태</th><th className="numeric">전압 <small>mV</small></th><th className="numeric">내부저항 <small>mΩ</small></th><th>LOT</th>{onReview && <th>검토</th>}</tr></thead><tbody role="rowgroup">{cells.slice(current * size, (current + 1) * size).map(c => <tr key={c.id} role="row">
+ <td role="cell" className="mono strong cell-identity"><DataValue row={c} field="id">{c.id}</DataValue></td>
+ <td role="cell" className="numeric"><span className="cell-mobile-label" aria-hidden="true">용량 · mAh</span><DataValue row={c} field="capacity_mah">{number(c.capacity_mah, 3)}</DataValue></td>
+ <td role="cell"><span className="cell-mobile-label" aria-hidden="true">상태</span><Badge tone={c.status === 'available' ? 'green' : 'gray'}>{c.status === 'available' ? '매칭 가능' : c.status === 'used' ? '사용 완료' : '보류'}</Badge></td>
+ <td role="cell" className="numeric"><span className="cell-mobile-label" aria-hidden="true">전압 · mV</span><DataValue row={c} field="voltage_mv">{number(c.voltage_mv, 3)}</DataValue></td>
+ <td role="cell" className="numeric"><span className="cell-mobile-label" aria-hidden="true">내부저항 · mΩ</span><DataValue row={c} field="resistance_mohm">{number(c.resistance_mohm, 5)}</DataValue></td>
+ <td role="cell" className="mono"><span className="cell-mobile-label" aria-hidden="true">LOT</span><DataValue row={c} field="lot">{c.lot}</DataValue></td>
+ {onReview && <td role="cell"><button className="text-button" disabled={c.status === 'used'} onClick={() => onReview(c.id)}>측정 검토</button></td>}
+ </tr>)}</tbody></table></div><div className="console-pager"><button className="secondary" disabled={current === 0} onClick={() => setPage(current - 1)}>이전 셀</button><span aria-label={`${cells.length}셀 중 ${current*size+1}–${Math.min((current+1)*size,cells.length)}셀 · ${current+1}페이지`}>{current + 1} / {Math.ceil(cells.length / size)}</span><button className="secondary" disabled={(current + 1) * size >= cells.length} onClick={() => setPage(current + 1)}>다음 셀</button></div></>;
+}

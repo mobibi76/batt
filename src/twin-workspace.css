@@ -102,3 +102,5 @@
 .studio-panel .twin-panel-body > form > label,
 .studio-panel .twin-panel-body > form > p { margin:0; }
 .studio-panel .twin-panel-body > form > button { width:100%; }
+
+.studio-panel .twin-summary + .twin-panel-body { margin-top:var(--space-16); }

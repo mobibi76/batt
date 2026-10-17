@@ -39,3 +39,15 @@
  .console-footer .console-task-actions { flex: 1; min-width: 0; gap: var(--space-4); }
  .console-footer .console-task-actions button { flex: 1; min-width: 0; padding-inline: var(--space-4); font-size: var(--type-caption-size); }
 }
+
+.source-tables { display:flex; flex-direction:column; gap:var(--space-8); padding:var(--space-8); flex:1; min-height:0; min-width:0; overflow:auto; }
+.source-tables > label { margin:0; }
+.source-tables select { width:100%; min-width:0; min-height:44px; padding:var(--space-8); border:1px solid var(--color-border); border-radius:var(--radius-4); background:var(--color-canvas); color:var(--color-ink); font:inherit; }
+.source-tables p { margin:0; font-size:var(--type-caption-size); }
+.source-table-scroll { overflow:auto; flex:1; min-height:100px; max-width:100%; border:1px solid var(--color-border); }
+.source-table-scroll table { width:max-content; min-width:100%; }
+.source-table-scroll td { white-space:pre-wrap; min-width:100px; max-width:360px; overflow-wrap:anywhere; }
+.source-table-scroll thead th { position:sticky; top:0; background:var(--color-canvas); z-index:1; }
+.source-table-scroll th { min-width:110px; max-width:360px; white-space:normal; }
+.source-tables .console-pager { flex-shrink:0; }
+.sample-data-view nav[hidden] { display:none; }

@@ -29,11 +29,17 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
   <header className="designer-header"><div className="mode-switch" aria-label="공정 설계 작업"><button aria-pressed={mode==='design'} className={mode==='design'?'active':''} onClick={()=>setMode('design')}>공정 설계 · 데이터 확보</button><button aria-pressed={mode==='simulation'} className={mode==='simulation'?'active':''} onClick={()=>{setMode('simulation');setEditing(false);}}>시뮬레이션 · 작업 효율</button></div><button className="secondary" onClick={onOpenApprovals}>공정 승인함</button></header>
   <p className="context-line" role={message?'status':undefined}>{message||(mode==='design'?'장비와 작업 순서를 설계하고 연구 데이터의 확보 계획을 확인합니다.':'목표 팩 수량과 회당 작업 조건으로 완료시간·대기·병목을 추정합니다.')}</p>
   {!plan&&<div className="notice">기존 가상 배치에는 작업·데이터 계획이 없습니다. <button onClick={()=>{if(canEdit){setLayout(planningLayout());setSelected('grading');}}} disabled={!canEdit}>현행 6단계 설계로 시작</button></div>}
-  <div className="designer-body"><section className={`designer-canvas panel ${surface==='analysis'?'designer-analysis':''}`}><div className="section-head"><div><h2>{mode==='design'?'공정과 확보 데이터':'공정별 예상 흐름'}</h2><p>{mode==='simulation'&&result?`전체 ${plan?.quantity}팩 ${durationText(result.total)} · 첫 팩 ${durationText(result.first)}`:'장비를 선택해 조건을 확인하세요.'}</p></div>{surface==='scene'&&<div className="designer-view-actions"><button className="secondary" aria-pressed={expanded} onClick={()=>setExpanded(!expanded)}>{expanded?'확대 닫기':'공정도 확대'}</button><button className="secondary" onClick={()=>setView(view==='iso'?'top':'iso')}>{view==='iso'?'위에서 보기':'입체로 보기'}</button></div>}</div>
+  <div className="designer-body"><section className={`designer-canvas panel ${surface==='analysis'?'designer-analysis':''}`}><div className="designer-toolbar">
    <nav className="designer-surface-tabs" aria-label="공정 화면 선택">
     <button aria-pressed={surface==='scene'} onClick={()=>setSurface('scene')}>공정 배치</button>
     <button aria-pressed={surface==='analysis'} onClick={()=>setSurface('analysis')}>{mode==='design'?'데이터 확보 현황':'단계별 작업시간'}</button>
    </nav>
+   {surface==='scene'&&<div className="designer-view-actions" role="group" aria-label="공정도 보기 도구">
+    <button type="button" aria-label={expanded?'확대 닫기':'공정도 확대'} title={expanded?'확대 닫기 (Esc)':'공정도 확대'} aria-pressed={expanded} onClick={()=>setExpanded(!expanded)}><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d={expanded?'M4 9h5V4m6 0v5h5M4 15h5v5m6 0v-5h5':'M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5'}/></svg></button>
+    <button type="button" aria-label={view==='iso'?'위에서 보기':'입체로 보기'} title={view==='iso'?'위에서 보기':'입체로 보기'} aria-pressed={view==='top'} onClick={()=>setView(view==='iso'?'top':'iso')}><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">{view==='iso'?<><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 12h16M12 4v16"/></>:<><path d="m12 3 9 5v9l-9 5-9-5V8zM3 8l9 5 9-5M12 13v9"/></>}</svg></button>
+   </div>}
+   </div>
+
    {surface==='scene'&&<>
    <TwinScene layout={layout} simulation={simulation} selected={selected} annotations={annotations} editing={mode==='design'&&editing&&canEdit} running={false} view={view} onSelect={setSelected} onMove={(id,x,z)=>{if(canPlace(layout,id,x,z))commit({...layout,devices:layout.devices.map(d=>d.id===id?{...d,x,z}:d)});}}/>
    <div className="designer-caption">{mode==='design'?<button className="text-button" disabled={!canEdit} aria-pressed={editing} onClick={()=>setEditing(!editing)}>배치 이동 {editing?'켜짐':'꺼짐'}</button>:<span>강조 장비: 단위 처리능력이 가장 낮은 병목 후보</span>}<small>배치는 개념도입니다. 이동시간은 직접 입력합니다.</small></div>

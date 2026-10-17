@@ -25,6 +25,8 @@ test('mobile design and simulation remain reachable without horizontal overflow'
 
 test('process diagram and consolidated coverage switch in place',async({page})=>{
  await page.setViewportSize({width:1366,height:768});await open(page);
+ expect((await page.locator('.designer-toolbar').boundingBox())!.height).toBeLessThanOrEqual(56);
+ await page.screenshot({path:'.local/process-compact-toolbar.png'});
  expect((await page.locator('.designer-canvas .twin-viewport').boundingBox())!.height).toBeGreaterThanOrEqual(460);
  await page.getByRole('button',{name:'공정도 확대',exact:true}).click();
  await expect(page.locator('.designer-canvas .twin-viewport')).toBeInViewport({ratio:1});

@@ -2147,6 +2147,8 @@ textarea {
   gap: var(--space-6);
 }
 .mode-switch button {
+  /* Selection foreground and background must change together. */
+  transition: none;
   min-height: var(--control-height);
   padding: var(--space-8) var(--space-16);
   border: var(--border-width) solid var(--color-border);

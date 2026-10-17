@@ -9,11 +9,11 @@ import './provenance.css';
 export default function PrivateDemo({session,onExit}:{session:Session;onExit:()=>void}){
  const [dataset,setDataset]=useState<PrivateDataset|null>(null),[error,setError]=useState(''),[mode,setMode]=useState<'raw'|'workflow'|null>(null),[tab,setTab]=useState('start');
  useEffect(()=>{
-  let alive=true,busy=false;const controller=new AbortController();
-  async function read(){if(busy)return;busy=true;const request=new AbortController(),cancel=()=>request.abort();controller.signal.addEventListener('abort',cancel);const timeout=setTimeout(cancel,10000);
+  let alive=true,busy=false,pending=false;const controller=new AbortController();
+  async function read(){if(busy){pending=true;return;}busy=true;const request=new AbortController(),cancel=()=>request.abort();controller.signal.addEventListener('abort',cancel);const timeout=setTimeout(cancel,10000);
    try{const r=await supabase.from('private_demo_datasets').select('payload').eq('id','customer-grading-v1').abortSignal(request.signal).single();if(r.error)throw Error('접근 권한 또는 체험 자료 연결을 확인하세요.');const d=validatePrivateDataset(r.data.payload);if(alive){setDataset(current=>current||d);setError('');}}
    catch(e){if(alive){setDataset(null);setMode(null);setError((e as Error).message);}}
-   finally{clearTimeout(timeout);controller.signal.removeEventListener('abort',cancel);busy=false;}
+   finally{clearTimeout(timeout);controller.signal.removeEventListener('abort',cancel);busy=false;if(alive&&pending){pending=false;void read();}}
   }
   void read();const timer=setInterval(()=>void read(),15000);window.addEventListener('focus',read);
   return()=>{alive=false;controller.abort();clearInterval(timer);window.removeEventListener('focus',read);};

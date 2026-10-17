@@ -2,7 +2,10 @@ import {prepareInspection} from './inspection';
 import {choose} from './chips';
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
+test.use({actionTimeout:10_000,trace:'retain-on-failure'});
 test('quality metrics link the three inspections and distinguish first pass from latest',async({page})=>{
+ // Four inspections and review span several workspaces; each action still has a 10s limit.
+ test.setTimeout(60_000);
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'운영 현황');
  const metric=(name:string)=>page.locator('.console-quality-summary button').filter({hasText:name}).locator('strong');
  await expect(metric('최종 불량률')).toHaveText('—');

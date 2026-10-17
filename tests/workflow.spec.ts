@@ -1,8 +1,12 @@
+// Preserve evidence when a long workflow fails without relaxing assertions.
 import {prepareInspection} from './inspection';
 import {choose} from './chips';
 import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
+test.use({trace:'retain-on-failure'});
 test('quality work follows the same pack through confirmation, independent approval and outcomes',async({page})=>{
+ // This scenario visits multiple workspaces; individual actions keep their own limit.
+ test.setTimeout(60_000);page.setDefaultTimeout(10_000);
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('CONNECTED-QUALITY');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await page.getByRole('button',{name:'이 팩 검사로 이어가기'}).click();await expect(page.getByRole('dialog')).toHaveAttribute('aria-label','CONNECTED-QUALITY');

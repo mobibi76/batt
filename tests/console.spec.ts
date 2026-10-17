@@ -1,8 +1,12 @@
+// Preserve evidence when a long workflow fails without relaxing assertions.
 import {prepareInspection} from './inspection';
 import {choose} from './chips';
 import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
+test.use({trace:'retain-on-failure'});
 for(const [width,height] of [[1366,768],[1024,600],[768,1024],[1920,1080],[320,480]])test(`production quality and research retain navigation at ${width}x${height}`,async({page})=>{
+ // This scenario visits multiple workspaces; individual actions keep their own limit.
+ test.setTimeout(60_000);page.setDefaultTimeout(10_000);
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
 
   await page.setViewportSize({width,height});

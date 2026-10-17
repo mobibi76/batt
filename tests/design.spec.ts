@@ -1,6 +1,10 @@
+// Preserve evidence when a long workflow fails without relaxing assertions.
 import {test,expect} from '@playwright/test';
+test.use({trace:'retain-on-failure'});
 import {navigate,step,researchSide} from './workspace';
 for(const width of [1440,900,768,390,320])test('integrated task geometry at '+width,async({page})=>{
+ // This scenario visits multiple workspaces; individual actions keep their own limit.
+ test.setTimeout(60_000);page.setDefaultTimeout(10_000);
  await page.setViewportSize({width,height:720});await page.goto('/batt/');await page.getByRole('button',{name:'사용 권한 신청',exact:true}).click();await expect(page.getByLabel('이름',{exact:true})).toBeVisible();await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  for(const name of ['운영 현황','셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){
  await navigate(page,name);await expect(page.locator('.operations-console')).toBeVisible();await expect(page.locator('.sidebar')).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBe(true);

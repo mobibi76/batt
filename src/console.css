@@ -870,3 +870,13 @@
     overflow: visible;
   }
 }
+
+/* On short viewports, fixed task introductions must not consume the entire editing area. */
+@media(max-height:700px) {
+  .console-task-body:has(> .task-steps):not(:has(.approval-detail)) { overflow: auto; }
+  .console-task-body > .task-steps:not(.approval-workspace:has(.approval-detail)) { height: auto; min-height: 100%; }
+  .console-task-body > .task-steps:not(.approval-workspace:has(.approval-detail)) > .task-step-body { flex: none; min-height: var(--size-task-min-height); }
+  .console-task-body > .task-steps:not(.approval-workspace:has(.approval-detail)) > .task-step-body > .task-step-panel { height: auto; min-height: var(--size-task-min-height); overflow: visible; }
+  .console-task-body .field-study-panel { height: auto; overflow: visible; }
+  .console-task-body .research-body.field-study-workspace { flex: none; min-height: var(--size-task-min-height); overflow: visible; }
+}

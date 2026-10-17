@@ -455,3 +455,8 @@
 .scene-label.is-offscreen {
   visibility: hidden
 }
+
+/* Keep projected process controls readable; the scene owns its vertical overflow. */
+.floor-scene { overflow:auto; }
+.floor-scene-body { flex:1 0 var(--size-scene-min-height); min-height:var(--size-scene-min-height); }
+.floor-scene .scene-annotations .scene-label { width:min(140px,calc((100% - 80px)/3)); }

@@ -35,7 +35,7 @@
   height: 56vh;
   max-height: 680px
 }
-.designer-inspector {
+.process-designer .designer-inspector {
   padding: var(--space-16);
   margin: 0;
   overflow: auto;
@@ -202,7 +202,7 @@
     flex-direction: column;
     min-height: auto
   }
-  .designer-canvas,.designer-inspector {
+  .process-designer .designer-canvas,.process-designer .designer-inspector {
     overflow: visible
   }
   .designer-canvas .twin-viewport {
@@ -213,7 +213,7 @@
     grid-template-columns: 80px minmax(0,1fr) 80px
   }
   .process-designer {
-    height: auto
+    height: 100%
   }
   .designer-header .mode-switch {
     width: 100%;
@@ -334,7 +334,7 @@
 @media(max-width:600px) {
   .designer-expanded .designer-canvas .twin-viewport {
     height: calc(100dvh - 180px);
-    min-height: 240px
+    min-height: var(--size-task-min-height)
   }
 }
 /* Each workspace view owns its information; no summary/detail jump. */
@@ -634,4 +634,15 @@
 .timeline-track i {
   margin-left: var(--timeline-start,0%);
   width: max(.3%,var(--timeline-width,0%))
+}
+
+/* Keep short desktops usable before bounded panes become smaller than their controls. */
+@media(min-width:801px) and (max-height:700px) {
+  .process-designer:not(.designer-expanded) { overflow: auto; }
+  .process-designer:not(.designer-expanded) .designer-body { flex: none; height: var(--size-designer-min-height); }
+  .process-designer .designer-editor-navigation { position: static; }
+}
+
+@media(max-width:800px) and (max-height:450px) {
+ .process-designer .designer-editor-navigation { position:static; }
 }

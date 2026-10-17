@@ -405,3 +405,19 @@
 @media(max-width:800px) and (max-height:600px) {
   .approval-decision textarea { height: var(--control-height); }
 }
+
+/* At very short heights the submission header must scroll with its evidence. */
+@media(max-height:700px), (min-width:801px) and (max-width:1100px) {
+ .console-task-body:has(.approval-detail) { overflow:auto; }
+ .approval-workspace:has(.approval-detail) { height:auto; min-height:100%; }
+ .approval-workspace:has(.approval-detail) > .task-step-body { flex:none; }
+ .approval-workspace:has(.approval-detail) .task-step-panel { height:auto; overflow:visible; }
+ .approval-detail { height:auto; overflow:visible; }
+ .approval-review-layout { flex:none; min-height:var(--size-task-min-height); }
+ .approval-review-layout > .approval-body, .approval-review-layout > .approval-decision { overflow:visible; }
+ .approval-decision-fields { flex:none; overflow:visible; }
+}
+
+@media(max-width:1100px) {
+ .approval-review-layout { grid-template-columns:minmax(0,1fr); }
+}

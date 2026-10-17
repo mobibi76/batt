@@ -1,6 +1,9 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
+  --size-task-min-height: 240px;
+  --size-designer-min-height: 360px;
+  --size-scene-min-height: 360px;
   /* Semantic colour and contextual palettes */
   --color-manual-brand: #536777;
   --color-manual-hover: #405463;

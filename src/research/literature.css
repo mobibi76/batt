@@ -1,27 +1,242 @@
-.literature-layout{display:grid;grid-template-columns:minmax(220px,1fr) minmax(0,2fr);gap:16px;margin:8px 0;align-items:start}.literature-toolbar,.literature-search form{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.literature-list{display:flex;flex-direction:column;gap:8px}.literature-list button{width:100%;max-width:none;text-align:left;display:flex;flex-direction:column;align-items:start;gap:8px;white-space:normal}.literature-list span,.literature-result p{font-size:12px}.literature-detail{min-width:0;border-left:2px solid #dce3eb;padding-left:16px}.literature-registry a,.literature-registry strong,.literature-detail dd{overflow-wrap:anywhere}.literature-detail dt{font-weight:600;margin-top:12px}.literature-detail dd{margin:4px 0 12px;white-space:pre-wrap}.literature-search,.literature-form{border-top:1px solid #dce3eb;margin-top:16px;padding-top:16px}.literature-search form label{flex:1;min-width:180px}.literature-result{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #dce3eb}.literature-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.literature-form fieldset{border:0;padding:0;min-width:0}.literature-registry label{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}.literature-registry input,.literature-registry select,.literature-registry textarea{width:100%;min-width:0;box-sizing:border-box}.literature-form textarea{resize:vertical}.literature-result>div{min-width:0}.literature-detail details{margin-top:16px}@media(max-width:700px){.literature-layout,.literature-fields{grid-template-columns:1fr}.literature-detail{border-left:0;border-top:1px solid #dce3eb;padding:14px 0}.literature-result{align-items:start;flex-direction:column}}
-
-.operations-console .literature-registry .literature-list button{width:100%;max-width:none}.console-task-body .research-body.literature-registry{gap:8px}.literature-registry select{min-height:44px;padding:8px 10px;border:1px solid #bdcbc2;border-radius:6px;background:white}
-
-.study-pane-tabs{display:flex;gap:8px;margin-bottom:14px}.operations-console .study-pane-tabs button{width:auto;flex:1}.readiness-findings{display:grid;gap:10px;margin-top:12px}.readiness-findings article{border-left:3px solid #95aa99;padding:8px 12px;background:#f5f8f3}.readiness-findings p{margin:6px 0}.schema-editor{border-top:1px solid #cfd9d0;padding-top:12px}.literature-form fieldset.schema-field{border:1px solid #cfd9d0;padding:12px;margin:12px 0}.study-readiness{min-width:0}.study-readiness code{overflow-wrap:anywhere}.study-readiness li{margin-bottom:6px}
+.literature-layout {
+  display: grid;
+  grid-template-columns: minmax(220px,1fr) minmax(0,2fr);
+  gap: var(--space-16);
+  margin: var(--space-8) 0;
+  align-items: start
+}
+.literature-toolbar,.literature-search form {
+  display: flex;
+  gap: var(--space-12);
+  align-items: end;
+  flex-wrap: wrap
+}
+.literature-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8)
+}
+.literature-list button {
+  width: 100%;
+  max-width: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--space-8);
+  white-space: normal
+}
+.literature-list span,.literature-result p {
+  font-size: var(--type-caption-size)
+}
+.literature-detail {
+  min-width: 0;
+  border-left: var(--border-strong-width) solid var(--color-border);
+  padding-left: var(--space-16)
+}
+.literature-registry a,.literature-registry strong,.literature-detail dd {
+  overflow-wrap: anywhere
+}
+.literature-detail dt {
+  font-weight: var(--weight-semibold);
+  margin-top: var(--space-12)
+}
+.literature-detail dd {
+  margin: var(--space-4) 0 var(--space-12);
+  white-space: pre-wrap
+}
+.literature-search,.literature-form {
+  border-top: var(--border-width) solid var(--color-border);
+  margin-top: var(--space-16);
+  padding-top: var(--space-16)
+}
+.literature-search form label {
+  flex: 1;
+  min-width: 180px
+}
+.literature-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12) 0;
+  border-bottom: var(--border-width) solid var(--color-border)
+}
+.literature-fields {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: var(--space-12)
+}
+.literature-form fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0
+}
+.literature-registry label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8)
+}
+.literature-registry input,.literature-registry select,.literature-registry textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box
+}
+.literature-form textarea {
+  resize: vertical
+}
+.literature-result>div {
+  min-width: 0
+}
+.literature-detail details {
+  margin-top: var(--space-16)
+}
+@media(max-width:700px) {
+  .literature-layout,.literature-fields {
+    grid-template-columns: 1fr
+  }
+  .literature-detail {
+    border-left: 0;
+    border-top: var(--border-width) solid var(--color-border);
+    padding: var(--space-12) 0
+  }
+  .literature-result {
+    align-items: start;
+    flex-direction: column
+  }
+}
+.operations-console .literature-registry .literature-list button {
+  width: 100%;
+  max-width: none
+}
+.console-task-body .research-body.literature-registry {
+  gap: var(--space-8)
+}
+.literature-registry select {
+  min-height: var(--control-height);
+  padding: var(--space-8) var(--space-8);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface)
+}
+.study-pane-tabs {
+  display: flex;
+  gap: var(--space-8);
+  margin-bottom: var(--space-12)
+}
+.operations-console .study-pane-tabs button {
+  width: auto;
+  flex: 1
+}
+.readiness-findings {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-12)
+}
+.readiness-findings article {
+  border-left: var(--border-accent-width) solid var(--color-border-strong);
+  padding: var(--space-8) var(--space-12);
+  background: var(--color-surface-subtle)
+}
+.readiness-findings p {
+  margin: var(--space-6) 0
+}
+.schema-editor {
+  border-top: var(--border-width) solid var(--color-border);
+  padding-top: var(--space-12)
+}
+.literature-form fieldset.schema-field {
+  border: var(--border-width) solid var(--color-border);
+  padding: var(--space-12);
+  margin: var(--space-12) 0
+}
+.study-readiness {
+  min-width: 0
+}
+.study-readiness code {
+  overflow-wrap: anywhere
+}
+.study-readiness li {
+  margin-bottom: var(--space-6)
+}
 /* Keep related fields and actions on one baseline within the literature workspace. */
-.literature-registry .literature-toolbar>label,.literature-registry .literature-search form>label,.literature-registry .literature-fields>label{margin:0}
-.literature-registry .literature-toolbar>label{width:224px;max-width:100%;min-width:0}
-.literature-registry .literature-toolbar>button,.literature-registry .literature-search form>button{width:auto;max-width:none;min-height:44px;height:44px;margin:0;flex:none}
-.literature-registry .literature-toolbar select,.literature-registry .literature-search input,.literature-registry .literature-fields input,.literature-registry .literature-fields select{height:44px;min-height:44px;margin:0}
-.literature-registry .literature-list,.literature-registry .study-pane-tabs{margin-top:0}
-.literature-registry .study-pane-tabs{min-height:44px;align-items:stretch}
-.literature-registry .study-pane-tabs button{margin:0;min-height:44px}
-.literature-registry .literature-detail>h3,.literature-registry .literature-search>h3,.literature-registry .literature-form>h3{margin-top:0}
-.literature-registry .literature-fields{gap:16px 12px;margin-bottom:16px}
-.literature-registry .literature-form .workflow-actions{gap:12px;margin-top:16px;flex-wrap:wrap}
-@media(max-width:700px){
- .literature-registry .literature-toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
- .literature-registry .literature-toolbar>label,.literature-registry .literature-toolbar>button{width:100%;min-width:0}
- .literature-registry .literature-toolbar>button{padding-inline:8px;font-size:12px}
- .literature-registry .literature-search form{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
- .literature-registry .literature-search form>label{min-width:0}
- .literature-registry .literature-search form>button{justify-self:start}
- .literature-registry .literature-layout{gap:16px}
- .literature-registry .literature-detail{padding:16px 0 0}
- .literature-registry .literature-fields{gap:12px}
+.literature-registry .literature-toolbar>label,.literature-registry .literature-search form>label,.literature-registry .literature-fields>label {
+  margin: 0
+}
+.literature-registry .literature-toolbar>label {
+  width: 224px;
+  max-width: 100%;
+  min-width: 0
+}
+.literature-registry .literature-toolbar>button,.literature-registry .literature-search form>button {
+  width: auto;
+  max-width: none;
+  min-height: var(--control-height);
+  height: var(--control-height);
+  margin: 0;
+  flex: none
+}
+.literature-registry .literature-toolbar select,.literature-registry .literature-search input,.literature-registry .literature-fields input,.literature-registry .literature-fields select {
+  height: var(--control-height);
+  min-height: var(--control-height);
+  margin: 0
+}
+.literature-registry .literature-list,.literature-registry .study-pane-tabs {
+  margin-top: 0
+}
+.literature-registry .study-pane-tabs {
+  min-height: var(--control-height);
+  align-items: stretch
+}
+.literature-registry .study-pane-tabs button {
+  margin: 0;
+  min-height: var(--control-height)
+}
+.literature-registry .literature-detail>h3,.literature-registry .literature-search>h3,.literature-registry .literature-form>h3 {
+  margin-top: 0
+}
+.literature-registry .literature-fields {
+  gap: var(--space-16) var(--space-12);
+  margin-bottom: var(--space-16)
+}
+.literature-registry .literature-form .workflow-actions {
+  gap: var(--space-12);
+  margin-top: var(--space-16);
+  flex-wrap: wrap
+}
+@media(max-width:700px) {
+  .literature-registry .literature-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    gap: var(--space-12)
+  }
+  .literature-registry .literature-toolbar>label,.literature-registry .literature-toolbar>button {
+    width: 100%;
+    min-width: 0
+  }
+  .literature-registry .literature-toolbar>button {
+    padding-inline: var(--space-8);
+    font-size: var(--type-caption-size)
+  }
+  .literature-registry .literature-search form {
+    display: grid;
+    grid-template-columns: minmax(0,1fr);
+    gap: var(--space-12)
+  }
+  .literature-registry .literature-search form>label {
+    min-width: 0
+  }
+  .literature-registry .literature-search form>button {
+    justify-self: start
+  }
+  .literature-registry .literature-layout {
+    gap: var(--space-16)
+  }
+  .literature-registry .literature-detail {
+    padding: var(--space-16) 0 0
+  }
+  .literature-registry .literature-fields {
+    gap: var(--space-12)
+  }
 }

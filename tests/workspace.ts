@@ -1,4 +1,4 @@
-import type {Page} from '@playwright/test';
+import {expect,type Page} from '@playwright/test';
 export async function step(page:Page,name:string){
  if(name==='데이터 검증'){
  await step(page,'연구 문헌');const registry=page.locator('.literature-registry');await registry.getByRole('button',{name:/Severson · 셀의 총/}).click();await registry.getByRole('button',{name:'데이터 준비 비교',exact:true}).click();const details=registry.locator('.severson-readiness-details');if(await details.getAttribute('open')===null)await details.locator('summary').first().click();return;
@@ -21,6 +21,7 @@ export async function step(page:Page,name:string){
  await nav.getByRole('button',{name:value,exact:true}).click();
 }
 export async function navigate(page:Page,name:string){
+ await expect(page.getByRole('region',{name:'생산·품질·연구 작업대',exact:true})).toBeVisible();
  if(!await page.getByRole('button',{name:'품질',exact:true}).isVisible())await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();
  const mode=['셀 매칭','셀 데이터'].includes(name)?'생산':['공정 관리','알고리즘 검증'].includes(name)?'연구':'품질';
  await page.getByRole('button',{name:mode,exact:true}).click();

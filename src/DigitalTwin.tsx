@@ -1,4 +1,4 @@
-import {useMemo,useRef,useState,type FormEvent} from 'react';
+import {useMemo,useRef,useState,type FormEvent,type CSSProperties} from 'react';
 import TwinScene from './twin/TwinScene';
 import {device,kinds,catalog,canPlace,validateLayout,initialSimulation,type Layout,type Kind} from './twin/model';
 import {planningLayout,orderedDevices,defaultStation,stageNames,stages,measurements,dataCoverage,estimate,durationText,publicationError,type Stage,type Measurement,type Estimate} from './twin/planning';
@@ -51,7 +51,7 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
    <TwinScene layout={layout} simulation={simulation} selected={selected} annotations={annotations} editing={mode==='design'&&editing&&canEdit} running={false} view={view} onSelect={selectDevice} onMove={(id,x,z)=>{if(canPlace(layout,id,x,z))commit({...layout,devices:layout.devices.map(d=>d.id===id?{...d,x,z}:d)});}}/>
    <div className="designer-caption">{mode==='design'?<button className="text-button" disabled={!canEdit} aria-pressed={editing} onClick={()=>setEditing(!editing)}>배치 이동 {editing?'켜짐':'꺼짐'}</button>:<span>강조 장비: 단위 처리능력이 가장 낮은 병목 후보</span>}<small>배치는 개념도입니다. 이동시간은 직접 입력합니다.</small></div>
    </>}
-   {surface==='analysis'&&mode==='simulation'&&result&&<div className="designer-timeline" aria-label="공정 시간 비교"><h3>목표 {plan?.quantity}팩 · 단계별 시작부터 마지막 완료까지</h3>{result.rows.map(r=><button title={`${r.name} · 팩당 평균 대기 ${durationText(r.waiting)}`} key={r.id} aria-pressed={selected===r.id} onClick={()=>selectDevice(r.id)}><span>{r.name}</span><span className="timeline-track"><i style={{marginLeft:`${r.start/result.total*100}%`,width:`${Math.max(.3,(r.end-r.start)/result.total*100)}%`}}/></span><small>{durationText(r.end)}</small></button>)}</div>}
+   {surface==='analysis'&&mode==='simulation'&&result&&<div className="designer-timeline" aria-label="공정 시간 비교"><h3>목표 {plan?.quantity}팩 · 단계별 시작부터 마지막 완료까지</h3>{result.rows.map(r=><button title={`${r.name} · 팩당 평균 대기 ${durationText(r.waiting)}`} key={r.id} aria-pressed={selected===r.id} onClick={()=>selectDevice(r.id)}><span>{r.name}</span><span className="timeline-track"><i style={{'--timeline-start':`${r.start/result.total*100}%`,'--timeline-width':`${(r.end-r.start)/result.total*100}%`} as CSSProperties}/></span><small>{durationText(r.end)}</small></button>)}</div>}
    {surface==='analysis'&&mode==='design'&&<section className="designer-coverage" aria-label="분석 목적별 데이터 확보 현황">
     <p className="coverage-intro">이 공정에서 어떤 분석을 준비할 수 있나요? 계획된 데이터와 추가할 데이터를 같은 행에서 확인하세요.</p>
     <table className="coverage-matrix"><thead><tr><th scope="col">분석 목적</th><th scope="col">확보할 계획이 있는 데이터</th><th scope="col">추가할 데이터 · 미계획</th></tr></thead><tbody>{coverage.map(r=><tr key={r.name}>

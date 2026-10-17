@@ -1,9 +1,9 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 import {choose} from './chips';
-test('all task choices remain visible without dropdown menus',async({page})=>{
+test('operational choices stay direct and research editors expose labelled selectors',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
- for(const task of ['운영 현황','셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){await navigate(page,task);await expect(page.locator('select')).toHaveCount(0);}
+ for(const task of ['운영 현황','셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){await navigate(page,task);if(task==='알고리즘 검증'){await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기',exact:true}).click();const group=page.locator('.task-step-panel:visible').getByRole('combobox',{name:'조건 그룹',exact:true});await expect(group).toBeVisible();await group.selectOption('DEMO-LOT-2');await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('선택 조건 32행');}else if(task==='공정 관리'){const equipment=page.getByRole('combobox',{name:'편집할 장비',exact:true});await expect(equipment).toBeVisible();await equipment.selectOption('storage');await expect(page.getByLabel('장비 이름',{exact:true})).toHaveValue('분류·보관');}else await expect(page.locator('select')).toHaveCount(0);}
 });
 test('large LOT choices are searchable and paginated while preserving selection',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 데이터');

@@ -4,7 +4,7 @@
 
 ## 목적과 근거
 
-알고리즘 검증의 `데이터 검증`은 수명 추론 연구에 필요한 데이터 구조·기초 품질·시험 조건을 비교한다. 모델을 학습/실행하거나 현장 성능을 인증하지 않는다. 기준은 Severson et al., Nature Energy (2019), DOI [10.1038/s41560-019-0356-8](https://doi.org/10.1038/s41560-019-0356-8)의 10·100사이클 Q(V) 분산 기반 수명 회귀 입력이다. 5사이클 분류·전체 특징 모델을 혼합하지 않는다.
+연구 → 데이터·AI 검증 → 수명·안전성 연구 준비에서 Severson 문헌의 데이터 준비 비교를 열고, `Severson 곡선·사이클·시험 조건 상세 검사`를 펼친다. 이 추가 검사는 수명 추론 연구에 필요한 데이터 구조·기초 품질·시험 조건을 비교한다. 모델을 학습/실행하거나 현장 성능을 인증하지 않는다. 기준은 Severson et al., Nature Energy (2019), DOI [10.1038/s41560-019-0356-8](https://doi.org/10.1038/s41560-019-0356-8)의 10·100사이클 Q(V) 분산 기반 수명 회귀 입력이다. 5사이클 분류·전체 특징 모델을 혼합하지 않는다.
 
 [논문](https://web.mit.edu/braatzgroup/Severson_NatureEnergy_2019.pdf)의 Data generation, Machine-learning approach, Methods를 기준으로 셀 모델·공칭 용량·챔버 온도·방전 조건, 공통 1,000지점, 수명 종료 정의를 기록했다. [공식 처리 코드](https://github.com/rdbraatz/data-driven-prediction-of-battery-cycle-life-before-capacity-degradation/blob/master/Load%20Data.ipynb)는 중단 시험 제외·배치 간 이어 측정 연결·잡음 채널 제외를 보여준다. 출처 URL과 앱 검사 규칙 버전을 보고서에 포함한다.
 

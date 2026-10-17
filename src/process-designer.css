@@ -38,3 +38,18 @@
 .designer-view-actions button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;min-height:36px;padding:0;border:1px solid var(--color-border);border-radius:6px;background:transparent;color:inherit}
 .designer-view-actions button:hover,.designer-view-actions button[aria-pressed=true]{background:#edf3ee;border-color:var(--color-primary)}
 @media(max-width:600px){.designer-toolbar{padding:0 8px;gap:4px}.designer-toolbar .designer-surface-tabs button{padding:10px 6px;font-size:12px}}
+
+/* Desktop is a bounded workbench: both panes share the available height. */
+@media(min-width:801px){
+ .process-designer{overflow:hidden}
+ .designer-header,.process-designer>.context-line,.process-designer>.notice{flex:none}
+ .designer-body{flex:1;min-height:0;align-items:stretch;grid-template-rows:minmax(0,1fr)}
+ .designer-canvas{display:flex;flex-direction:column;height:100%;min-width:0;overflow:hidden}
+ .designer-toolbar,.designer-caption{flex:none}
+ .process-designer .designer-canvas .twin-viewport{flex:1;min-height:0;height:auto;max-height:none}
+ .designer-inspector{height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+ .designer-canvas .designer-coverage,.designer-canvas .designer-timeline{min-height:0;overflow:auto;overscroll-behavior:contain}
+ .designer-expanded .designer-body{display:grid;grid-template-columns:minmax(0,1fr)}
+}
+.designer-inspector>.editor-tabs::before{content:"";position:absolute;inset:-18px -16px 0;background:var(--color-surface);z-index:-1}
+@media(min-width:801px) and (max-height:850px){.designer-canvas .scene-label{width:96px!important;max-width:96px!important}.designer-canvas .scene-label strong{font-size:11px}}

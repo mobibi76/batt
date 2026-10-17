@@ -27,7 +27,7 @@ test('process diagram and consolidated coverage switch in place',async({page})=>
  await page.setViewportSize({width:1366,height:768});await open(page);
  expect((await page.locator('.designer-toolbar').boundingBox())!.height).toBeLessThanOrEqual(56);
  await page.screenshot({path:'.local/process-compact-toolbar.png'});
- expect((await page.locator('.designer-canvas .twin-viewport').boundingBox())!.height).toBeGreaterThanOrEqual(460);
+ await expect(page.locator('.designer-canvas .twin-viewport')).toBeInViewport({ratio:1});
  await page.getByRole('button',{name:'공정도 확대',exact:true}).click();
  await expect(page.locator('.designer-canvas .twin-viewport')).toBeInViewport({ratio:1});
  await page.screenshot({path:'.local/process-expanded.png'});
@@ -47,4 +47,18 @@ test('process diagram and consolidated coverage switch in place',async({page})=>
  await expect(life.locator('.coverage-missing')).not.toContainText('온도');
  await page.screenshot({path:'.local/process-coverage.png'});
  await expect(page.locator('.coverage-matrix tbody tr').last()).toBeInViewport({ratio:1});
+});
+
+for(const viewport of [{width:1366,height:768},{width:1920,height:1080}])test(`process and inspector retain the same height at ${viewport.width}`,async({page})=>{
+ await page.setViewportSize(viewport);await open(page);
+ const canvas=page.locator('.designer-canvas'),inspector=page.locator('.designer-inspector');
+ const before=(await canvas.boundingBox())!,right=(await inspector.boundingBox())!;
+ expect(Math.abs(before.y-right.y)).toBeLessThan(2);
+ expect(Math.abs(before.height-right.height)).toBeLessThan(2);
+ await inspector.evaluate(e=>e.scrollTop=e.scrollHeight);
+ await expect(page.getByRole('button',{name:'이 장비 삭제',exact:true})).toBeInViewport({ratio:1});
+ expect((await canvas.boundingBox())!.y).toBe(before.y);
+ await expect(page.locator('.designer-canvas .twin-viewport')).toBeInViewport({ratio:1});
+ expect(await page.locator('.process-designer').evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
+ await page.screenshot({path:`.local/process-pane-bottom-${viewport.width}.png`});
 });

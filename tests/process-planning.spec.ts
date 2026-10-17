@@ -56,9 +56,42 @@ for(const viewport of [{width:1366,height:768},{width:1920,height:1080}])test(`p
  expect(Math.abs(before.y-right.y)).toBeLessThan(2);
  expect(Math.abs(before.height-right.height)).toBeLessThan(2);
  await inspector.evaluate(e=>e.scrollTop=e.scrollHeight);
- await expect(page.getByRole('button',{name:'이 장비 삭제',exact:true})).toBeInViewport({ratio:1});
+ await expect(page.locator('.designer-route li').last()).toBeInViewport({ratio:1});
  expect((await canvas.boundingBox())!.y).toBe(before.y);
  await expect(page.locator('.designer-canvas .twin-viewport')).toBeInViewport({ratio:1});
  expect(await page.locator('.process-designer').evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
  await page.screenshot({path:`.local/process-pane-bottom-${viewport.width}.png`});
+});
+
+test('adding and selecting equipment opens its editor with visible removal',async({page})=>{
+ await page.setViewportSize({width:1366,height:768});await open(page);
+ const count=await page.locator('.designer-route li').count();
+ await page.locator('.designer-device-tools summary').click();
+ await page.locator('.designer-library button').first().click();
+ await expect(page.locator('.designer-route li')).toHaveCount(count+1);
+ await expect(page.getByLabel('장비 이름',{exact:true})).toBeInViewport({ratio:1});
+ await page.getByLabel('장비 이름',{exact:true}).fill('추가 장비 편집 확인');
+ await expect(page.getByRole('button',{name:'이 장비 삭제',exact:true})).toBeInViewport({ratio:1});
+ await page.getByRole('button',{name:'이 장비 삭제',exact:true}).click();
+ await expect(page.locator('.designer-route li')).toHaveCount(count);
+ await expect(page.locator('.designer-route')).not.toContainText('추가 장비 편집 확인');
+ await page.getByRole('button',{name:'삭제 취소',exact:true}).click();
+ await expect(page.getByLabel('장비 이름',{exact:true})).toHaveValue('추가 장비 편집 확인');
+ await page.getByRole('button',{name:'이 장비 삭제',exact:true}).click();
+ await page.locator('.designer-route li').last().getByRole('button').first().click();
+ await expect(page.getByLabel('장비 이름',{exact:true})).toHaveValue('최종검사');
+ await expect(page.getByLabel('장비 이름',{exact:true})).toBeInViewport({ratio:1});
+ await page.screenshot({path:'.local/process-equipment-editor.png'});
+ await page.getByLabel('장비 이름',{exact:true}).fill('최종검사 수정');
+ await page.getByRole('button',{name:'최종검사 수정 앞으로',exact:true}).click();
+ await expect(page.locator('.designer-route li').nth(count-2)).toContainText('최종검사 수정');
+ await page.getByRole('button',{name:'확보 데이터',exact:true}).click();
+ await page.getByLabel('편집할 장비',{exact:true}).selectOption('grading');
+ await expect(page.getByRole('heading',{name:'셀 충방전 검사 · 확보 계획',exact:true})).toBeVisible();
+ await page.getByLabel('온도',{exact:true}).check();
+ await page.getByRole('button',{name:'저장·승인',exact:true}).click();
+ await page.getByRole('button',{name:'개인 설계 저장',exact:true}).click();
+ const saved=await page.evaluate(()=>Object.entries(localStorage).filter(([k])=>k.startsWith('jsi-process-plan-v1-')).map(([,v])=>JSON.parse(v)));
+ expect(saved.some(l=>l.devices.some((d:any)=>d.name==='최종검사 수정')&&l.plan.stations.grading.data.includes('temperature'))).toBe(true);
+
 });

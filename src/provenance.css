@@ -51,3 +51,6 @@
 .source-table-scroll th { min-width:110px; max-width:360px; white-space:normal; }
 .source-tables .console-pager { flex-shrink:0; }
 .sample-data-view nav[hidden] { display:none; }
+
+.private-demo-home-row { margin-bottom:var(--space-12); padding-right:56px; }
+.private-demo-entry .private-demo-home-row .private-demo-home { display:inline-flex; align-items:center; justify-content:center; width:44px; min-width:44px; height:44px; padding:0; }

@@ -13,6 +13,12 @@ for (const [width, height] of [[320, 360], [320, 480], [900, 360], [1366, 600], 
         const findings: any[] = [];
         async function audit(name: string) { const dismiss = page.getByRole('button', { name: '알림 닫기', exact: true }); if (await dismiss.isVisible())
             await dismiss.click(); const bad = await page.evaluate(() => { const scope = document.querySelector<HTMLElement>('[aria-modal=true]') || document; const targets = [...scope.querySelectorAll<HTMLElement>('button,input:not([type=radio]):not([type=checkbox]):not([type=file]),select,textarea,summary,a,.choice-chip>span')].filter(e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 4 && r.height > 4 && s.visibility !== 'hidden' && s.pointerEvents !== 'none' && e.checkVisibility({ checkVisibilityCSS: true }) && !e.closest('.scene-label.quiet'); }); const failed: any[] = []; for (const e of targets) {
+            // Start each reachability check at the scroll owners' top; a prior control
+            // may leave this control underneath a sticky navigation bar.
+            for (let owner = e.parentElement; owner; owner = owner.parentElement) {
+                if (/^(auto|scroll)$/.test(getComputedStyle(owner).overflowY))
+                    owner.scrollTo({ top: 0, behavior: 'instant' });
+            }
             let p = e.parentElement;
             while (p) {
                 const s = getComputedStyle(p);
@@ -135,8 +141,12 @@ for (const [width, height] of [[320, 360], [320, 480], [900, 360], [1366, 600], 
                     await audit('연구-' + s);
                     await researchSide(page, 'controls');
                     await audit('연구입력-' + s);
-                    if (s === '2. 비교 조건')
+                    if (s === '2. 비교 조건') {
                         await page.getByRole('button', { name: '알고리즘 비교 실행', exact: true }).click();
+                        // The worker opens results on completion; wait before auditing later stages.
+                        await expect(page.getByRole('heading', { name: '비교 후보 선택', exact: true, includeHidden: true })).toBeAttached();
+                        await expect(page.getByRole('navigation', { name: '작업 단계', exact: true }).getByRole('button', { name: '3. 검증 결과', exact: true })).toHaveAttribute('aria-pressed', 'true');
+                    }
                 }
                 await step(page, '연구 문헌');
                 await audit('문헌');

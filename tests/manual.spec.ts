@@ -74,7 +74,7 @@ test('help targets the selected action, does not highlight the approval toolbar,
  const target=page.locator('.sample-data-view .console-task-heading > button');
  for(const [width,height] of [[1366,768],[390,844],[320,480]]){
   await page.setViewportSize({width,height});
-  await expect.poll(async()=>{const a=await target.boundingBox(),b=await page.locator('.manual-spotlight').boundingBox();return !!a&&!!b&&Math.abs(a.x-b.x)<1&&Math.abs(a.y-b.y)<1&&Math.abs(a.width-b.width)<1&&Math.abs(a.height-b.height)<1;}).toBe(true);
+  await expect.poll(async()=>{const a=await target.boundingBox(),b=await page.locator('.manual-spotlight').boundingBox();return !!a&&!!b&&Math.abs(b.x-Math.max(4,a.x-12))<1&&Math.abs(b.y-Math.max(4,a.y-12))<1&&Math.abs(b.x+b.width-Math.min(width-4,a.x+a.width+12))<1&&Math.abs(b.y+b.height-Math.min(height-4,a.y+a.height+12))<1;}).toBe(true);
  }
  await page.keyboard.press('Escape');await page.setViewportSize({width:1366,height:768});await target.click();await navigate(page,'품질·공정 승인함');await page.getByRole('button',{name:'사용 안내',exact:true}).click();await topics.getByRole('button',{name:'근거 검토 후 판단',exact:true}).click();
  await expect(page.locator('.manual-spotlight')).toHaveCount(0);await expect(page.locator('.manual-current small')).toBeVisible();await page.keyboard.press('Escape');
@@ -87,4 +87,12 @@ test('inspection highlight includes evidence, kind and judgement, and can reveal
   await expect.poll(async()=>{const a=await page.getByRole('radiogroup',{name,exact:true}).boundingBox(),b=await page.locator('.manual-spotlight').boundingBox();return !!a&&!!b&&b.x<=a.x+1&&b.y<=a.y+1&&b.x+b.width>=a.x+a.width-1&&b.y+b.height>=a.y+a.height-1;}).toBe(true);
  }
  await page.setViewportSize({width:320,height:480});await page.getByRole('button',{name:'강조 영역만 보기',exact:true}).click();await expect(page.locator('.manual-spotlight')).toBeVisible();await expect(page.getByRole('button',{name:'설명 닫기',exact:true})).toBeInViewport({ratio:1});await page.getByRole('button',{name:'설명 다시 펼치기',exact:true}).click();await expect(page.getByRole('button',{name:'실측·시험 및 판정 구분',exact:true})).toHaveAttribute('aria-pressed','true');
+});
+
+test('quality help has a padded rounded frame and Docs keeps a separate reading surface',async({page})=>{
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'품질',exact:true}).click();await page.getByRole('button',{name:'사용 안내',exact:true}).click();await page.getByRole('button',{name:'지표의 근거 확인',exact:true}).click();
+ const frame=page.locator('.manual-spotlight');await expect(frame).toBeVisible();await expect(frame).toHaveCSS('border-top-width','2px');await expect(frame).toHaveCSS('border-top-left-radius','12px');
+ await page.screenshot({path:'.local/manual-quality-comfort.png'});
+ await page.getByRole('button',{name:'DOCS 전체 매뉴얼',exact:true}).click();await expect(page.locator('.manual-reading')).toHaveCSS('border-top-width','1px');
+ for(const [width,height] of [[1366,768],[390,844],[320,480]]){await page.setViewportSize({width,height});await expect(page.getByRole('button',{name:'DOCS 닫기',exact:true})).toBeInViewport();expect(await page.locator('.manual-dialog').evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);await page.screenshot({path:`.local/docs-comfort-${width}.png`});}
 });

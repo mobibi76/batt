@@ -30,3 +30,10 @@ export function targetRect(step:ManualStep):Rect|null {
  return {left,top,width:Math.max(...boxes.map(r=>r.left+r.width))-left,height:Math.max(...boxes.map(r=>r.top+r.height))-top};
 }
 export function overlap(a:Rect,b:Rect){return Math.max(0,Math.min(a.left+a.width,b.left+b.width)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.top+a.height,b.top+b.height)-Math.max(a.top,b.top));}
+
+export function paddedRect(rect:Rect):Rect {
+ const padding=12,edge=4;
+ const left=Math.max(edge,rect.left-padding),top=Math.max(edge,rect.top-padding);
+ const right=Math.min(innerWidth-edge,rect.left+rect.width+padding),bottom=Math.min(innerHeight-edge,rect.top+rect.height+padding);
+ return {left,top,width:Math.max(0,right-left),height:Math.max(0,bottom-top)};
+}

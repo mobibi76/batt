@@ -1,16 +1,16 @@
 /* JSI only: shared palette, type, spacing and geometry.
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
-  --color-manual-brand: #526878;
+  --color-manual-brand: #536777;
   --color-manual-hover: #405463;
-  --color-manual-surface: #f3f4f2;
+  --color-manual-surface: #edefeb;
   --color-manual-accent: var(--color-manual-brand);
-  --color-manual-border: #d4dbe0;
-  --color-manual-selected: #e7edf0;
+  --color-manual-border: #b9c4ca;
+  --color-manual-selected: #e2e9ed;
   --color-manual-muted: #5f6b73;
-  --color-manual-paper: #fafaf8;
+  --color-manual-paper: #f7f6f2;
   --color-manual-ink: #303a40;
-  --color-manual-dimmer: rgba(15,31,29,.66);
+  --color-manual-dimmer: rgba(35,39,43,.48);
   --size-manual-print-image: 105mm;
   --size-manual-panel: 680px;
   --size-manual-index: 280px;

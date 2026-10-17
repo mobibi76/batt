@@ -5,7 +5,7 @@ import {manualVersion,scenarios,scenarioById} from './content';
 import './manual.css';
 import Article,{walkthroughs} from './ManualArticle';
 import {guidance} from './guidance';
-import {visibleRect,findTargets,targetRect,overlap,type Rect} from './spotlight';
+import {visibleRect,findTargets,targetRect,paddedRect,overlap,type Rect} from './spotlight';
 const visible=(e:Element)=>!!visibleRect(e);
 export default function UserManual({context}:{context:string}){
  const [host,setHost]=useState<Element|null>(null),[mode,setMode]=useState<'screen'|'docs'|null>(null),[topic,setTopic]=useState(0),[docsId,setDocsId]=useState(context),[query,setQuery]=useState(''),[rect,setRect]=useState<Rect|null>(null);
@@ -28,7 +28,7 @@ export default function UserManual({context}:{context:string}){
   if(mode!=='screen'){setRect(null);return;}
   let frame=0,previous='';
   const update=()=>{
-   const next=targetRect(step);const box=panel.current?.getBoundingClientRect();
+   const target=targetRect(step);const next=target?paddedRect(target):null;const box=panel.current?.getBoundingClientRect();
    let position='bottom-center',hidden=false;
    if(next&&box){
     const gap=parseFloat(getComputedStyle(dialog.current!).getPropertyValue('--space-8'))||8;

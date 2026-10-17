@@ -1,7 +1,7 @@
 import {readFile} from 'node:fs/promises';
 import {prepareInspection} from './inspection';
 import {choose} from './chips';
-import {navigate,step} from './workspace';
+import {navigate,step,researchSide} from './workspace';
 import {test,expect} from '@playwright/test';
 
 for(const width of [1366,390]){test.describe(`역할별 사용자 동선 ${width}px`,()=>{test.use({viewport:{width,height:900}});
@@ -42,19 +42,19 @@ test('researcher compares, exports, edits and saves a separate process design',a
  await page.getByRole('button',{name:'생산',exact:true}).click();const before=await page.locator('.floor-context-heading').innerText();
  await navigate(page,'알고리즘 검증');
  await expect(page.locator('.research-lab button').filter({hasText:'알고리즘 비교 실행'})).toBeDisabled();
- await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();
- await expect(page.locator('.research-dataset')).toContainText('55셀');
- await step(page,'2. 비교 조건');await page.getByRole('button',{name:'알고리즘 비교 실행'}).click();
+ await researchSide(page,'controls');await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기'}).click();
+ await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('원자료 128행');
+ await step(page,'2. 비교 조건');await researchSide(page,'controls');await page.getByRole('button',{name:'알고리즘 비교 실행'}).click();
  await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();
- await expect(page.locator('.research-cohort')).toHaveCount(3);
- await expect(page.locator('.research-cohort tbody tr')).toHaveCount(9);
+ await researchSide(page,'evidence');await expect(page.locator('.research-cohort')).toHaveCount(1);
+ await researchSide(page,'evidence');await page.locator('.research-cohort > summary').click();await expect(page.locator('.research-cohort table')).toBeVisible();await page.locator('.research-cohort tbody tr').first().scrollIntoViewIfNeeded();await expect(page.locator('.research-cohort tbody tr').first()).toBeInViewport();await expect(page.locator('.research-cohort tbody tr')).toHaveCount(12);
  const results=await page.locator('.research-cohort tbody tr').first().innerText();expect(results).toContain('무작위 순서 조합');
- const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'검증 보고서 내려받기'}).click();const dl=await downloadPromise;
+ await researchSide(page,'controls');const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'검증 보고서 내려받기'}).click();const dl=await downloadPromise;
  expect(dl.suggestedFilename()).toMatch(/JSI_연구검증_.*\.json/);
  const stream=await dl.createReadStream();const chunks=[];for await(const c of stream!)chunks.push(c);const report=JSON.parse(Buffer.concat(chunks).toString('utf8').replace(/^\ufeff/,''));
- expect(report.dataset.cells).toHaveLength(55);expect(report.results).toHaveLength(3);expect(report.dataset_sha256).toMatch(/^[a-f0-9]{64}$/);expect(report.promotion.status).toContain('운영 미적용');
+ expect(report.dataset.cells).toHaveLength(128);expect(report.results).toHaveLength(4);expect(report.dataset_sha256).toMatch(/^[a-f0-9]{64}$/);expect(report.promotion.status).toContain('운영 미적용');
  await page.getByRole('button',{name:'생산',exact:true}).click();expect(await page.locator('.floor-context-heading').innerText()).toBe(before);
- await navigate(page,'알고리즘 검증');await expect(page.locator('.research-history button')).toHaveCount(1);await step(page,'최근 실험');await page.locator('.research-history button').click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();await step(page,'2. 비교 조건');await expect(page.getByRole('button',{name:'알고리즘 비교 실행'})).toBeEnabled();await expect(page.getByLabel('재현 시드')).toHaveValue('20261014');
+ await navigate(page,'알고리즘 검증');await expect(page.locator('.research-history button')).toHaveCount(1);await step(page,'최근 실험');await page.locator('.research-history button').click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();await step(page,'2. 비교 조건');await researchSide(page,'controls');await expect(page.getByRole('button',{name:'알고리즘 비교 실행'})).toBeEnabled();await expect(page.getByLabel('재현 시드')).toHaveValue('20261014');
  await step(page,'공개 모델 추론');await page.getByRole('button',{name:'공개 모델 실행',exact:true}).click();await expect(page.locator('.pretrained-explorer')).toContainText('1,127.1 mAh');
  await step(page,'Severson 열화 이력');await expect(page.locator('.severson-chart')).toBeVisible();
  await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 설계 · 데이터 확보',exact:true}).click();await step(page,'선택 장비 · 데이터 정의');await page.getByLabel('장비 이름',{exact:true}).fill('연구 검토용 식별 리더');

@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {navigate,step} from './workspace';
+import {navigate,step,researchSide} from './workspace';
 import {choose} from './chips';
 for(const width of [1366,390]){test.describe(`업무 재개 ${width}px`,()=>{
  test.use({viewport:{width,height:900}});
@@ -18,9 +18,9 @@ for(const width of [1366,390]){test.describe(`업무 재개 ${width}px`,()=>{
   await expect(page.locator('.cell-inventory tbody tr').first()).toHaveText(firstCell,{useInnerText:true});
  });
  test('research repeated run and reopening the same history show results',async({page})=>{
-  await navigate(page,'알고리즘 검증');await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();
-  await expect(page.locator('.research-dataset')).toContainText('55셀');
-  for(let i=0;i<2;i++){await step(page,'2. 비교 조건');await page.getByRole('button',{name:'알고리즘 비교 실행'}).click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();}
+  await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await navigate(page,'알고리즘 검증');await researchSide(page,'controls');await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기'}).click();
+  await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('원자료 128행');
+  for(let i=0;i<2;i++){await step(page,'2. 비교 조건');await researchSide(page,'controls');await page.getByRole('button',{name:'알고리즘 비교 실행'}).click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();}
   for(let i=0;i<2;i++){await step(page,'최근 실험');await page.locator('.research-history button').first().click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();}
  });
  test('quality review draft survives list return and stays separate by reviewer',async({page})=>{

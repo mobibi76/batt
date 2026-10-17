@@ -1,9 +1,9 @@
 import {test,expect} from '@playwright/test';
-import {navigate,step} from './workspace';
+import {navigate,step,researchSide} from './workspace';
 test('all import controls open a file chooser by mouse and keyboard',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
- for(const [task,panel,name] of [['셀 데이터','고객 자료 검토','고객 측정 파일 가져오기'],['셀 데이터','측정 파일로 시작하세요','파일 가져오기'],['공정 관리','저장·가져오기','설계 가져오기'],['알고리즘 검증','1. 연구 데이터','검증 CSV 가져오기']]){
-  await navigate(page,task);if(task==='알고리즘 검증')await page.getByText('추가 연구 CSV 가져오기',{exact:true}).click();else await step(page,panel);
+ for(const [task,panel,name] of [['셀 데이터','고객 자료 검토','고객 측정 파일 가져오기'],['셀 데이터','측정 파일로 시작하세요','파일 가져오기'],['공정 관리','저장·가져오기','설계 가져오기'],['알고리즘 검증','1. 연구 데이터','고객 측정 CSV 가져오기']]){
+  await navigate(page,task);if(task==='알고리즘 검증'){await researchSide(page,'controls');await page.locator('summary').filter({hasText:'고객 측정 CSV 가져오기'}).click();}else await step(page,panel);
   const button=page.getByRole('button',{name,exact:true});await expect(button).toBeEnabled();
   for(const method of ['mouse','Enter','Space']){const opened=page.waitForEvent('filechooser');if(method==='mouse')await button.click();else{await button.focus();await page.keyboard.press(method);}const picker=await opened;await picker.setFiles([]);}
  }

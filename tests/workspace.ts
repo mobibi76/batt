@@ -31,3 +31,6 @@ export async function navigate(page:Page,name:string){
  if(name==='공정 관리')await page.locator('.process-designer').waitFor();
  if(name==='품질 리포트')await step(page,'품질 리포트');
 }
+export async function researchSide(page:Page,side:'controls'|'evidence'){
+ const nav=page.locator('.field-mobile-tabs:visible');if(await nav.count())await nav.getByRole('button',{name:side==='controls'?'입력·선택 상세':'분석 근거',exact:true}).click();
+}

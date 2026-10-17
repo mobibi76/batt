@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {navigate,step} from './workspace';
+import {navigate,step,researchSide} from './workspace';
 test('Severson capacity records retain continuation provenance and remain separate from matching',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await navigate(page,'알고리즘 검증');await step(page,'Severson 열화 이력');
@@ -19,5 +19,5 @@ test('Severson capacity records retain continuation provenance and remain separa
  await expect(panel.getByRole('img')).toBeHidden();
  await panel.getByRole('radio',{name:/이어 측정/}).nth(1).check();
  await expect(panel.getByRole('img')).toBeVisible();
- await step(page,'1. 연구 데이터');await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();await expect(page.locator('.research-dataset')).toContainText('55셀');
+ await step(page,'1. 연구 데이터');await researchSide(page,'controls');await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기'}).click();await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('원자료 128행');
 });

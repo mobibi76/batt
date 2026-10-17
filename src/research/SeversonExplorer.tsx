@@ -15,7 +15,7 @@ export default function SeversonExplorer(){
  const rows=data.records.filter(r=>r.batch===batch),row=rows.find(r=>r.id===selected)??rows[0],notes=data.batches.find(b=>b.title===batch)!;
  const values=row.capacity_mah,min=Math.min(...values),max=Math.max(...values),range=max-min||1;
  const points=values.map((v,i)=>`${45+i/(values.length-1)*510},${160-(v-min)/range*130}`).join(' ');
- return <div className="research-body severson-explorer">
+ return <div className="research-body severson-explorer"><p><strong>원 연구 목적: 셀이 수명 종료까지 총 몇 사이클을 사용할 수 있는가?</strong></p><p>수명·안전성 연구를 위한 참고 자료입니다. 현재 화면은 공개 셀의 용량 이력 조회이며 수명 예측 모델을 실행하지 않습니다. 고객 셀이나 조합한 팩의 수명·안전성을 직접 추론하는 근거로 사용할 수 없습니다.</p>
 
   <button className="secondary severson-picker-toggle" aria-pressed={showPicker} onClick={()=>setShowPicker(!showPicker)}>{showPicker?'이력 보기':'시험 선택'}</button>
   <div className={`severson-layout ${showPicker?'severson-picker-open':''}`}><div className="severson-selector">
@@ -31,7 +31,7 @@ export default function SeversonExplorer(){
   </svg>
   {row.continuation_of&&<p className="muted">이 셀은 이전 배치에서 이어 측정했습니다. 새로운 독립 셀로 세지 않으며 앞선 기록과 자동 연결하지 않습니다.</p>}
   <p className="muted">용량 변화 관찰용입니다. 초기 과도값·시험 중단을 보존했습니다. 마지막 기록은 수명 종료 판정이 아니며, 이 요약으로 수명·현장 불량률을 예측하지 않습니다.</p>
-  <div className="workflow-actions"><button className="secondary" onClick={()=>download(`JSI_Severson_${row.id}.json`,JSON.stringify({schema_version:1,source_url:data.source_url,citation:data.citation,license:data.license,retrieved_at:data.retrieved_at,files:data.files,transform:data.transform,batch:notes,record:row,scope:'공식 용량 요약 관찰. 학습·수명 예측·조합 적합 판정·생산 적용 아님.'},null,2),'application/json')}>선택 기록·출처 내려받기</button></div>
+  <div className="workflow-actions"><button className="secondary" onClick={()=>download(`JSI_Severson_${row.id}.json`,JSON.stringify({schema_version:1,source_url:data.source_url,citation:data.citation,license:data.license,retrieved_at:data.retrieved_at,files:data.files,transform:data.transform,batch:notes,record:row,scope:'원 연구 목적은 셀의 총 사이클 수명 예측. 현재 제공 기능은 공식 용량 요약 관찰. 수명·안전성 연구 참고용. 고객 데이터 적용 성능 미검증. 학습·수명 예측·팩 안전성 추론·조합 적합 판정·생산 적용 아님.'},null,2),'application/json')}>선택 기록·출처 내려받기</button></div>
   <details><summary>시험 조건·자료 한계</summary>  <p>공식 공개 요약 <strong>{data.record_count}개 시험 기록 · 고유 셀 {data.unique_cells}개</strong>. 이어 측정한 기록 {data.continuations}개를 별도 표시합니다. 논문 분석용 124셀과 동일한 선별 표본이 아닙니다.</p><p>1.1Ah LFP 셀을 30°C에서 시험한 자료입니다. 급속충전 조건은 시험마다 다릅니다. 전압·저항·사이클 번호가 부족해 셀 조합에는 사용하지 않습니다.</p><p>일부 시험은 중간에 끝났거나 측정 문제가 있었습니다. 아래 원문 주의사항을 확인하세요.</p><p>{notes.design}</p><p>{notes.notes}</p><p>{notes.experimental_notes}</p><SourceReference id="severson-data">MIT·Stanford·TRI 공동 연구 원출처</SourceReference><p>{data.citation}</p><p>{data.license}</p><p>예측 모델 코드는 별도 라이선스 대상이며 이 앱에서 사용하지 않습니다.</p></details>
  </div></div></div>;
 }

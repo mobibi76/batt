@@ -1,8 +1,9 @@
+import {validatePlan,publicationError,type ProcessPlan} from './planning';
 import {fieldSteps} from '../process';
 export type Kind = 'scanner' | 'meter' | 'bench' | 'welder' | 'cycler' | 'inspection';
 export type Tag = { key:string; label:string; unit:string; nominal:number; high:number|null };
 export type Device = { id:string; kind:Kind; name:string; model:string; x:number; z:number; rotation:number; cycle:number; tags:Tag[] };
-export type Layout = { version:1; source:'simulation'; devices:Device[]; links:{from:string;to:string}[] };
+export type Layout = { plan?:ProcessPlan; version:1; source:'simulation'; devices:Device[]; links:{from:string;to:string}[] };
 export const catalog:Record<Kind,{name:string;reference:string;url:string;description:string;cycle:number;tags:Tag[]}> = {
  scanner:{name:'식별 리더',reference:'Cognex DataMan 280',url:'https://docs.cognex.com/dmst_6114/web/EN/DM280_Manual/Content/Topics/specifications/specifications-280.htm',description:'코드 식별 장비 참고. 가상 작업 ID를 발급합니다.',cycle:2,tags:[{key:'read_rate',label:'모의 판독률',unit:'%',nominal:99,high:null}]},
  meter:{name:'셀 측정기',reference:'HIOKI BT3562A',url:'https://www.hioki.com/global/products/resistance-meters/battery/id_6826',description:'OCV·AC 내부저항 측정기 참고. 측정 조건은 실제 장비 확인 후 매핑합니다.',cycle:3,tags:[{key:'voltage',label:'전압',unit:'mV',nominal:3300,high:3400},{key:'resistance',label:'AC 내부저항',unit:'mΩ',nominal:0.42,high:0.6}]},
@@ -36,9 +37,10 @@ export function validateLayout(value:unknown):Layout {
  for(const edge of l.links){if(!edge||!ids.has(edge.from)||!ids.has(edge.to)||edge.from===edge.to||incoming.has(edge.to)||outgoing.has(edge.from))fail();incoming.add(edge.to);outgoing.add(edge.from);}
  for(const id of ids){const seen=new Set<string>();let next:string|undefined=id;while(next){if(seen.has(next))fail();seen.add(next);next=l.links.find(e=>e.from===next)?.to;}}
  // Only whitelisted configuration is persisted; telemetry is never imported as a live reading.
- return {version:1,source:'simulation',devices:l.devices.map(d=>({id:d.id,kind:d.kind,name:d.name,model:d.model,x:d.x,z:d.z,rotation:d.rotation,cycle:d.cycle,tags:d.tags.map(t=>({key:t.key,label:t.label,unit:t.unit,nominal:t.nominal,high:t.high}))})),links:l.links.map(e=>({from:e.from,to:e.to}))};
+ return {...(l.plan?{plan:validatePlan(l.plan,l.devices)}:{}),version:1,source:'simulation',devices:l.devices.map(d=>({id:d.id,kind:d.kind,name:d.name,model:d.model,x:d.x,z:d.z,rotation:d.rotation,cycle:d.cycle,tags:d.tags.map(t=>({key:t.key,label:t.label,unit:t.unit,nominal:t.nominal,high:t.high}))})),links:l.links.map(e=>({from:e.from,to:e.to}))};
 }
 export function runError(l:Layout):string|null {
+ if(l.plan)return publicationError(l);
  if(!l.devices.length)return '장비 블록을 먼저 배치하세요.';
  for(const d of l.devices){const input=l.links.some(e=>e.to===d.id),output=l.links.some(e=>e.from===d.id);
   if((!input&&d.kind!=='scanner')||(!output&&d.kind!=='inspection')||(input&&d.kind==='scanner')||(output&&d.kind==='inspection'))return '각 공정은 식별 리더에서 시작해 최종검사대에서 끝나도록 연결하세요. 분기·합류·순환은 현재 지원하지 않습니다.';

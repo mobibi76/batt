@@ -1,4 +1,4 @@
-﻿import {test,expect,type Page} from '@playwright/test';
+import {test,expect,type Page} from '@playwright/test';
 import {navigate,step} from './workspace';
 async function inspect(page:Page,screen:string){return page.locator('button:visible, .choice-chip:visible span, .file-button:visible, .twin-import:visible').evaluateAll((elements,screen)=>{
  const issues:string[]=[];
@@ -43,7 +43,7 @@ for(const width of [320,390,768,1366])test(`control labels keep Korean words tog
  }
  for(const name of ['운영 현황','셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){
   await navigate(page,name);issues.push(...await inspectSteps(page,name));
-  if(name==='공정 관리')for(const mode of ['설비 상태','시뮬레이션']){await page.getByRole('button',{name:mode,exact:true}).click();issues.push(...await inspectSteps(page,`${name}/${mode}`));}
+  if(name==='공정 관리')for(const mode of ['공정 설계 · 데이터 확보','시뮬레이션 · 작업 효율']){await page.getByRole('button',{name:mode,exact:true}).click();issues.push(...await inspectSteps(page,`${name}/${mode}`));}
  }
  expect([...new Set(issues)]).toEqual([]);
 });

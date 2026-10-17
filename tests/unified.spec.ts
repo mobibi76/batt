@@ -10,7 +10,7 @@ test('all tools stay in one workspace without legacy navigation',async({page})=>
  for(const name of ['셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){await navigate(page,name);await shell(page);await expect(page.locator('.console-task-body')).toBeVisible();await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await expect(page.locator('.console-home-body')).toBeVisible();}
 });
 test('import and sample download complete in control',async({page})=>{
- await start(page);await navigate(page,'셀 데이터');const download=page.waitForEvent('download');await page.getByRole('button',{name:'샘플 양식'}).click();expect((await download).suggestedFilename()).toContain('.csv');
+ await start(page);await navigate(page,'셀 데이터');await step(page,'측정 파일로 시작하세요');const download=page.waitForEvent('download');await page.getByRole('button',{name:'샘플 양식'}).click();expect((await download).suggestedFilename()).toContain('.csv');
  await page.locator('.upload-actions input[type=file]').setInputFiles('tests/fixtures/sample.xlsx');await expect(page.getByRole('dialog')).toContainText('형식 검증 완료');await page.getByRole('button',{name:'전체 1개 등록'}).click();await step(page,'셀 재고');await page.getByPlaceholder('셀 ID 또는 LOT 검색').fill('XLSX-QA-001');await expect(page.getByRole('cell',{name:'XLSX-QA-001 합성값',exact:true})).toBeVisible();await shell(page);
 });
 test('field inspections flow into independent control approval and reinspection revokes approval',async({page})=>{
@@ -25,6 +25,6 @@ test('field inspections flow into independent control approval and reinspection 
 test('research executes in control and exports isolated evidence',async({page})=>{
  await start(page);await navigate(page,'알고리즘 검증');await page.getByRole('button',{name:'UConn 공개 데이터 불러오기'}).click();await expect(page.locator('.research-dataset')).toContainText('55셀');await step(page,'2. 비교 조건');await page.getByRole('button',{name:'알고리즘 비교 실행'}).click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();await expect(page.locator('.research-cohort tbody tr')).toHaveCount(9);const download=page.waitForEvent('download');await page.getByRole('button',{name:'검증 보고서 내려받기'}).click();expect((await download).suggestedFilename()).toContain('.json');await shell(page);
 });
-test('process design stays idle until explicit simulation',async({page})=>{
- await start(page);await navigate(page,'공정 관리');await expect(page.locator('.twin-stage canvas')).toBeVisible();await expect(page.getByRole('button',{name:'가상 실행',exact:true})).toHaveCount(0);await page.getByRole('button',{name:'시뮬레이션',exact:true}).click();await step(page,'모의 처리량·실행 기록');await expect(page.getByTestId('twin-tick')).toContainText('0');await page.getByRole('button',{name:'1초 진행',exact:true}).click();await expect(page.getByTestId('twin-tick')).toContainText('1');await shell(page);
+test('process planning estimates efficiency without synthetic production records',async({page})=>{
+ await start(page);await navigate(page,'공정 관리');await expect(page.locator('.designer-canvas canvas')).toBeVisible();await expect(page.getByRole('button',{name:'가상 실행',exact:true})).toHaveCount(0);await page.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toContainText('전체 16팩');await shell(page);
 });

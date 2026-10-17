@@ -24,12 +24,12 @@ for(const width of [1366,390]){test.describe(`업무 재개 ${width}px`,()=>{
   for(let i=0;i<2;i++){await step(page,'최근 실험');await page.locator('.research-history button').first().click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();}
  });
  test('quality review draft survives list return and stays separate by reviewer',async({page})=>{
-  await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 구성',exact:true}).click();await step(page,'공정 검토 요청');
-  await page.getByLabel('공정 제출 이름').fill('다른 배치');await page.getByLabel('공정 검토 요청 사유').fill('별도 요청');await page.getByRole('button',{name:'현재 공정 검토 요청',exact:true}).click();await expect(page.locator('.twin-message')).toContainText('승인함에 제출');
-  await step(page,'선택 장비 · 데이터 정의');await page.getByLabel('장비 이름',{exact:true}).fill('별도 검토 리더');await page.getByRole('button',{name:'장비·데이터 적용',exact:true}).click();await step(page,'공정 검토 요청');
-  await page.getByLabel('공정 제출 이름').fill('검토 중인 배치');await page.getByLabel('공정 검토 요청 사유').fill('배치 확인');await page.getByRole('button',{name:'현재 공정 검토 요청',exact:true}).click();
-  await expect(page.locator('.twin-message')).toContainText('승인함에 제출');
-  await page.getByRole('button',{name:'품질·공정 승인함 열기',exact:true}).click();
+  await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 설계 · 데이터 확보',exact:true}).click();await step(page,'공정 검토 요청');
+  await page.getByLabel('공정 버전 이름').fill('다른 배치');await page.getByLabel('변경 이유와 검토 사항').fill('별도 요청');await page.getByRole('button',{name:'공정 승인 요청',exact:true}).click();await expect(page.locator('.process-designer [role=status]')).toContainText('검토 요청을 제출');
+  await step(page,'선택 장비 · 데이터 정의');await page.getByLabel('장비 이름',{exact:true}).fill('별도 검토 리더');await step(page,'공정 검토 요청');
+  await page.getByLabel('공정 버전 이름').fill('검토 중인 배치');await page.getByLabel('변경 이유와 검토 사항').fill('배치 확인');await page.getByRole('button',{name:'공정 승인 요청',exact:true}).click();
+  await expect(page.locator('.process-designer [role=status]')).toContainText('검토 요청을 제출');
+  await page.getByRole('button',{name:'공정 승인함',exact:true}).click();
   if(await page.getByRole('button',{name:'제출본 검토',exact:true}).first().isVisible())await page.getByRole('button',{name:'제출본 검토',exact:true}).first().click();
   await expect(page.locator('.approval-detail h2')).toHaveText('검토 중인 배치');
   await choose(page,'체험 역할','demo-reviewer');if(width<800)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();

@@ -57,11 +57,11 @@ test('researcher compares, exports, edits and saves a separate process design',a
  await navigate(page,'알고리즘 검증');await expect(page.locator('.research-history button')).toHaveCount(1);await step(page,'최근 실험');await page.locator('.research-history button').click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();await step(page,'2. 비교 조건');await expect(page.getByRole('button',{name:'알고리즘 비교 실행'})).toBeEnabled();await expect(page.getByLabel('재현 시드')).toHaveValue('20261014');
  await step(page,'공개 모델 추론');await page.getByRole('button',{name:'공개 모델 실행',exact:true}).click();await expect(page.locator('.pretrained-explorer')).toContainText('1,127.1 mAh');
  await step(page,'Severson 열화 이력');await expect(page.locator('.severson-chart')).toBeVisible();
- await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 구성',exact:true}).click();await step(page,'선택 장비 · 데이터 정의');await page.getByLabel('장비 이름',{exact:true}).fill('연구 검토용 식별 리더');await page.getByRole('button',{name:'장비·데이터 적용'}).click();
- await step(page,'저장·가져오기');await page.getByRole('button',{name:'이 브라우저에 저장',exact:true}).click();
- await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('.manual-current strong')).toHaveText('설계 저장과 가져오기');await expect(page.locator('.manual-spotlight')).toBeVisible();await page.screenshot({path:`test-results/role-research-help-${width}.png`});await page.getByRole('button',{name:'업무로 돌아가기',exact:true}).click();
- const exportPromise=page.waitForEvent('download');await page.getByRole('button',{name:'공정 JSON 내보내기',exact:true}).click();const design=await exportPromise;expect(design.suggestedFilename()).toContain('가상공정');
- await page.getByRole('button',{name:'시뮬레이션',exact:true}).click();await step(page,'모의 처리량·실행 기록');await page.getByRole('button',{name:'1초 진행',exact:true}).click();await expect(page.getByTestId('twin-tick')).toContainText('1초');await page.screenshot({path:`test-results/role-research-${width}.png`});
+ await navigate(page,'공정 관리');await page.getByRole('button',{name:'공정 설계 · 데이터 확보',exact:true}).click();await step(page,'선택 장비 · 데이터 정의');await page.getByLabel('장비 이름',{exact:true}).fill('연구 검토용 식별 리더');
+ await step(page,'저장·가져오기');await page.getByRole('button',{name:'개인 설계 저장',exact:true}).click();
+ await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('.manual-current strong')).toHaveText('저장과 승인');await expect(page.locator('.manual-spotlight')).toBeVisible();await page.screenshot({path:`test-results/role-research-help-${width}.png`});await page.getByRole('button',{name:'업무로 돌아가기',exact:true}).click();
+ const exportPromise=page.waitForEvent('download');await page.getByRole('button',{name:'설계 내보내기',exact:true}).click();const design=await exportPromise;expect(design.suggestedFilename()).toContain('공정설계');
+ await page.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toContainText('전체');await page.screenshot({path:`test-results/role-research-${width}.png`});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 

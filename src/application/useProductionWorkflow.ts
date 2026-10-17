@@ -7,6 +7,7 @@ import type { Intake } from '../intake';
 import { supersedeDemoRequests, type Approval } from '../approvals';
 type Setter<T> = Dispatch<SetStateAction<T>>;
 type Props = {
+    processDesign?:import('../useProcessDesign').ProcessDesign|null;
     demo: boolean;
     cells: Cell[];
     setCells: Setter<Cell[]>;
@@ -22,7 +23,7 @@ type Props = {
     } | null>;
     setDemoRequests: Setter<Approval[]>;
 };
-export default function useProductionWorkflow({ demo, cells, setCells, packs, setPacks, tests, setTests, reload, setToast, setContinuation, setDemoRequests }: Props) {
+export default function useProductionWorkflow({ processDesign, demo, cells, setCells, packs, setPacks, tests, setTests, reload, setToast, setContinuation, setDemoRequests }: Props) {
     const available = cells.filter(c => c.status === 'available');
     const [busy, setBusy] = useState(false), [reviewReason, setReviewReason] = useState('');
     const [uploadSource, setUploadSource] = useState('synthetic');
@@ -66,7 +67,7 @@ export default function useProductionWorkflow({ demo, cells, setCells, packs, se
             throw new Error('이미 사용한 팩 번호입니다.');
         if (approval.cell_ids.some(id => !available.some(c => c.id === id)))
             throw new Error('이미 사용한 셀이 있습니다.');
-        const pack: Pack = { process_version:'field-v1', source_kind: 'synthetic', created_by: 'demo-requester', confirmed_name: '체험 공정 담당자', id: crypto.randomUUID(), serial_no: serial, created_at: new Date().toISOString(), pack_cells: approval.cell_ids.map((cell_id, i) => ({ cell_id, position: i + 1 })) };
+        const pack: Pack = { process_design:processDesign?structuredClone(processDesign):null, process_version:'field-v1', source_kind: 'synthetic', created_by: 'demo-requester', confirmed_name: '체험 공정 담당자', id: crypto.randomUUID(), serial_no: serial, created_at: new Date().toISOString(), pack_cells: approval.cell_ids.map((cell_id, i) => ({ cell_id, position: i + 1 })) };
         createdId = pack.id;
         setPacks([pack, ...packs]);
         setCells(cells.map(c => approval.cell_ids.includes(c.id) ? { ...c, status: 'used' } : c));

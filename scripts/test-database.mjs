@@ -1,3 +1,4 @@
+import {planningLayout} from '../src/twin/planning.ts';
 ﻿// Isolated real PostgreSQL engine. Auth identity is stubbed; no production calls.
 import {PGlite} from '@electric-sql/pglite';
 import {readFile,readdir} from 'node:fs/promises';
@@ -134,6 +135,31 @@ try {
  await db.exec('reset role');
  await db.exec((await readFile('tests/security.sql','utf8')).replace(/^\uFEFF/,''));
  console.log('PASS: existing security integration tests');
+
+ await identity(ids.operator);
+ { const plan=planningLayout();
+ const request=await q("select public.submit_quality_request('twin',null,'Planning v1','Test publication',$1)",[plan]);
+ assert.equal(await q('select count(*) from public.process_releases'),0);
+ await assert.rejects(()=>q("select public.decide_quality_request($1,'approved','self')",[request]));
+ await identity(ids.reviewer);
+ await q("select public.decide_quality_request($1,'approved','Independent planning approval')",[request]);
+ const release=await q('select layout from public.process_releases where active');assert.deepEqual(release,plan);
+ await assert.rejects(()=>q('update public.process_releases set active=false'),/permission/);
+ await db.exec('reset role');
+ const oldPin=await q('select process_design from public.packs where id=$1',[pack]);assert.equal(oldPin,null);
+ const newPack=await q("insert into public.packs(serial_no,created_by) values('PLAN-PIN-TEST',$1) returning id",[ids.operator]);
+ assert.equal((await q('select process_design from public.packs where id=$1',[newPack])).id,request);
+ await assert.rejects(()=>q('update public.packs set process_design=null where id=$1',[newPack]),/변경/);
+ await identity(ids.operator);plan.plan.stations.grading.minutes=600;
+ const request2=await q("select public.submit_quality_request('twin',null,'Planning v2','Test new version',$1)",[plan]);
+ await identity(ids.reviewer);await q("select public.decide_quality_request($1,'approved','Second version')",[request2]);
+ assert.equal(await q('select id from public.process_releases where active'),request2);
+ assert.equal((await q('select process_design from public.packs where id=$1',[newPack])).id,request);
+ await identity(ids.pending);assert.equal(await q('select count(*) from public.process_releases'),0);
+ await identity(ids.operator);plan.plan.stations.grading.batch=127;
+ await assert.rejects(()=>q("select public.submit_quality_request('twin',null,'Invalid','Bad batch',$1)",[plan]),/8의 배수/);
+ console.log('PASS: independent process approval publishes atomically; pack versions remain pinned; permissions and planning validation enforced'); }
+
  await db.exec('reset role');
  const before=(await db.query('select id,rows,original_rows,revision from intake_batches order by id')).rows;
  const archive=await db.dumpDataDir();

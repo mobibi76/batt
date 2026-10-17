@@ -5,7 +5,7 @@ import Papa from 'papaparse';
 import type { Cell } from '../supabase/functions/_shared/matching';
 export const supabase=createClient(deployment.supabaseUrl,deployment.publishableKey);
 export type Profile={id:string;email:string;display_name:string;role:'admin'|'operator'|'viewer';status:'pending'|'approved'|'rejected'|'suspended';created_at:string;quality_reviewer?:boolean;process_stages?:('assembly'|'aging'|'final')[]};
-export type Pack={process_version?:'legacy'|'field-v1';source_kind?:string;matching_run_id?:string;created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
+export type Pack={process_design?:import('./useProcessDesign').ProcessDesign|null;process_version?:'legacy'|'field-v1';source_kind?:string;matching_run_id?:string;created_by?:string;confirmed_name?:string;id:string;serial_no:string;created_at:string;pack_cells:{cell_id:string;position:number}[]};
 export type Inspection={evidence_kind?:'measured'|'test'|'unknown';created_by?:string;confirmed_name?:string;id:string;pack_id:string;kind:'aging'|'module'|'casing'|'final';result:'pass'|'fail';note:string;created_at:string};
 export const number=(v:number|null|undefined,d=0)=>v==null?'미측정':v.toLocaleString('ko-KR',{maximumFractionDigits:d});
 export const date=(v:string)=>new Date(v).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});

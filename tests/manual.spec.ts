@@ -33,13 +33,13 @@ test('inspection guidance preserves an unsaved memo and does not submit it',asyn
 
 test('help stays reachable when the twin header changes with viewport size',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'공정 관리');
- for(const [width,height] of [[1366,768],[320,480],[1366,768]]){await page.setViewportSize({width,height});await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('#manual-title')).toContainText('공정 공간');await page.keyboard.press('Escape');}
+ for(const [width,height] of [[1366,768],[320,480],[1366,768]]){await page.setViewportSize({width,height});await page.getByRole('button',{name:'사용 안내',exact:true}).click();await expect(page.locator('#manual-title')).toContainText('공정 설계와 효율 시뮬레이션');await page.keyboard.press('Escape');}
 });
 
 test('every scenario has readable numbered screenshots, outcomes and troubleshooting',async({page})=>{
  await page.goto('/batt/#docs/inspection');const nav=page.getByRole('navigation',{name:'업무 시나리오'});await expect(nav.getByRole('button')).toHaveCount(13);const names=await nav.getByRole('button').allTextContents();expect(names).toHaveLength(13);
  for(const name of names){await nav.getByRole('button',{name,exact:true}).click();const article=page.locator('.manual-reading article');await expect(article.locator('h2')).toHaveText(name);expect(await article.locator('.manual-figure').count()).toBeGreaterThanOrEqual(2);await expect(article.locator('.manual-troubleshooting')).toBeVisible();await expect(article).toContainText('처리 후 확인');
-  const images=article.locator('img');await images.evaluateAll(async nodes=>{await Promise.all(nodes.map(async node=>{const img=node as HTMLImageElement;img.loading='eager';await img.decode();if(img.naturalWidth!==1366)throw Error('Broken manual capture');}));});
+  const images=article.locator('img');await images.evaluateAll(async nodes=>{await Promise.all(nodes.map(async node=>{const img=node as HTMLImageElement;img.loading='eager';await img.decode();if(img.naturalWidth!==Number(img.getAttribute('width'))||img.naturalHeight!==Number(img.getAttribute('height'))||img.naturalWidth<1000)throw Error('Broken manual capture');}));});
   expect(await article.locator('.manual-callouts li').count()).toBeGreaterThanOrEqual(2);
  }
  await nav.getByRole('button',{name:'현장 검사·재검사 기록',exact:true}).click();await expect(page.locator('.manual-reading .manual-figure')).toHaveCount(5);

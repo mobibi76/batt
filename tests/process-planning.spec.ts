@@ -18,3 +18,17 @@ test('mobile design and simulation remain reachable without horizontal overflow'
  await page.setViewportSize({width:390,height:844});await open(page);await page.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:'.local/process-planning-mobile.png',fullPage:true});
 });
+
+test('process diagram is tall and every coverage detail is reachable from the overview',async({page})=>{
+ await page.setViewportSize({width:1366,height:768});await open(page);
+ expect((await page.locator('.designer-canvas .twin-viewport').boundingBox())!.height).toBeGreaterThanOrEqual(460);
+ await page.getByRole('button',{name:'공정도 확대',exact:true}).click();
+ await expect(page.locator('.designer-canvas .twin-viewport')).toBeInViewport({ratio:1});
+ await page.screenshot({path:'.local/process-expanded.png'});
+ await page.getByRole('button',{name:'확대 닫기',exact:true}).press('Escape');
+ await expect(page.locator('.process-designer')).not.toHaveClass(/designer-expanded/);
+ await page.getByRole('navigation',{name:'공정 분석 상세 바로가기'}).getByRole('button',{name:/수명·열화/}).click();
+ await expect(page.locator('.designer-coverage')).toBeInViewport();
+ await expect(page.locator('.designer-coverage > small')).toBeInViewport();
+ await page.screenshot({path:'.local/process-coverage.png'});
+});

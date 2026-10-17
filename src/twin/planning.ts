@@ -40,7 +40,7 @@ export function estimate(l:Layout,quantity=l.plan?.quantity):Estimate{
  const total=arrivals[arrivals.length-1];return {total,first:arrivals[0],single,labor,throughput:quantity!*60/total,bottleneck:rows.reduce((a,b)=>a.capacity<=b.capacity?a:b).id,rows};
 }
 export function dataCoverage(l:Layout){const data=new Set(Object.values(l.plan?.stations??{}).flatMap(s=>s.data));return [
- {name:'셀 조합 비교',needs:['cell_id','voltage','capacity'] as Measurement[]},
+ {name:'셀 조합 비교',needs:['cell_id','voltage','resistance','capacity'] as Measurement[]},
  {name:'조합 이후 품질 분석',needs:['cell_id','pack_id','timestamp','conditions','outcome'] as Measurement[]},
  {name:'수명·열화 분석 준비',needs:['cell_id','timestamp','cycle','voltage','current','capacity','temperature','conditions','life_label'] as Measurement[]},
  {name:'온도·부하별 이상징후 분석 준비',needs:['cell_id','pack_id','timestamp','voltage','current','temperature','conditions','outcome'] as Measurement[]}

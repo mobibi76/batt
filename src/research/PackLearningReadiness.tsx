@@ -1,0 +1,9 @@
+import {packLearningCases,type FieldEvidence,type FieldRow} from './fieldEvidence';
+const kinds={module:'모듈 검사',casing:'케이싱',aging:'에이징',final:'최종검사'};
+export default function PackLearningReadiness({evidence,rows,onSelect}:{evidence:FieldEvidence;rows:FieldRow[];onSelect:(ids:string[],detail?:boolean)=>void}){
+ const cases=packLearningCases(evidence,rows),records=cases.flatMap(c=>c.inspections),linked=records.filter(t=>!t.issues.length);
+ return <section className="pack-learning-readiness" aria-label="팩 단위 학습자료 준비"><h3>8셀 구성 → 현장 판정 연결</h3><p>선택 셀에 연결된 고유 팩 {cases.length}개 · 검사 기록 {records.length}건 · 기초 연결 충족 {linked.length}건</p><p>학습 모델 미구현 · 8셀 구성과 검사 종류별 팩 판정을 연결하는 준비 단계입니다. 충족 건수는 학습 완료나 성능이 아닙니다.</p>
+ {!cases.length&&<div className="field-warning">팩 구성·판정 연결 미확보. 생산에서 확정한 팩 ID·구성 8셀과 품질의 검사 종류·PASS/FAIL·작업자·시각·사유가 필요합니다. 셀 CSV의 개별 판정만으로 이 연결을 대신할 수 없습니다.</div>}
+ {cases.map(c=><article className="field-operational-case" key={c.pack.id}><button className="text-button" onClick={()=>onSelect(c.ids,true)}>{c.pack.serial_no} · 구성 {c.ids.length}셀 근거 보기</button><p>검사 {c.inspections.length}건 · 재검사 종류 {c.repeated.length}개{c.conflicting.length>0?' · 같은 검사 종류의 PASS/FAIL 혼재':''}</p>{!c.inspections.length&&<p className="field-warning">팩 검사 미연결{c.problems.length?' · '+c.problems.join(' · '):''}</p>}{c.inspections.map(t=><div className="pack-training-record" key={t.record.id}><strong>{kinds[t.record.kind]} · {t.record.result.toUpperCase()}</strong><span>{t.record.created_at||'시각 미확보'} · {t.record.confirmed_name||t.record.created_by||'작업자 미확보'}</span><p>{t.issues.length?t.issues.join(' · '):'기초 연결 충족 · 조건 검토 필요'}</p></div>)}</article>)}
+ <details><summary>학습 전 남은 검증</summary><p>현재 원측정 스냅샷은 조합 당시 값과 동일함을 보증하지 않습니다. 조합 시점의 측정값·조건을 고정하고, 재검사 처리와 목표 검사 종류를 정한 뒤 시간·LOT 분리와 누수 검증이 필요합니다. 아직 학습 모델·독립 평가·추론 기능은 없습니다.</p><p>팩의 PASS/FAIL을 구성 셀 8개의 개별 라벨로 복제하지 않습니다. 재검사를 독립 팩으로 늘려 세거나 서로 다른 검사 종류의 결과를 하나의 라벨로 합치지 않습니다.</p></details></section>;
+}

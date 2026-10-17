@@ -39,6 +39,7 @@ test('process diagram and consolidated coverage switch in place',async({page})=>
  expect(await page.locator('.process-designer').evaluate(e=>e.scrollTop)).toBe(y);
  await expect(page.locator('.coverage-matrix tbody tr')).toHaveCount(4);
  await expect(page.locator('.coverage-matrix tbody tr').last()).toBeInViewport({ratio:1});
+ const matching=page.getByRole('row').filter({hasText:'셀 조합 비교'});await expect(matching).toContainText('3/4 항목 계획');await expect(matching.locator('.coverage-missing')).toContainText('내부저항');
  const life=page.getByRole('row').filter({hasText:'수명·열화 분석 준비'});
  await expect(life).toContainText('5/9 항목 계획');
  await expect(life.locator('.coverage-missing')).toContainText('온도');

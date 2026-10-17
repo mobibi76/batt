@@ -15,11 +15,15 @@ test('design data, compare efficiency, independently approve and share with prod
  await page.screenshot({path:'.local/process-planning-operational.png',fullPage:true});
 });
 test('mobile design and simulation remain reachable without horizontal overflow',async({page})=>{
- await page.setViewportSize({width:390,height:844});await open(page);await page.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toBeVisible();
+ await page.setViewportSize({width:390,height:844});await open(page);
+ await page.getByRole('button',{name:'데이터 확보 현황',exact:true}).click();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+ await page.screenshot({path:'.local/process-coverage-mobile.png',fullPage:true});
+ await page.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:'.local/process-planning-mobile.png',fullPage:true});
 });
 
-test('process diagram is tall and every coverage detail is reachable from the overview',async({page})=>{
+test('process diagram and consolidated coverage switch in place',async({page})=>{
  await page.setViewportSize({width:1366,height:768});await open(page);
  expect((await page.locator('.designer-canvas .twin-viewport').boundingBox())!.height).toBeGreaterThanOrEqual(460);
  await page.getByRole('button',{name:'공정도 확대',exact:true}).click();
@@ -27,8 +31,18 @@ test('process diagram is tall and every coverage detail is reachable from the ov
  await page.screenshot({path:'.local/process-expanded.png'});
  await page.getByRole('button',{name:'확대 닫기',exact:true}).press('Escape');
  await expect(page.locator('.process-designer')).not.toHaveClass(/designer-expanded/);
- await page.getByRole('navigation',{name:'공정 분석 상세 바로가기'}).getByRole('button',{name:/수명·열화/}).click();
- await expect(page.locator('.designer-coverage')).toBeInViewport();
- await expect(page.locator('.designer-coverage > small')).toBeInViewport();
+ const y=await page.locator('.process-designer').evaluate(e=>e.scrollTop);
+ await page.getByRole('button',{name:'데이터 확보 현황',exact:true}).click();
+ expect(await page.locator('.process-designer').evaluate(e=>e.scrollTop)).toBe(y);
+ await expect(page.locator('.coverage-matrix tbody tr')).toHaveCount(4);
+ await expect(page.locator('.coverage-matrix tbody tr').last()).toBeInViewport({ratio:1});
+ const life=page.getByRole('row').filter({hasText:'수명·열화 분석 준비'});
+ await expect(life).toContainText('5/9 항목 계획');
+ await expect(life.locator('.coverage-missing')).toContainText('온도');
+ await page.getByRole('button',{name:'확보 데이터',exact:true}).click();
+ await page.getByLabel('온도',{exact:true}).check();
+ await expect(life).toContainText('6/9 항목 계획');
+ await expect(life.locator('.coverage-missing')).not.toContainText('온도');
  await page.screenshot({path:'.local/process-coverage.png'});
+ await expect(page.locator('.coverage-matrix tbody tr').last()).toBeInViewport({ratio:1});
 });

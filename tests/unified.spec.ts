@@ -7,6 +7,8 @@ async function start(page:Page){await page.goto('/batt/');await page.getByRole('
 async function shell(page:Page){await expect(page.getByRole('region',{name:'생산·품질·연구 작업대'})).toBeVisible();await expect(page.locator('.sidebar,.topbar')).toHaveCount(0);await expect(page.getByRole('button',{name:'운영 지표',exact:true})).toHaveCount(0);}
 async function pack(page:Page){await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).filter({visible:true}).click();await page.getByLabel('팩 일련번호').fill('UNIFIED-001');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();}
 test('all tools stay in one workspace without legacy navigation',async({page})=>{
+ // Eight round trips share the scenario budget; each action still has a 10s limit.
+ test.setTimeout(60_000);
  await start(page);
  for(const name of ['셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){await navigate(page,name);await shell(page);await expect(page.locator('.console-task-body')).toBeVisible();await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await expect(page.locator('.console-home-body')).toBeVisible();}
 });

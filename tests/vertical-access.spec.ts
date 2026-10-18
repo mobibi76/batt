@@ -72,6 +72,7 @@ for (const [width, height] of [[320, 360], [320, 480], [900, 360], [1366, 600], 
         await page.getByRole('button', { name: '사용 권한 신청', exact: true }).click();
         await audit('가입');
         await page.getByRole('button', { name: '가상 데이터로 공정 체험', exact: true }).click();
+        await page.getByRole('button', { name: '셀 검사·재고', exact: true }).click();
         await page.getByRole('button', { name: '예시 셀로 다음 단계' }).click();
         await page.getByRole('button', { name: '생산 홈', exact: true }).click();
         for (const mode of ['생산', '품질', '연구']) {

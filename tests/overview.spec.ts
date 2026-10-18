@@ -6,7 +6,7 @@ test.use({actionTimeout:10_000,trace:'retain-on-failure'});
 test('quality metrics link the three inspections and distinguish first pass from latest',async({page})=>{
  // Four inspections and review span several workspaces; each action still has a 10s limit.
  test.setTimeout(60_000);
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'운영 현황');
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'운영 현황');
  const metric=(name:string)=>page.locator('.console-quality-summary button').filter({hasText:name}).locator('strong');
  await expect(metric('최종 불량률')).toHaveText('—');
  await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('QUALITY-OVERVIEW');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();

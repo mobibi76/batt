@@ -1,0 +1,29 @@
+﻿/* The entry screen fits the viewport; only genuinely short screens scroll. */
+.auth-page { min-height: 100dvh; }
+.auth-story { padding: var(--space-24) var(--space-40); }
+.auth-copy { min-height: 0; padding: var(--space-16) 0; }
+.auth-copy h1 { font-size: var(--type-auth-title-size); line-height: var(--type-heading-leading); margin: var(--space-8) 0; }
+.auth-copy p { margin: var(--space-8) 0; }
+.cell-pack-art { height: clamp(100px, 24dvh, 280px); object-fit: contain; object-position: left center; margin: var(--space-12) 0; }
+.auth-spec { padding-top: var(--space-8); }
+.auth-form-wrap { min-height: 100dvh; padding: var(--space-24); }
+.auth-form { width: 100%; max-width: 380px; }
+.auth-form h2 { margin: var(--space-8) 0; }
+.auth-form > .muted { margin-bottom: var(--space-16); }
+.auth-form label { margin-bottom: var(--space-8); }
+.auth-form form > .primary { margin-top: var(--space-8); min-height: var(--control-height); }
+.auth-switch { margin: var(--space-8) 0; }
+.auth-divider { margin: var(--space-24) 0 var(--space-16); }
+@media (min-width: 801px) and (min-height: 600px) {
+ .auth-page { height: 100dvh; min-height: 0; }
+ .auth-story,.auth-form-wrap { min-height: 0; }
+ .auth-story { display: grid; grid-template-rows: auto minmax(0,1fr) auto; }
+ .auth-copy { display: grid; grid-template-rows: auto auto auto minmax(0,1fr) auto; margin: 0; }
+ .auth-copy .cell-pack-art { height: 100%; min-height: 0; max-height: 280px; margin: 0; align-self: center; }
+}
+@media (max-height: 650px) {
+ .auth-form-wrap { padding: var(--space-12) var(--space-24); }
+ .auth-form > .muted { margin-bottom: var(--space-8); }
+ .auth-divider { display: none; }
+ .auth-form .demo-note { margin-top: var(--space-8); }
+}

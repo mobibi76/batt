@@ -880,3 +880,32 @@
   .console-task-body .field-study-panel { height: auto; overflow: visible; }
   .console-task-body .research-body.field-study-workspace { flex: none; min-height: var(--size-task-min-height); overflow: visible; }
 }
+
+/* Research tools share the same heading row as production and quality. */
+.console-task-tools { display: flex; align-items: center; gap: var(--space-8); margin-left: auto; min-width: 0; }
+.console-task-tools .mode-switch { margin: 0; flex-wrap: nowrap; }
+.console-task-tools button { min-width: 0; padding: var(--space-8) var(--space-12); }
+@media (max-width: 1000px) {
+ .console-task-heading:has(.console-task-tools) { flex-wrap: wrap; }
+ .console-task-tools { flex: 1 1 100%; }
+ .console-task-tools .mode-switch { flex: 1; }
+ .console-task-tools .mode-switch button { flex: 1; white-space: normal; }
+}
+
+.console-task-heading .console-task-tools button { min-height: var(--control-compact-height); }
+@media (min-width: 1001px) {
+ .console-task-tools { flex-shrink: 0; }
+ .console-task-tools .mode-switch { flex: none; }
+ .console-task-heading .console-task-tools button { width: auto; white-space: nowrap; flex-shrink: 0; }
+}
+@media (max-width: 700px) {
+ .console-task-tools { display: contents; }
+ .console-task-tools > .mode-switch { order: 1; flex: 1 1 100%; display: grid; grid-template-columns: 1fr 1fr; }
+ .console-task-tools > .secondary { width: auto; margin-left: auto; }
+}
+/* At extreme viewport heights, keep the toolbar and editor reachable together. */
+@media (max-height: 450px) {
+ .console-task-view:has(.console-task-tools) { overflow: auto; }
+ .console-task-view:has(.console-task-tools) > .console-task-heading { flex: none; }
+ .console-task-view:has(.console-task-tools) > .console-task-body { flex: none; height: var(--size-designer-min-height); }
+}

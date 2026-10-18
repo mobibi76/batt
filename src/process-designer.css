@@ -7,16 +7,6 @@
   padding: var(--space-12);
   overflow: auto
 }
-.designer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-8);
-  flex-wrap: wrap
-}
-.designer-header .mode-switch {
-  margin: 0
-}
 .designer-body {
   display: grid;
   grid-template-columns: minmax(0,1fr) 360px;
@@ -215,15 +205,7 @@
   .process-designer {
     height: 100%
   }
-  .designer-header .mode-switch {
-    width: 100%;
-    display: flex
-  }
-  .designer-header .mode-switch button {
-    flex: 1;
-    white-space: normal
-  }
-  .designer-coverage span {
+.designer-coverage span {
     float: none;
     display: block
   }
@@ -320,7 +302,7 @@
   box-shadow: var(--shadow-scene-expanded);
   overflow: auto
 }
-.designer-expanded>.designer-header,.designer-expanded>.context-line,.designer-expanded>.notice,.designer-expanded .designer-inspector,.designer-expanded .designer-surface-tabs,.designer-expanded .designer-coverage,.designer-expanded .designer-timeline {
+.designer-expanded>.context-line,.designer-expanded>.notice,.designer-expanded .designer-inspector,.designer-expanded .designer-surface-tabs,.designer-expanded .designer-coverage,.designer-expanded .designer-timeline {
   display: none
 }
 .designer-expanded .designer-body {
@@ -497,7 +479,7 @@
   .process-designer {
     overflow: hidden
   }
-  .designer-header,.process-designer>.context-line,.process-designer>.notice {
+  .process-designer>.context-line,.process-designer>.notice {
     flex: none
   }
   .designer-body {
@@ -637,7 +619,7 @@
 }
 
 /* Keep short desktops usable before bounded panes become smaller than their controls. */
-@media(min-width:801px) and (max-height:700px) {
+@media(min-width:801px) and (max-height:540px) {
   .process-designer:not(.designer-expanded) { overflow: auto; }
   .process-designer:not(.designer-expanded) .designer-body { flex: none; height: var(--size-designer-min-height); }
   .process-designer .designer-editor-navigation { position: static; }

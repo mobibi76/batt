@@ -1,4 +1,4 @@
-import {useMemo,useRef,useState,type FormEvent,type CSSProperties} from 'react';
+import {useEffect,useMemo,useRef,useState,type FormEvent,type CSSProperties} from 'react';
 import TwinScene from './twin/TwinScene';
 import {device,kinds,catalog,canPlace,validateLayout,initialSimulation,type Layout,type Kind} from './twin/model';
 import {planningLayout,orderedDevices,defaultStation,stageNames,stages,measurements,dataCoverage,estimate,durationText,publicationError,type Stage,type Measurement,type Estimate} from './twin/planning';
@@ -6,8 +6,8 @@ import {download} from './lib';
 import FilePicker from './FilePicker';
 import './twin.css';
 import './process-designer.css';
-type Props={onOpenRecords:()=>void;userId:string;canEdit:boolean;initialLayout?:Layout|null;onSubmitApproval:(l:Layout,title:string,note:string)=>Promise<void>;onOpenApprovals:()=>void};
-export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApproval,onOpenApprovals}:Props){
+type Props={mode:'design'|'simulation';onOpenRecords:()=>void;userId:string;canEdit:boolean;initialLayout?:Layout|null;onSubmitApproval:(l:Layout,title:string,note:string)=>Promise<void>;onOpenApprovals:()=>void};
+export default function DigitalTwin({mode,userId,canEdit,initialLayout,onSubmitApproval,onOpenApprovals}:Props){
  const [expanded,setExpanded]=useState(false);
  const [surface,setSurface]=useState<'scene'|'analysis'>('scene');
  const [equipmentView,setEquipmentView]=useState<'edit'|'order'|'add'>('edit');
@@ -16,7 +16,7 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
  const key=`jsi-process-plan-v1-${userId}`;
  function validateDraft(raw:unknown){const next=validateLayout(raw);try{return {...next,devices:orderedDevices(next)};}catch{return next;}}
  const [layout,setLayout]=useState<Layout>(()=>{try{const l=initialLayout??JSON.parse(localStorage.getItem(key)||'null');return l?validateDraft(l):planningLayout();}catch{return planningLayout();}});
- const [mode,setMode]=useState<'design'|'simulation'>('design'),[panel,setPanel]=useState<'equipment'|'data'|'approval'>('equipment');
+ const [panel,setPanel]=useState<'equipment'|'data'|'approval'>('equipment');
  const [selected,setSelected]=useState(layout.devices[0]?.id??''),[view,setView]=useState<'iso'|'top'>('iso'),[editing,setEditing]=useState(false),[message,setMessage]=useState(''),[busy,setBusy]=useState(false);
  const [baseline,setBaseline]=useState<{layout:Layout;result:Estimate}|null>(null);
  const current=layout.devices.find(d=>d.id===selected),plan=layout.plan,station=plan?.stations[selected];
@@ -26,6 +26,7 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
  function commit(next:Layout){if(!canEdit)return false;try{setLayout(validateLayout(next));setRemoved(null);setMessage('설계 변경됨 · 저장하거나 새 승인 요청을 제출하세요.');return true;}catch(e){setMessage((e as Error).message);return false;}}
  function patchStation(patch:Partial<NonNullable<Layout['plan']>['stations'][string]>){if(plan&&station)commit({...layout,plan:{...plan,stations:{...plan.stations,[selected]:{...station,...patch}}}});}
  function resetInspector(reveal=true){requestAnimationFrame(()=>{inspectorRef.current?.scrollTo({top:0});if(reveal&&window.innerWidth<=800){const inspector=inspectorRef.current,workspace=inspector?.closest<HTMLElement>('.process-designer');if(inspector&&workspace)workspace.scrollTo({top:workspace.scrollTop+inspector.getBoundingClientRect().top-workspace.getBoundingClientRect().top});}});}
+ useEffect(()=>{setEditing(false);resetInspector(false);},[mode]);
  function showEquipment(view:'edit'|'order'|'add'){setEquipmentView(view);resetInspector();}
  function selectDevice(id:string){setSelected(id);setEquipmentView('edit');if(mode==='design'&&panel==='approval')setPanel('equipment');setExpanded(false);resetInspector();}
  function add(kind:Kind){if(!plan)return;if(layout.devices.length>=30){setMessage('장비는 최대 30개입니다.');return;}for(let z=-9;z<=9;z+=3)for(let x=-9;x<=9;x+=3)if(canPlace(layout,'',x,z)){const id=`EQ-${crypto.randomUUID().slice(0,8)}`;if(!commit({...layout,devices:[...layout.devices,device(kind,id,x,z)],links:[...layout.links,...(layout.devices.length?[{from:layout.devices[layout.devices.length-1].id,to:id}]:[])],plan:{...plan,stations:{...plan.stations,[id]:defaultStation('module')}}}))return;setPanel('equipment');selectDevice(id);setMessage('장비를 작업 순서 마지막에 추가했습니다. 장비를 편집하거나 작업 순서에서 위치를 조정하세요.');return;}}
@@ -33,8 +34,6 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
  async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();if(gate){setMessage(gate);return;}const f=new FormData(e.currentTarget);setBusy(true);try{await onSubmitApproval(layout,String(f.get('title')),String(f.get('note')));setMessage('검토 요청을 제출했습니다. 독립 승인 후 생산·품질의 새 팩에 이 공정 버전이 적용됩니다.');}catch(e){setMessage((e as Error).message);}finally{setBusy(false);}}
  const annotations=Object.fromEntries(layout.devices.map(d=>{const s=plan?.stations[d.id],r=result?.rows.find(r=>r.id===d.id);return [d.id,{title:d.name,detail:mode==='simulation'&&r?`${durationText(r.work)} / 회`:`확보 계획 ${s?.data.length??0}항목`,tone:mode==='simulation'&&result?.bottleneck===d.id?'attention' as const:'quiet' as const}];}));
  return <div className={`process-designer ${expanded?'designer-expanded':''}`} onKeyDown={e=>{if(e.key==='Escape')setExpanded(false);}}>
-  <header className="designer-header"><div className="mode-switch" aria-label="공정 설계 작업"><button aria-pressed={mode==='design'} className={mode==='design'?'active':''} onClick={()=>{setMode('design');resetInspector(false);}}>공정 설계 · 데이터 확보</button><button aria-pressed={mode==='simulation'} className={mode==='simulation'?'active':''} onClick={()=>{setMode('simulation');setEditing(false);resetInspector(false);}}>시뮬레이션 · 작업 효율</button></div><button className="secondary" onClick={onOpenApprovals}>공정 승인함</button></header>
-  <p className="context-line" role={message?'status':undefined}>{message||(mode==='design'?'장비와 작업 순서를 설계하고 연구 데이터의 확보 계획을 확인합니다.':'목표 팩 수량과 회당 작업 조건으로 완료시간·대기·병목을 추정합니다.')}</p>
   {!plan&&<div className="notice">기존 가상 배치에는 작업·데이터 계획이 없습니다. <button onClick={()=>{if(canEdit){setLayout(planningLayout());setSelected('grading');}}} disabled={!canEdit}>현행 6단계 설계로 시작</button></div>}
   <div className="designer-body"><section className={`designer-canvas panel ${surface==='analysis'?'designer-analysis':''}`}><div className="designer-toolbar">
    <nav className="designer-surface-tabs" aria-label="공정 화면 선택">
@@ -49,7 +48,7 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
 
    {surface==='scene'&&<>
    <TwinScene purpose="design" layout={layout} simulation={simulation} selected={selected} annotations={annotations} editing={mode==='design'&&editing&&canEdit} running={false} view={view} onSelect={selectDevice} onMove={(id,x,z)=>{if(canPlace(layout,id,x,z))commit({...layout,devices:layout.devices.map(d=>d.id===id?{...d,x,z}:d)});}}/>
-   <div className="designer-caption">{mode==='design'?<button className="text-button" disabled={!canEdit} aria-pressed={editing} onClick={()=>setEditing(!editing)}>배치 이동 {editing?'켜짐':'꺼짐'}</button>:<span>강조 장비: 단위 처리능력이 가장 낮은 병목 후보</span>}<small>배치는 개념도입니다. 이동시간은 직접 입력합니다.</small></div>
+   <div className="designer-caption">{mode==='design'?<button className="text-button" disabled={!canEdit} aria-pressed={editing} onClick={()=>setEditing(!editing)}>배치 이동 {editing?'켜짐':'꺼짐'}</button>:<span>강조 장비: 단위 처리능력이 가장 낮은 병목 후보</span>}<small role={message?'status':undefined}>{message||'배치는 개념도입니다. 이동시간은 직접 입력합니다.'}</small></div>
    </>}
    {surface==='analysis'&&mode==='simulation'&&result&&<div className="designer-timeline" aria-label="공정 시간 비교"><h3>목표 {plan?.quantity}팩 · 단계별 시작부터 마지막 완료까지</h3>{result.rows.map(r=><button title={`${r.name} · 팩당 평균 대기 ${durationText(r.waiting)}`} key={r.id} aria-pressed={selected===r.id} onClick={()=>selectDevice(r.id)}><span>{r.name}</span><span className="timeline-track"><i style={{'--timeline-start':`${r.start/result.total*100}%`,'--timeline-width':`${(r.end-r.start)/result.total*100}%`} as CSSProperties}/></span><small>{durationText(r.end)}</small></button>)}</div>}
    {surface==='analysis'&&mode==='design'&&<section className="designer-coverage" aria-label="분석 목적별 데이터 확보 현황">
@@ -61,6 +60,7 @@ export default function DigitalTwin({userId,canEdit,initialLayout,onSubmitApprov
     </tr>)}</tbody></table>
     <p className="coverage-note">설계에 등록한 항목을 비교한 결과입니다. 모두 계획해도 측정 조건·셀–팩 연결·실측 품질 검증이 필요하며, 실제 분석 가능 여부를 보증하지 않습니다.</p>
    </section>}
+  {surface==='analysis'&&message&&<p className="designer-caption" role="status">{message}</p>}
   </section><aside ref={inspectorRef} className="designer-inspector panel">
    {mode==='design'?<><div className="designer-editor-navigation"><nav className="editor-tabs" aria-label="설계 도구">{([['equipment','장비·공정'],['data','확보 데이터'],['approval','저장·승인']] as const).map(([id,label])=><button key={id} aria-pressed={panel===id} className={panel===id?'primary':'secondary'} onClick={()=>{setPanel(id);if(id==='equipment')setEquipmentView('edit');if(id==='data')setSurface('analysis');resetInspector();}}>{label}</button>)}</nav>{panel==='equipment'&&<nav className="designer-equipment-tabs" aria-label="장비와 작업 순서"><button aria-pressed={equipmentView==='edit'} onClick={()=>showEquipment('edit')}>장비 편집</button><button aria-pressed={equipmentView==='order'} onClick={()=>showEquipment('order')}>작업 순서 <span>{layout.devices.length}</span></button><button aria-pressed={equipmentView==='add'} disabled={!canEdit||!plan} onClick={()=>showEquipment('add')}>+ 장비 추가</button></nav>}</div>
    {(panel==='data'||panel==='equipment'&&equipmentView==='edit')&&<label>편집할 장비<select aria-label="편집할 장비" value={selected} onChange={e=>selectDevice(e.target.value)}>{layout.devices.map((d,i)=><option key={d.id} value={d.id}>{i+1}. {d.name}</option>)}</select></label>}

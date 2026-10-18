@@ -3,10 +3,10 @@ import {test,expect} from '@playwright/test';
 for(const width of [1366,390])test('process mode labels remain readable throughout both transitions at '+width,async({page})=>{
  await page.setViewportSize({width,height:844});
  await page.goto('/batt/');
- await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();
+ await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();
  await page.getByRole('button',{name:'연구',exact:true}).click();
  await page.getByRole('button',{name:'공정 설계·시뮬레이션',exact:true}).click();
- const switcher=page.locator('.designer-header .mode-switch');
+ const switcher=page.locator('.console-task-heading .mode-switch');
  await expect(switcher).toBeVisible();
  const samples=await switcher.evaluate(async element=>{
   const buttons=Array.from(element.querySelectorAll('button'));

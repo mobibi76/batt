@@ -3,7 +3,7 @@ import {navigate,step,researchSide} from './workspace';
 import {choose} from './chips';
 for(const width of [1366,390]){test.describe(`업무 재개 ${width}px`,()=>{
  test.use({viewport:{width,height:900}});
- test.beforeEach(async({page})=>{await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();});
+ test.beforeEach(async({page})=>{await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();});
  test('production search starts at the first matching cell after paging',async({page})=>{
   await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();
   const firstCell=await page.locator('.cell-inventory tbody tr').first().innerText();

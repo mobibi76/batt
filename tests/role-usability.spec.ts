@@ -8,7 +8,7 @@ for(const width of [1366,390]){test.describe(`역할별 사용자 동선 ${width
 test('production operator and quality reviewer complete the same pack',async({page})=>{
  // Two file imports, inventory review and the full inspection/approval chain run together.
  test.setTimeout(90000);
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();
  await expect(page.getByRole('region',{name:'전체 공정 체험 안내'})).toContainText('1. 충방전 측정 파일 등록');
  await step(page,'셀 재고');await expect(page.getByRole('heading',{name:'셀 재고 0',exact:true})).toBeVisible();await step(page,'측정 파일로 시작하세요');
  for(const invalid of [true,false]){
@@ -38,7 +38,7 @@ test('production operator and quality reviewer complete the same pack',async({pa
 });
 
 test('researcher compares, exports, edits and saves a separate process design',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await page.getByRole('button',{name:'생산',exact:true}).click();const before=await page.locator('.floor-context-heading').innerText();
  await navigate(page,'알고리즘 검증');
  await expect(page.locator('.research-lab button').filter({hasText:'알고리즘 비교 실행'})).toBeDisabled();
@@ -68,7 +68,7 @@ test('researcher compares, exports, edits and saves a separate process design',a
 });}
 
 test('short phone can scroll from demo instructions to inventory and change pages',async({page})=>{
- await page.setViewportSize({width:320,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();
+ await page.setViewportSize({width:320,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();
  await page.getByRole('button',{name:'다음 셀',exact:true}).click();await expect(page.locator('.cell-inventory tbody tr')).toHaveCount(6);await expect(page.locator('.console-pager > span:visible')).toHaveText('2 / 22');
  await page.locator('.cell-inventory tbody tr').first().getByRole('button',{name:'측정 검토',exact:true}).click();await expect(page.getByRole('button',{name:'측정 검토',exact:true}).first()).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBe(true);

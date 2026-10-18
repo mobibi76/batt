@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate} from './workspace';
 import {planningLayout} from '../src/twin/planning';
-async function start(page:any){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await navigate(page,'공정 관리');}
+async function start(page:any){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await navigate(page,'공정 관리');}
 test('draft editing persists without publishing operational changes',async({page})=>{
  await start(page);await page.getByLabel('장비 이름',{exact:true}).fill('개인 설계 A');await page.getByLabel('X 격자 좌표').fill('-9');await page.getByRole('button',{name:/90° 회전/}).click();await page.getByRole('button',{name:'저장·승인',exact:true}).click();await page.getByRole('button',{name:'개인 설계 저장'}).click();
  const promise=page.waitForEvent('download');await page.getByRole('button',{name:'설계 내보내기'}).click();const stream=await(await promise).createReadStream();const chunks=[];for await(const c of stream!)chunks.push(c);const data=JSON.parse(Buffer.concat(chunks).toString('utf8').replace(/^\uFEFF/,''));expect(data.devices[0]).toMatchObject({name:'개인 설계 A',x:-9,rotation:90});expect(data.plan.quantity).toBe(16);

@@ -2,7 +2,7 @@ import {navigate,step} from './workspace';
 ﻿import {test,expect} from '@playwright/test';
 
 test('customer-data experiments are reproducible, exported, persisted and isolated from operations',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await page.getByRole('button',{name:'생산',exact:true}).click();const before=await page.locator('.floor-context-heading').innerText();
  await navigate(page,'알고리즘 검증');
  await expect(page.locator('.research-lab button').filter({hasText:'알고리즘 비교 실행'})).toBeDisabled();
@@ -23,7 +23,7 @@ test('customer-data experiments are reproducible, exported, persisted and isolat
 });
 
 test('research upload requires provenance and rejects invalid input',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'알고리즘 검증');await page.locator('.research-import > summary').click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'알고리즘 검증');await page.locator('.research-import > summary').click();
  const file={name:'invalid.csv',mimeType:'text/csv',buffer:Buffer.from('id,cohort,voltage_mv,resistance_mohm,capacity_mah\na,test,3300,20,1200')};
  await page.locator('.research-import input[type=file]').setInputFiles(file);await expect(page.getByRole('alert')).toContainText('출처·이용 조건');
  await page.getByLabel('데이터 출처').fill('https://example.org/research');await page.getByLabel('라이선스·이용 조건').fill('internal test');await page.getByLabel('측정 조건·전처리 설명').fill('test cohort');

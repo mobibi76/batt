@@ -3,7 +3,7 @@ import {choose} from './chips';
 import {test,expect,type Page} from '@playwright/test';
 import {navigate,step,researchSide} from './workspace';
 test.use({actionTimeout:10_000,trace:'retain-on-failure'});
-async function start(page:Page){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();}
+async function start(page:Page){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();}
 async function shell(page:Page){await expect(page.getByRole('region',{name:'생산·품질·연구 작업대'})).toBeVisible();await expect(page.locator('.sidebar,.topbar')).toHaveCount(0);await expect(page.getByRole('button',{name:'운영 지표',exact:true})).toHaveCount(0);}
 async function pack(page:Page){await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).filter({visible:true}).click();await page.getByLabel('팩 일련번호').fill('UNIFIED-001');await page.getByLabel('조합 검토 사유',{exact:true}).fill('합성 시험 조합 검토');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();}
 test('all tools stay in one workspace without legacy navigation',async({page})=>{

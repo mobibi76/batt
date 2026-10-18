@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {choose} from './chips';
 import {planningLayout} from '../src/twin/planning';
-async function open(page:any){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'연구',exact:true}).click();await page.getByRole('button',{name:'공정 설계·시뮬레이션',exact:true}).click();await expect(page.locator('.process-designer')).toBeVisible();}
+async function open(page:any){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'연구',exact:true}).click();await page.getByRole('button',{name:'공정 설계·시뮬레이션',exact:true}).click();await expect(page.locator('.process-designer')).toBeVisible();}
 test('design data, compare efficiency, independently approve and share with production and quality',async({page})=>{
  await page.setViewportSize({width:1440,height:1000});await open(page);
  await page.getByLabel('장비 이름',{exact:true}).fill('검증 충방전 장비');

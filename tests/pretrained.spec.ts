@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 test('public pretrained inference runs explicitly, exports provenance and fits small screens',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  await navigate(page,'알고리즘 검증');await step(page,'공개 모델 추론');const panel=page.locator('.pretrained-explorer');
  await expect(panel).toContainText('추가 학습 없음');await expect(panel.locator('.pretrained-metrics')).toHaveCount(0);
  await panel.getByRole('button',{name:'공개 모델 실행',exact:true}).click();await expect(panel).toContainText('1,127.1 mAh');

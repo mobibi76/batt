@@ -1,7 +1,7 @@
 ﻿import {test,expect} from '@playwright/test';
 import {navigate,step,researchSide} from './workspace';
 import {runExperiment} from '../src/research/engine';
-async function start(page:any){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();await navigate(page,'알고리즘 검증');}
+async function start(page:any){await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();await navigate(page,'알고리즘 검증');}
 for(const width of [1366,900,390])test(`customer evidence, missing values and reversible research navigation at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:844});await start(page);
  const steps=page.locator('.research-lab > .visible-task-tabs');await expect(steps.getByRole('button')).toHaveCount(5);

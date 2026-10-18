@@ -5,7 +5,7 @@ import {navigate} from './workspace';
 for(const width of [1366,390])test(`work destinations are visible buttons at ${width}px`,async({page})=>{
  // This scenario visits multiple workspaces; individual actions keep their own limit.
  test.setTimeout(60_000);page.setDefaultTimeout(10_000);
- await page.setViewportSize({width,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
+ await page.setViewportSize({width,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  for(const task of ['셀 데이터','셀 매칭','품질 리포트','알고리즘 검증','품질·공정 승인함','공정 관리']){
   await navigate(page,task);const nav=task==='공정 관리'?page.getByRole('navigation',{name:'설계 도구',exact:true}):page.locator('.visible-task-tabs:visible').last();await expect(nav).toBeVisible();await expect(nav.locator('select')).toHaveCount(0);await expect(page.getByRole('combobox',{name:'현재 작업'})).toHaveCount(0);
   for(const button of await nav.getByRole('button').all()){await expect(button).toBeVisible();const r=(await button.boundingBox())!;expect(r.x).toBeGreaterThanOrEqual(0);expect(r.x+r.width).toBeLessThanOrEqual(width);const minimum=await button.evaluate(e=>parseFloat(getComputedStyle(e).getPropertyValue('--control-compact-height')));expect(r.height).toBeGreaterThanOrEqual(minimum);}

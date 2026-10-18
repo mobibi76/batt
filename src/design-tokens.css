@@ -72,6 +72,7 @@
   --font-body: 'Pretendard Variable', 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-code: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   --type-title-size: 30px;
+  --type-auth-title-size: clamp(var(--type-title-size), 4.5dvh, var(--type-metric-size));
   --type-section-size: 17px;
   --type-body-size: 14px;
   --type-control-size: 13px;

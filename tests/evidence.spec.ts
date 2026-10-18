@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 test('v2 retains missing IR, recommends field groups, records retest and preserves evidence',async({page})=>{
- await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');
+ await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');
  const csv=['id,lot,voltage_mv,resistance_mohm,capacity_mah,measured_at',...Array.from({length:24},(_,i)=>`EVID-${i},FIXTURE,${i===0?3200:3300+i%3},,${25000+i*10},2026-10-15T09:00:00+09:00`)].join('\n');
  await page.locator('.evidence-workspace input[type=file]').setInputFiles({name:'synthetic-evidence.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
  await page.getByRole('radiogroup',{name:'고객 자료 출처'}).getByRole('radio',{name:'합성 시험자료',exact:true}).check();

@@ -6,7 +6,7 @@ for(const width of [1366,900,390])test(`customer evidence, missing values and re
  await page.setViewportSize({width,height:844});await start(page);
  const steps=page.locator('.research-lab > .visible-task-tabs');await expect(steps.getByRole('button')).toHaveCount(5);
  await expect(page.getByRole('button',{name:'UConn 공개 데이터 불러오기'})).toHaveCount(0);
- await step(page,'3. 검증 결과');await expect(page.getByRole('heading',{name:'아직 비교를 실행하지 않았습니다'})).toBeVisible();
+ await step(page,'3. 검증 결과');await expect(page.getByRole('heading',{name:'어떤 8셀 후보가 설정한 편차를 충족하나요?'})).toBeVisible();
  await step(page,'1. 연구 데이터');await researchSide(page,'controls');
  await page.locator('.research-import > summary').click();
  await page.getByLabel('데이터 출처',{exact:true}).fill('고객 검증 자료');await page.getByLabel('라이선스·이용 조건',{exact:true}).fill('내부 검토');await page.getByLabel('측정 조건·전처리 설명',{exact:true}).fill('동일 LOT·온도·SOC·측정법');
@@ -25,7 +25,7 @@ for(const width of [1366,900,390])test(`customer evidence, missing values and re
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
 });
 test('current snapshot stays synthetic, candidate results reopen and remain separate from operations',async({page})=>{
- await start(page);await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기',exact:true}).click();await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('128행');await step(page,'2. 비교 조건');await page.getByRole('button',{name:'알고리즘 비교 실행',exact:true}).click();await expect(page.locator('.research-cohort tbody tr')).toHaveCount(12);await step(page,'최근 실험');await page.locator('.research-history button').first().click();await expect(page.getByRole('heading',{name:'3. 검증 결과',exact:true})).toBeVisible();await expect(page.locator('.research-cohort tbody tr')).toHaveCount(12);await step(page,'1. 연구 데이터');await page.getByLabel('합성·시험 보완값 포함',{exact:true}).first().uncheck();await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('비교 대상 0셀');await step(page,'3. 검증 결과');await expect(page.getByRole('heading',{name:'아직 비교를 실행하지 않았습니다'})).toBeVisible();
+ await start(page);await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기',exact:true}).click();await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('128행');await step(page,'2. 비교 조건');await page.getByRole('button',{name:'알고리즘 비교 실행',exact:true}).click();await expect(page.locator('.research-cohort tbody tr')).toHaveCount(12);await step(page,'최근 실험');await page.locator('.research-history button').first().click();await expect(page.getByRole('heading',{name:'3. 검증 결과',exact:true})).toBeVisible();await expect(page.locator('.research-cohort tbody tr')).toHaveCount(12);await step(page,'1. 연구 데이터');await page.getByLabel('합성·시험 보완값 포함',{exact:true}).first().uncheck();await expect(page.locator('.task-step-panel:visible .field-data-summary')).toContainText('비교 대상 0셀');await step(page,'3. 검증 결과');await expect(page.getByRole('heading',{name:'어떤 8셀 후보가 설정한 편차를 충족하나요?'})).toBeVisible();
 });
 
 test('stored preparation restores its cohort and changing candidates clears unrelated cell evidence',async({page})=>{

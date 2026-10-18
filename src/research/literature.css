@@ -240,3 +240,14 @@
     gap: var(--space-12)
   }
 }
+
+.study-decision-map {border-top:var(--border-width) solid var(--color-border);padding-top:var(--space-12);margin-top:var(--space-8)}
+.literature-list h3 {margin:0;font-size:var(--type-subheading-size)}
+.study-decision-map ol {list-style:none;padding:0;margin:var(--space-12) 0;border-left:var(--border-strong-width) solid var(--color-border)}
+.study-decision-map li {padding:var(--space-8) var(--space-12)}
+.study-decision-map small,.study-decision-map strong,.study-decision-map span {display:block}
+.study-decision-map small {color:var(--color-ink-muted)}
+
+.study-decision-map ol {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-left:0;gap:var(--space-8)}
+.study-decision-map li {padding:var(--space-8) 0;border-top:var(--border-strong-width) solid var(--color-border);font-size:var(--type-caption-size)}
+.study-decision-map p {margin:var(--space-8) 0}

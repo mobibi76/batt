@@ -909,3 +909,6 @@
  .console-task-view:has(.console-task-tools) > .console-task-heading { flex: none; }
  .console-task-view:has(.console-task-tools) > .console-task-body { flex: none; height: var(--size-designer-min-height); }
 }
+
+.demo-next-guide {margin-bottom:var(--space-8)}
+.demo-next-guide summary {font-weight:var(--weight-semibold)}

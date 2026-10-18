@@ -19,6 +19,7 @@ test('production operator and quality reviewer complete the same pack',async({pa
   else {await expect(dialog).toContainText('형식 검증 완료');await expect(dialog.getByRole('radio',{name:'실측 자료',exact:true})).toBeDisabled();await dialog.getByRole('button',{name:'전체 128개 등록',exact:true}).click();}
  }
  await page.getByRole('button',{name:'용량별 재고 확인',exact:true}).click();await expect(page.getByRole('heading',{name:'셀 재고 128',exact:true})).toBeVisible();await expect(page.getByRole('cell',{name:'DEMO-0001 합성값',exact:true})).toBeVisible();
+ const guide=page.getByRole('region',{name:'전체 공정 체험 안내'});await expect(guide.locator('.demo-next-guide')).not.toHaveAttribute('open','');await guide.locator('summary').click();await expect(guide.getByText('LOT·용량을 확인하고 보류·재검사를 연습하세요.',{exact:false})).toBeVisible();await guide.locator('summary').click();await expect(guide.getByRole('button',{name:'이 셀로 8셀 조합',exact:true})).toBeInViewport({ratio:1});
  await expect(page.locator('.cell-inventory tbody tr')).toHaveCount(6);expect(await page.locator('.cell-inventory').evaluate(e=>e.scrollWidth<=e.clientWidth)).toBe(true);await page.screenshot({path:`test-results/role-production-${width}.png`});
  await page.getByRole('row').filter({hasText:'DEMO-0001'}).getByRole('button',{name:'측정 검토',exact:true}).click();
  await page.getByRole('button',{name:'측정 검토',exact:true}).first().click();await page.getByLabel('처리 사유',{exact:true}).fill('가상 셀 보류 시연');await page.getByRole('button',{name:'셀 보류',exact:true}).click();

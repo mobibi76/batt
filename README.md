@@ -105,7 +105,7 @@ npx supabase functions deploy match-cells --use-api
 
 ## 화면 매뉴얼과 Docs
 
-각 화면의 **사용 안내**에서 현재 작업을 설명하고, **DOCS 전체 매뉴얼**에서 시나리오·검색·인쇄/PDF를 제공합니다. 두 화면은 `src/manual/content.ts`와 `src/manual/walkthroughs.json`의 안내를 공유합니다. 기능·동선 변경 시 설명과 대상 요소, 관련 캡처를 함께 확인합니다. 전체 재생성은 최종 UI를 빌드하고 로컬 미리보기를 실행한 뒤 `npm run capture:manual`로 수행합니다. 기본 포트는 4173이며 다른 로컬 포트는 `MANUAL_PREVIEW_ORIGIN`으로 지정합니다. 스크립트는 로컬 외 요청을 차단하거나 합성 응답으로 대체합니다. 캡처·목록 갱신 후 다시 빌드하고 `tests/manual.spec.ts`와 실제 인쇄/PDF를 확인합니다.
+2026-10-18 화면 기준으로 메뉴·작업 순서·복귀 경로와 연구의 두 테마를 정리했습니다. 각 화면의 **사용 안내**에서 현재 작업을 설명하고, **DOCS 전체 매뉴얼**에서 시나리오·검색·인쇄/PDF를 제공합니다. 두 화면은 `src/manual/content.ts`와 `src/manual/walkthroughs.json`의 안내를 공유합니다. 기능·동선 변경 시 설명과 대상 요소, 관련 캡처를 함께 확인합니다. 전체 재생성은 최종 UI를 빌드하고 로컬 미리보기를 실행한 뒤 `npm run capture:manual`로 수행합니다. 기본 포트는 4173이며 다른 로컬 포트는 `MANUAL_PREVIEW_ORIGIN`으로 지정합니다. 스크립트는 로컬 외 요청을 차단하거나 합성 응답으로 대체합니다. 캡처·목록 갱신 후 다시 빌드하고 `tests/manual.spec.ts`와 실제 인쇄/PDF를 확인합니다.
 
 고객 자료 안내에는 전체 항목 조회, 원자료와 보완값 구분, 체험 작업 복귀와 운영 홈 복귀를 포함합니다. 캡처는 고객 데이터가 없는 합성 예시를 사용합니다. 관련 캡처 갱신은 로컬 미리보기 실행 후 `npm run capture:manual -- sample`로 수행하고, 갱신된 캡처 목록을 포함해 다시 빌드합니다.
 

@@ -24,7 +24,7 @@ async function snap(scenario:string,key:string,title:string,items:[Locator,strin
  if(audit){await auditHelp(p,`${scenario}/${key}`);return;}
  if(await button('작업 크게 보기').isVisible())await button('작업 크게 보기').click();
  if(await p.locator('.operational-scene').isVisible()){await p.locator('.operational-scene canvas').waitFor();await p.waitForTimeout(300);}
- await p.evaluate(()=>document.fonts.ready);await p.locator('.toast').waitFor({state:'hidden',timeout:4500}).catch(()=>{});
+ await p.evaluate(()=>document.fonts.ready);const dismiss=button('알림 닫기');if(await dismiss.isVisible())await dismiss.click();await p.locator('.toast').waitFor({state:'hidden',timeout:4500});
  const marks=[];for(const [loc,text] of items){const e=loc.first();await expect(e).toBeVisible();const b=await e.boundingBox();if(!b||b.y<0||b.y+b.height>900||b.x<0||b.x+b.width>1366)throw Error(`Capture target outside viewport ${scenario}/${key}: ${text} ${JSON.stringify(b)}`);marks.push({...b,text});}
  await p.evaluate(({marks,note})=>{const layer=document.createElement('div');layer.id='manual-capture-overlay';layer.className='manual-capture-overlay';
  const tag=document.createElement('div');tag.textContent=note;tag.className='manual-capture-tag';layer.append(tag);

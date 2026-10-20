@@ -1,0 +1,58 @@
+import {test,expect} from '@playwright/test';
+import {navigate,step} from './workspace';
+import {prepareInspection} from './inspection';
+test('customer tutorial connects production quality and research without persistent writes',async({page})=>{
+ const id='33333333-3333-4333-8333-333333333333';let revoked=false,holdNextRead=false;let releaseRead:(()=>void)|undefined;const writes:string[]=[];
+ const profile={id,role:'operator',status:'approved',process_stages:['assembly','aging','final']};
+ const source_tables=[{file:'grading-fixture.xlsx',sheet:'sheet1',header_rows:2,rows:Array.from({length:130},(_,r)=>Array.from({length:88},(_,c)=>r===0?`COLUMN-${c+1}`:r===129&&c===87?'LAST-ORIGINAL':r===2&&c===1?'0011':r===2&&c===2?null:r*100+c))},...['2_팩별편차비교','3_AI매칭_팩구성','4_유효셀_특성값'].map(sheet=>({file:'poc-fixture.xlsx',sheet,rows:[['원래 컬럼','원래 값'],['원래 행',123.456789]]}))];
+ const dataset={version:1,source_tables,files:[{name:'synthetic-fixture.xlsx',sha256:'a'.repeat(64),created:'2026-01-01T00:00:00Z',modified:'2026-02-01T00:00:00Z',provided_at:null}],verification:{valid:8,held:1,sequence_mean:7,poc_mean:7,improvement_percent:0,poc_two_criteria_pass:1,algorithm_reproduced:false},intake:{name:'synthetic-fixture.xlsx',hash:'a'.repeat(64),source_kind:'reconstructed',mapping_version:'test',headers:[],warnings:[],rows:Array.from({length:9},(_,i)=>({id:`PRIVATE-${i}`,channel:String(i),row_no:i+3,voltage_mv:3300+i/10,capacity_mah:i===8?null:25000+i,resistance_mohm:null,measured_at:null,issues:[],state:i===8?'held':'ready',field_origins:{id:'supplemented',voltage_mv:'provided',capacity_mah:'provided'}}))}};
+ await page.addInitScript(id=>localStorage.setItem('sb-asfrsorbzmqhnwnxlxar-auth-token',JSON.stringify({access_token:'test-token',refresh_token:'refresh',expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user:{id,email:'test@example.com',aud:'authenticated',role:'authenticated'}})),id);
+ await page.route('https://asfrsorbzmqhnwnxlxar.supabase.co/**',async route=>{const path=new URL(route.request().url()).pathname;if(path.endsWith('/profiles'))return route.fulfill({json:profile});if(path.endsWith('/read_workbench'))return route.fulfill({json:{profile,changed:true,revision:1,cells:[],packs:[],tests:[],members:[]}});if(path.endsWith('/private_demo_datasets')){const denied=revoked;if(holdNextRead){holdNextRead=false;await new Promise<void>(resolve=>releaseRead=resolve);}return denied?route.fulfill({status:406,json:{message:'denied'}}):route.fulfill({json:{payload:dataset}});}if(route.request().method==='POST')writes.push(path);return route.fulfill({json:[]});});
+
+ await page.goto('/batt/');await page.getByRole('button',{name:'고객 데이터 체험',exact:true}).click();
+ await page.getByRole('button',{name:'보완값 포함 업무 체험'}).click();
+ await page.getByRole('button',{name:'연구',exact:true}).click();
+ await page.getByRole('button',{name:'튜토리얼 모드',exact:true}).click();
+ await expect(page.getByRole('button',{name:'생산',exact:true})).toHaveAttribute('aria-pressed','true');
+ const guide=page.getByRole('region',{name:'고객 데이터 튜토리얼'});
+ const next=guide.getByRole('button',{name:'다음 실습',exact:true});
+ await expect(next).toBeDisabled();
+ for(const width of [320,390,768,900,1366,1440]){
+  await page.setViewportSize({width,height:width===320?480:768});
+  await expect(guide).toBeVisible();
+  await page.screenshot({path:`test-results/tutorial-${width}.png`});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await guide.getByRole('button',{name:'튜토리얼 접기'}).click();
+  await expect(guide.getByRole('button',{name:'튜토리얼 펼치기'})).toBeInViewport();
+  await guide.getByRole('button',{name:'튜토리얼 펼치기'}).click();
+ }
+ await page.setViewportSize({width:1366,height:900});
+ await guide.getByRole('checkbox').check();await next.click();
+ await expect(next).toBeDisabled();
+ await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');
+ await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();
+ await page.getByLabel('팩 일련번호').fill('TUTORIAL-001');await page.getByLabel('조합 검토 사유',{exact:true}).fill('고객 데이터 실습');
+ await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
+ await expect(next).toBeEnabled();await next.click();await expect(next).toBeDisabled();
+ await page.getByRole('row').filter({hasText:'TUTORIAL-001'}).getByRole('button',{name:'상세 조회'}).click();
+ await prepareInspection(page,true);
+ await page.getByRole('textbox',{name:'검사 메모',exact:true}).fill('튜토리얼 시험 검사');
+ await page.getByRole('button',{name:'검사 결과 저장',exact:true}).click();
+ await page.getByRole('button',{name:'닫기',exact:true}).click();
+ await expect(next).toBeEnabled();await next.click();
+ await guide.getByRole('checkbox').check();await next.click();
+ await expect(next).toBeDisabled();
+ await page.getByRole('button',{name:'현재 측정·판정 자료 가져오기'}).click();
+ await step(page,'2. 비교 조건');
+ await page.getByRole('checkbox',{name:'합성·시험 보완값 포함',exact:true}).check();
+ await page.getByRole('button',{name:'알고리즘 비교 실행',exact:true}).click();
+ await expect(next).toBeEnabled();await next.click();
+ await guide.getByRole('checkbox').check();await guide.getByRole('button',{name:'실습 마무리'}).click();
+ await expect(guide).toContainText('팩 1개 · 검사 1건 · 연구 비교 실행 완료');
+ await guide.getByRole('link',{name:'연구 DOCS'}).click();await expect(page.getByRole('dialog')).toBeVisible();await page.getByRole('button',{name:'DOCS 닫기'}).click();
+ expect(writes).toEqual([]);
+ expect(await page.evaluate(()=>Object.values(localStorage).some(v=>v.includes('PRIVATE-0')))).toBe(false);
+ await page.screenshot({path:'test-results/customer-tutorial-complete.png'});
+ await page.getByRole('button',{name:'체험 종료',exact:true}).click();await page.getByRole('button',{name:'고객 데이터 튜토리얼 시작'}).click();
+ await expect(guide).toContainText('1 / 6');await expect(next).toBeDisabled();
+});

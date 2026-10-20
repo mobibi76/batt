@@ -1,0 +1,32 @@
+.operations-console.has-tutorial {
+  grid-template-rows: auto auto auto auto minmax(0,1fr) auto;
+}
+.customer-tutorial {
+  max-height: 30dvh;
+  overflow: auto;
+  min-width: 0;
+  padding: var(--space-12);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface-accent);
+  font-size: var(--type-body-size);
+}
+.tutorial-heading, .tutorial-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+.tutorial-heading { justify-content: space-between; }
+.customer-tutorial p { margin: var(--space-8) 0; }
+.customer-tutorial label { display: flex; align-items: center; gap: var(--space-8); }
+.customer-tutorial input[type=checkbox] { width: auto; }
+.tutorial-actions { margin-top: var(--space-8); }
+.has-tutorial .console-mode { flex-wrap: wrap; }
+.console-header:has(.tutorial-mode-button) { flex-wrap: wrap; }
+.console-header:has(.tutorial-mode-button) .console-mode { flex-wrap: wrap; flex-shrink: 1; }
+.operations-console.floor-console .console-mode .tutorial-mode-button { white-space: nowrap; min-width: max-content; }
+.tutorial-actions a { color: var(--color-brand); }
+@media (max-height: 540px) {
+  .sample-open .console-header:has(.tutorial-mode-button) .console-mode { display: none; }
+}

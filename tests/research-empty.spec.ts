@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step,researchSide} from './workspace';
-for(const width of [1366,390])test('research explains analysis before data '+width,async({page})=>{
+for(const width of [1366,834])test('research explains analysis before data '+width,async({page})=>{
  await page.setViewportSize({width,height:768});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await navigate(page,'알고리즘 검증');
  const active=page.locator('.task-step-panel:visible');await expect(active.getByRole('region',{name:'분석 미리보기'})).toBeVisible();await expect(active.locator('.decision-preview-chart')).toHaveCount(3);await expect(active.locator('.decision-empty-axis').first()).toContainText('자료 대기');await page.screenshot({path:'test-results/research-empty-'+width+'.png'});
  await active.getByRole('button',{name:'입력·설정 열기 →',exact:true}).click();await expect(active.locator('.research-import')).toHaveAttribute('open','');await expect(page.getByLabel('데이터 출처',{exact:true})).toBeFocused();await expect(page.getByLabel('데이터 출처',{exact:true})).toBeInViewport({ratio:1});

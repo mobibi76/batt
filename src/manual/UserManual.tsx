@@ -6,8 +6,10 @@ import './manual.css';
 import Article,{walkthroughs} from './ManualArticle';
 import {guidance} from './guidance';
 import {visibleRect,findTargets,targetRect,paddedRect,overlap,type Rect} from './spotlight';
+import {useSupportedViewport} from '../SupportedViewport';
 const visible=(e:Element)=>!!visibleRect(e);
 export default function UserManual({context}:{context:string}){
+ const supported=useSupportedViewport();
  const [host,setHost]=useState<Element|null>(null),[mode,setMode]=useState<'screen'|'docs'|null>(null),[topic,setTopic]=useState(0),[docsId,setDocsId]=useState(context),[query,setQuery]=useState(''),[rect,setRect]=useState<Rect|null>(null);
  const [placement,setPlacement]=useState('bottom-center'),[covered,setCovered]=useState(false),[compact,setCompact]=useState(false);
  const panel=useRef<HTMLElement>(null);
@@ -23,7 +25,7 @@ export default function UserManual({context}:{context:string}){
   const read=()=>{const id=location.hash.match(/^#docs\/([a-z]+)$/)?.[1];if(id&&scenarios.some(s=>s.id===id)){previousHash.current='';setDocsId(id);setMode('docs');}};
   read();window.addEventListener('hashchange',read);return()=>window.removeEventListener('hashchange',read);
  },[]);
- useEffect(()=>{if(mode!=='docs'){printEpoch.current++;setPrinting(false);}if(mode&&!dialog.current?.open)dialog.current?.showModal();if(!mode&&dialog.current?.open)dialog.current.close();},[mode]);
+ useEffect(()=>{if(mode!=='docs'||!supported){printEpoch.current++;setPrinting(false);}if(mode&&supported&&!dialog.current?.open)dialog.current?.showModal();if((!mode||!supported)&&dialog.current?.open)dialog.current.close();},[mode,supported]);
  useEffect(()=>{
   if(mode!=='screen'){setRect(null);return;}
   let frame=0,previous='';

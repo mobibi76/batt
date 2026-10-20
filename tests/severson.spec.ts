@@ -13,7 +13,7 @@ test('Severson capacity records retain continuation provenance and remain separa
  const chunks=[];for await(const chunk of (await file.createReadStream())!)chunks.push(chunk);
  const report=JSON.parse(Buffer.concat(chunks).toString('utf8').replace(/^\ufeff/,''));
  expect(report.record.continuation_of).toBeTruthy();expect(report.record.capacity_mah.length).toBeGreaterThan(2);expect(report.record.voltage_mv).toBeUndefined();expect(report.scope).toContain('생산 적용 아님');expect(report.files.length).toBe(6);
- await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.setViewportSize({width:834,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await expect(panel.getByRole('img')).toBeVisible();
  await panel.getByRole('button',{name:'시험 선택',exact:true}).click();
  await expect(panel.getByRole('img')).toBeHidden();

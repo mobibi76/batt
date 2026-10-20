@@ -5,7 +5,7 @@ import { navigate, step, researchSide } from './workspace';
 import fs from 'node:fs';
 import { choose } from './chips';
 import { prepareInspection } from './inspection';
-for (const [width, height] of [[320, 360], [320, 480], [900, 360], [1366, 600], [1366, 768]])
+for (const [width, height] of [[800, 360], [800, 480], [900, 360], [1366, 600], [1366, 768]])
     test('vertical access ' + width + 'x' + height, async ({ page }, testInfo) => {
         test.setTimeout(90000);
         page.setDefaultTimeout(10000);

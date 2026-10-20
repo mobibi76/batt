@@ -32,7 +32,7 @@ async function inspectSteps(page:Page,screen:string){
  }
  return issues;
 }
-for(const width of [320,390,768,1366])test(`control labels keep Korean words together at ${width}`,async({page})=>{
+for(const width of [800,834,768,1366])test(`control labels keep Korean words together at ${width}`,async({page})=>{
  test.setTimeout(120000);await page.setViewportSize({width,height:844});await page.goto('/batt/');await page.evaluate(()=>document.fonts.ready);
  const issues=await inspect(page,'로그인');await page.getByRole('button',{name:'사용 권한 신청',exact:true}).click();issues.push(...await inspect(page,'가입'));
  await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();

@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-for(const width of [1440,1024,390])test(`title product image and access controls at ${width}`,async({page})=>{
+for(const width of [1440,1024,834])test(`title product image and access controls at ${width}`,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/batt/');
  const art=page.locator('.cell-pack-art');await art.evaluate((el:HTMLImageElement)=>el.decode());
  expect(await art.evaluate((el:HTMLImageElement)=>el.naturalWidth)).toBeGreaterThan(500);

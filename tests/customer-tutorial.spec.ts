@@ -18,7 +18,7 @@ test('customer tutorial connects production quality and research without persist
  const guide=page.getByRole('region',{name:'고객 데이터 튜토리얼'});
  const next=guide.getByRole('button',{name:'다음 실습',exact:true});
  await expect(next).toBeDisabled();
- for(const [width,height] of [[320,480],[390,768],[768,1024],[1024,768],[800,1280],[1280,800],[834,1194],[1194,834],[900,768],[1366,768],[1440,768]]){
+ for(const [width,height] of [[768,1024],[1024,768],[800,1280],[1280,800],[834,1194],[1194,834],[900,768],[1366,768],[1440,768]]){
   await page.setViewportSize({width,height});
   await expect(guide).toBeVisible();
   await page.screenshot({path:`test-results/tutorial-${width}.png`});

@@ -68,8 +68,8 @@ test('researcher compares, exports, edits and saves a separate process design',a
 
 });}
 
-test('short phone can scroll from demo instructions to inventory and change pages',async({page})=>{
- await page.setViewportSize({width:320,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();
+test('short tablet window can scroll from demo instructions to inventory and change pages',async({page})=>{
+ await page.setViewportSize({width:800,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계',exact:true}).click();
  await page.getByRole('button',{name:'다음 셀',exact:true}).click();await expect(page.locator('.cell-inventory tbody tr')).toHaveCount(6);await expect(page.locator('.console-pager > span:visible')).toHaveText('2 / 22');
  await page.locator('.cell-inventory tbody tr').first().getByRole('button',{name:'측정 검토',exact:true}).click();await expect(page.getByRole('button',{name:'측정 검토',exact:true}).first()).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBe(true);

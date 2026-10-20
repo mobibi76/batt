@@ -15,12 +15,12 @@ test('private samples distinguish provided/supplemented values, restore work and
  const selector=view.getByLabel('원자료 선택');await expect(selector.locator('option')).toHaveCount(4);await expect(view.locator('.source-table-scroll')).toContainText('COLUMN-88');await expect(view.getByRole('cell',{name:'0011',exact:true})).toBeVisible();
  for(let i=0;i<6;i++)await view.getByRole('button',{name:'다음 자료',exact:true}).click();await expect(view.getByRole('cell',{name:'LAST-ORIGINAL',exact:true})).toBeVisible();await expect(view.getByRole('button',{name:'다음 자료',exact:true})).toBeDisabled();
  for(const i of ['1','2','3']){await selector.selectOption(i);await expect(view.getByRole('cell',{name:'123.456789',exact:true})).toBeVisible();}
- for(const width of [1366,390,320]){await page.setViewportSize({width,height:720});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`test-results/source-tables-${width}.png`});}
+ for(const width of [1366,834,800]){await page.setViewportSize({width,height:720});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`test-results/source-tables-${width}.png`});}
  await view.getByRole('button',{name:'원자료·사용값',exact:true}).click();
  await view.getByRole('button',{name:'출처·날짜'}).click();await expect(view).toContainText('제공일 미확인');await view.getByRole('button',{name:'원자료·사용값'}).click();
- await page.setViewportSize({width:390,height:844});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- await page.screenshot({path:'test-results/private-sample-mobile.png'});
- await page.setViewportSize({width:320,height:480});await expect(view.locator('.console-pager')).toBeInViewport({ratio:1});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBe(true);
+ await page.setViewportSize({width:834,height:844});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:'test-results/private-sample-tablet.png'});
+ await page.setViewportSize({width:800,height:480});await expect(view.locator('.console-pager')).toBeInViewport({ratio:1});await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBe(true);
  await view.getByRole('button',{name:'내부저항',exact:true}).click();await page.screenshot({path:'test-results/private-sample-small.png'});await expect(view.locator('.data-origin-supplemented').filter({hasText:'0.42'})).toBeInViewport({ratio:1});await page.screenshot({path:'test-results/private-sample-small.png'});await page.setViewportSize({width:1366,height:768});
  await view.getByRole('button',{name:'업무로 돌아가기'}).click();await navigate(page,'셀 매칭');await page.getByRole('button',{name:'조합 추천',exact:true}).click();await expect(page.locator('.candidate')).toHaveCount(1);await expect(page.locator('.candidate')).toContainText('보완값 포함 체험 결과');
  await page.getByRole('button',{name:'샘플 데이터',exact:true}).click();await view.getByRole('button',{name:'업무로 돌아가기'}).click();await expect(page.locator('.candidate')).toHaveCount(1);

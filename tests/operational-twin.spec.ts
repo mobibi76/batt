@@ -17,7 +17,7 @@ test('operational process remains usable when WebGL is unavailable',async({page}
 });
 
 test('small field fits every stage and moves between process and work',async({page})=>{
- await page.setViewportSize({width:320,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await expect(page.locator('.operational-scene canvas')).toBeVisible();
+ await page.setViewportSize({width:800,height:480});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await expect(page.locator('.operational-scene canvas')).toBeVisible();
  await expect.poll(async()=>page.locator('.scene-label').evaluateAll(es=>es.every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth;}))).toBe(true);
  await page.locator('[data-scene-stage="storage"]').click();await expect(page.getByRole('button',{name:'셀 재고 확인',exact:true})).toBeInViewport();await page.getByRole('button',{name:'공정 전체 보기 ↑'}).click();await expect(page.locator('.floor-briefing')).toBeInViewport();
 });

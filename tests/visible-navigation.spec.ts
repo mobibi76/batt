@@ -2,7 +2,7 @@
 import {test,expect} from '@playwright/test';
 test.use({trace:'retain-on-failure'});
 import {navigate} from './workspace';
-for(const width of [1366,390])test(`work destinations are visible buttons at ${width}px`,async({page})=>{
+for(const width of [1366,834])test(`work destinations are visible buttons at ${width}px`,async({page})=>{
  // This scenario visits multiple workspaces; individual actions keep their own limit.
  test.setTimeout(60_000);page.setDefaultTimeout(10_000);
  await page.setViewportSize({width,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();

@@ -17,7 +17,7 @@ test('quality work follows the same pack through confirmation, independent appro
  await page.getByLabel('검토 요청 사유',{exact:true}).fill('재검사 근거 확인 후 최종 승인 요청');await page.getByRole('button',{name:'팩 품질 검토 요청'}).click();await choose(page,'체험 역할','demo-reviewer');await page.getByLabel('검토 의견').fill('공정 확인 및 재검사 결과 확인');await page.getByRole('button',{name:'제출본 승인',exact:true}).click();await page.getByRole('button',{name:'품질 결과 확인',exact:true}).click();
  await expect(page.locator('.outcome-comparison article').nth(0)).toContainText('100%');await expect(page.locator('.outcome-comparison article').nth(1)).toContainText('0%');
  await navigate(page,'팩 · 검사이력');await expect(page.getByRole('row').filter({hasText:'CONNECTED-QUALITY'})).toContainText('품질 승인 완료');
- for(const width of [1440,390,320]){await page.setViewportSize({width,height:720});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+ for(const width of [1440,834,800]){await page.setViewportSize({width,height:720});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
 });
 test('quality drilldown filters the affected records rather than opening an unrelated list',async({page})=>{
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'품질 리포트');await step(page,'품질 비교');await page.getByRole('button',{name:'누락된 결과 연결'}).click();await expect(page.getByRole('radiogroup',{name:'조회 조건 · 품질 기록 관리',exact:true}).locator('input[value="unlinked"]')).toBeChecked();

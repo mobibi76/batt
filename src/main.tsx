@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import SupportedViewport from './SupportedViewport';
 import './styles.css';
 import './typography.css';
 import './control-layout.css';
 import './visual-hierarchy.css';
 import './auth-layout.css';
 import './tablet-layout.css';
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App /></React.StrictMode>);
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><SupportedViewport><App /></SupportedViewport></React.StrictMode>);

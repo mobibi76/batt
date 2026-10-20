@@ -15,13 +15,13 @@ test('design data, compare efficiency, independently approve and share with prod
  for(const mode of ['생산','품질']){await page.getByRole('button',{name:mode,exact:true}).click();await expect(page.locator('.floor-scene-caption')).toContainText('생산 반영 검증 공정');await expect(page.getByRole('button',{name:'검증 충방전 장비',exact:true})).toBeVisible();}
  await page.screenshot({path:'.local/process-planning-operational.png',fullPage:true});
 });
-test('mobile design and simulation remain reachable without horizontal overflow',async({page})=>{
- await page.setViewportSize({width:390,height:844});await open(page);
+test('tablet design and simulation remain reachable without horizontal overflow',async({page})=>{
+ await page.setViewportSize({width:834,height:844});await open(page);
  await page.getByRole('button',{name:'데이터 확보 현황',exact:true}).click();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
- await page.screenshot({path:'.local/process-coverage-mobile.png',fullPage:true});
+ await page.screenshot({path:'.local/process-coverage-tablet.png',fullPage:true});
  await page.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:'.local/process-planning-mobile.png',fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);await page.screenshot({path:'.local/process-planning-tablet.png',fullPage:true});
 });
 
 test('process diagram and consolidated coverage switch in place',async({page})=>{
@@ -102,7 +102,7 @@ test('adding and selecting equipment opens its editor with visible removal',asyn
 
 });
 
-for(const viewport of [{width:1366,height:768},{width:900,height:720},{width:390,height:844}])test(`equipment and order round trip retains edits and visible navigation at ${viewport.width}`,async({page})=>{
+for(const viewport of [{width:1366,height:768},{width:900,height:720},{width:834,height:844}])test(`equipment and order round trip retains edits and visible navigation at ${viewport.width}`,async({page})=>{
  await page.setViewportSize(viewport);await open(page);
  const editor=page.getByRole('button',{name:'장비 편집',exact:true}),order=page.getByRole('button',{name:/^작업 순서 \d+$/});
  const name=page.getByLabel('장비 이름',{exact:true});

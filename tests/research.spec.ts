@@ -19,7 +19,7 @@ test('customer-data experiments are reproducible, exported, persisted and isolat
  expect(report.dataset.cells).toHaveLength(128);expect(report.results).toHaveLength(4);expect(report.dataset_sha256).toMatch(/^[a-f0-9]{64}$/);expect(report.promotion.status).toContain('운영 미적용');
  await page.getByRole('button',{name:'생산',exact:true}).click();expect(await page.locator('.floor-context-heading').innerText()).toBe(before);
  await navigate(page,'알고리즘 검증');await expect(page.locator('.research-history button')).toHaveCount(1);await step(page,'최근 실험');await page.locator('.research-history button').click();await expect(page.getByRole('heading',{name:'3. 검증 결과'})).toBeVisible();await step(page,'2. 비교 조건');await expect(page.getByRole('button',{name:'알고리즘 비교 실행'})).toBeEnabled();await expect(page.getByLabel('재현 시드')).toHaveValue('20261014');
- await page.setViewportSize({width:390,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.setViewportSize({width:834,height:1000});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
 test('research upload requires provenance and rejects invalid input',async({page})=>{

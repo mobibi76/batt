@@ -32,17 +32,17 @@ test('file-first demo validates measurements and follows the same cells through 
  await page.getByLabel('검토 요청 사유',{exact:true}).fill('재검사 근거 확인 후 최종 승인 요청');await page.getByRole('button',{name:'팩 품질 검토 요청'}).click();await choose(page,'체험 역할','demo-reviewer');await page.getByLabel('검토 의견').fill('공정 확인 및 재검사 결과 확인');await page.getByRole('button',{name:'제출본 승인',exact:true}).click();await page.getByRole('button',{name:'품질 결과 확인',exact:true}).click();
  await expect(page.locator('.outcome-comparison article').nth(0)).toContainText('100%');await expect(page.locator('.outcome-comparison article').nth(1)).toContainText('0%');
  await navigate(page,'팩 · 검사이력');await expect(page.getByRole('row').filter({hasText:'CONNECTED-QUALITY'})).toContainText('품질 승인 완료');
- for(const width of [1440,390,320]){await page.setViewportSize({width,height:720});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+ for(const width of [1440,834,800]){await page.setViewportSize({width,height:720});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
 });
 
 test('file-first entry remains usable on a small screen',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();
+ await page.setViewportSize({width:834,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험',exact:true}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();
  await expect(page.getByRole('button',{name:'가상 측정 파일 받기',exact:true})).toBeInViewport();
  await page.getByRole('button',{name:'파일 가져오기',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('button',{name:'파일 가져오기',exact:true})).toBeInViewport();
- await page.screenshot({path:'.local/demo-file-start-mobile.png'});
+ await page.screenshot({path:'.local/demo-file-start-tablet.png'});
 });
 
-for(const width of [1366,390])test(`single demo entry can skip file registration at ${width}px`,async({page})=>{
+for(const width of [1366,834])test(`single demo entry can skip file registration at ${width}px`,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/batt/');
  await expect(page.locator('.auth-form').getByRole('button',{name:/체험/})).toHaveCount(1);
  await page.screenshot({path:`.local/demo-single-login-${width}.png`});

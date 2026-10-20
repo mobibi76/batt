@@ -1,0 +1,32 @@
+import {test,expect} from '@playwright/test';
+test.use({hasTouch:true});
+for(const width of [320,390,600,767])test(`mobile notice replaces all work at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:844});
+ const requests:string[]=[];
+ page.on('request',r=>{if(r.url().includes('supabase.co'))requests.push(r.url());});
+ await page.goto('/batt/#docs/research');
+ await expect(page.getByRole('heading',{name:'모바일은 지원하지 않습니다',exact:true})).toBeVisible();
+ await expect(page.getByRole('button')).toHaveCount(0);
+ await expect(page.locator('.supported-viewport')).toBeEmpty();
+ expect(requests).toEqual([]);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:`test-results/unsupported-${width}.png`});
+});
+test('blocking and restoring a tablet retains input and suspends the manual dialog',async({page})=>{
+ await page.setViewportSize({width:768,height:1024});await page.goto('/batt/');
+ await page.getByLabel('이메일',{exact:true}).fill('tablet-draft@example.com');
+ await page.getByRole('button',{name:'사용 안내',exact:true}).click();
+ await page.getByRole('button',{name:'DOCS 전체 매뉴얼'}).click();
+ await page.setViewportSize({width:767,height:1024});
+ const notice=page.getByRole('main',{name:'모바일은 지원하지 않습니다'});
+ await expect(notice).toBeVisible();await expect(notice).toBeFocused();
+ await expect(page.getByRole('dialog')).toHaveCount(0);
+ await expect(page.getByRole('button')).toHaveCount(0);
+ await page.keyboard.press('Tab');await page.keyboard.press('Enter');
+ await expect(page.locator('.supported-viewport')).toBeHidden();
+ await page.setViewportSize({width:1024,height:768});
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.getByRole('button',{name:'DOCS 닫기'}).click();
+ await expect(page.getByLabel('이메일',{exact:true})).toHaveValue('tablet-draft@example.com');
+ await expect(notice).toBeHidden();
+});

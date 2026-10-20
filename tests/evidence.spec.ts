@@ -12,6 +12,6 @@ test('v2 retains missing IR, recommends field groups, records retest and preserv
  await page.getByRole('button',{name:'실행·처리 이력',exact:true}).click();await expect(page.locator('.evidence-workspace tbody tr')).toHaveCount(8);
  await page.getByRole('button',{name:'측정·재검사',exact:true}).click();await page.getByRole('button',{name:'측정 검토'}).first().click();await page.getByLabel('처리 사유',{exact:true}).fill('장비 재측정 시험');await page.getByRole('button',{name:'재측정값 입력'}).click();await page.getByLabel('내부저항 mΩ',{exact:true}).fill('0.42');await page.getByLabel('측정 시각 (ISO·시간대 포함)').fill('2026-10-15T10:00:00+09:00');await page.getByRole('button',{name:'재검사 결과 기록'}).click();
  await expect(page.locator('.evidence-workspace')).toContainText('현재 측정');
- for(const width of [1366,768,390,320]){await page.setViewportSize({width,height:768});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
+ for(const width of [1366,768,834,800]){await page.setViewportSize({width,height:768});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);}
  await page.setViewportSize({width:1366,height:768});await page.screenshot({path:'test-results/evidence-retest.png',fullPage:true});
 });

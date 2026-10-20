@@ -4,7 +4,7 @@ import {choose} from './chips';
 import {navigate,step} from './workspace';
 import {test,expect} from '@playwright/test';
 test.use({trace:'retain-on-failure'});
-for(const [width,height] of [[1366,768],[1024,600],[768,1024],[1920,1080],[320,480]])test(`production quality and research retain navigation at ${width}x${height}`,async({page})=>{
+for(const [width,height] of [[1366,768],[1024,600],[768,1024],[1920,1080],[800,480]])test(`production quality and research retain navigation at ${width}x${height}`,async({page})=>{
  // This scenario visits multiple workspaces; individual actions keep their own limit.
  test.setTimeout(60_000);page.setDefaultTimeout(10_000);
  await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
@@ -32,7 +32,7 @@ test('next work selects the unresolved inspection then hands the same pack to qu
  await page.getByRole('button',{name:'셀 매칭 시작',exact:true}).click();await page.getByRole('button',{name:'조합 추천',exact:true}).click();await step(page,'8셀 추천 조합');await page.getByRole('button',{name:'조합 검토 · 확정'}).first().click();await page.getByLabel('팩 일련번호').fill('NEXT-WORK');await page.getByLabel('조합 검토 사유',{exact:true}).fill('업무 연결 검증');await page.getByRole('button',{name:'확인 및 팩 구성',exact:true}).click();
  await page.getByRole('button',{name:/^(생산|품질|연구) 홈$/}).click();await expect(page.locator('.console-target')).toContainText('NEXT-WORK');await expect(page.getByRole('button',{name:'첫 대상 확인'})).toHaveCount(0);
  for(const kind of ['module','casing','final']){
-  await page.setViewportSize({width:320,height:480});
+  await page.setViewportSize({width:800,height:480});
   await page.getByRole('button',{name:'검사 확인·기록',exact:true}).click();await expect(page.getByRole('radiogroup',{name:'검사 구분'}).locator(`input[value="${kind}"]`)).toBeChecked();
   await expect(page.getByRole('button',{name:'검사 메모·저장으로'})).toBeInViewport({ratio:1});await expect(page.getByRole('button',{name:'검사 입력 닫기'})).toBeInViewport({ratio:1});
   expect(await page.locator('.console-content').evaluate(e=>e.scrollHeight<=e.clientHeight+1)).toBe(true);

@@ -54,6 +54,9 @@ test('tablet rotation and keyboard keep pack selection and unsaved inspection in
  await page.getByRole('button',{name:'이 팩 검사로 이어가기'}).click();await prepareInspection(page,true);
  const memo=page.getByRole('textbox',{name:'검사 메모',exact:true});
  await memo.fill('가로·세로 회전 후에도 유지할 시험 검사 메모');
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.getByRole('heading',{name:'모바일은 지원하지 않습니다',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'검사 결과 저장',exact:true})).toHaveCount(0);
  for(const viewport of [sizes[1],{width:1024,height:500},sizes[0]]){
   await page.setViewportSize(viewport);
   await expect(memo).toHaveValue('가로·세로 회전 후에도 유지할 시험 검사 메모');

@@ -1,5 +1,22 @@
 /* Supported touch workspaces: tablets in either orientation.
    Viewport rules also handle desktop split windows; no device/UA gating. */
+.supported-viewport { display: contents; }
+.supported-viewport[hidden], .unsupported-viewport[hidden] { display: none; }
+.unsupported-viewport {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-24);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+.unsupported-viewport section {
+  width: 100%;
+  max-width: var(--size-manual-panel);
+}
+.unsupported-viewport h1 { margin-bottom: var(--space-24); }
+.unsupported-viewport p { margin-bottom: var(--space-16); }
+.unsupported-viewport-brand { font-weight: var(--weight-bold); }
 @media (any-pointer: coarse) {
   :root {
     --control-compact-height: var(--control-height);

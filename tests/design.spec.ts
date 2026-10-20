@@ -2,7 +2,7 @@
 import {test,expect} from '@playwright/test';
 test.use({trace:'retain-on-failure'});
 import {navigate,step,researchSide} from './workspace';
-for(const width of [1440,900,768,390,320])test('integrated task geometry at '+width,async({page})=>{
+for(const width of [1440,900,768,834,800])test('integrated task geometry at '+width,async({page})=>{
  // This scenario visits multiple workspaces; individual actions keep their own limit.
  test.setTimeout(60_000);page.setDefaultTimeout(10_000);
  await page.setViewportSize({width,height:720});await page.goto('/batt/');await page.getByRole('button',{name:'사용 권한 신청',exact:true}).click();await expect(page.getByLabel('이름',{exact:true})).toBeVisible();await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
@@ -62,7 +62,7 @@ test('login hero stays readable against the brightest green background',async({p
   }
  });
 
-for(const width of [1366,390])test('content spacing and gutters at '+width,async({page})=>{
+for(const width of [1366,834])test('content spacing and gutters at '+width,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  for(const [task,panel,body] of [['품질 리포트','.outcome-review','.workbench-body'],['품질·공정 승인함','.task-step-panel:visible > .panel','.approval-submit']]) {
   await navigate(page,task);
@@ -80,18 +80,18 @@ for(const width of [1366,390])test('content spacing and gutters at '+width,async
   if(await details.count()){await details.locator('summary').first().click();await page.screenshot({path:'.local/spacing-open-'+task+'-'+width+'.png'});}
  }
  await navigate(page,'알고리즘 검증');const workspace=page.locator('.task-step-panel:visible .field-study-workspace');await expect(workspace).toBeVisible();await expect(workspace.locator('.field-study-analysis')).toBeVisible();await researchSide(page,'controls');await expect(workspace.locator('.field-study-controls')).toBeVisible();expect(await workspace.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);await step(page,'2. 비교 조건');await researchSide(page,'controls');
- if(width===390){const gaps=await page.locator('.research-controls').evaluate(el=>[...el.children].slice(1).map((c,i)=>c.getBoundingClientRect().top-el.children[i].getBoundingClientRect().bottom));for(const gap of gaps)expect(gap).toBeGreaterThanOrEqual(12);}
+ if(width===834){const gaps=await page.locator('.research-controls').evaluate(el=>[...el.children].slice(1).map((c,i)=>c.getBoundingClientRect().top-el.children[i].getBoundingClientRect().bottom));for(const gap of gaps)expect(gap).toBeGreaterThanOrEqual(12);}
  await page.screenshot({path:'.local/spacing-research-form-'+width+'.png'});
 });
 
 test('expanded field reference leaves customer import reachable',async({page})=>{
- await page.setViewportSize({width:390,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');
+ await page.setViewportSize({width:834,height:844});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'셀 데이터');await step(page,'고객 자료 검토');
  await page.getByText('실제 공정과 품질 기준 확인 · 2026-10-16',{exact:true}).click();
  const upload=page.getByRole('button',{name:'고객 측정 파일 가져오기',exact:true});await upload.scrollIntoViewIfNeeded();await expect(upload).toBeInViewport();
  await page.screenshot({path:'.local/spacing-expanded-evidence-scroll.png'});
 });
 
-for(const width of [1366,1024,390])test('studio tools retain clear edges and aligned actions at '+width,async({page})=>{
+for(const width of [1366,1024,834])test('studio tools retain clear edges and aligned actions at '+width,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/batt/');await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();await navigate(page,'공정 관리');
  for(const tab of ['장비·공정','확보 데이터','저장·승인']){
   await page.getByRole('button',{name:tab,exact:true}).click();const panel=page.locator('.designer-inspector:visible');

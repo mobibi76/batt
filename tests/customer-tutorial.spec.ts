@@ -18,6 +18,11 @@ test('customer tutorial connects production quality and research without persist
  const guide=page.getByRole('region',{name:'고객 데이터 튜토리얼'});
  const next=guide.getByRole('button',{name:'다음 실습',exact:true});
  await expect(next).toBeDisabled();
+ await guide.getByRole('link',{name:'튜토리얼 사용법',exact:true}).click();
+ await expect(page.locator('.manual-reading h2')).toHaveText('튜토리얼 시작·진행·종료');
+ await expect(page.locator('.manual-reading')).toContainText('체험 종료');
+ await page.getByRole('button',{name:'DOCS 닫기'}).click();
+ await expect(guide).toContainText('1 / 6');await expect(next).toBeDisabled();
  for(const [width,height] of [[768,1024],[1024,768],[800,1280],[1280,800],[834,1194],[1194,834],[900,768],[1366,768],[1440,768]]){
   await page.setViewportSize({width,height});
   await expect(guide).toBeVisible();
@@ -54,6 +59,12 @@ test('customer tutorial connects production quality and research without persist
  expect(writes).toEqual([]);
  expect(await page.evaluate(()=>Object.values(localStorage).some(v=>v.includes('PRIVATE-0')))).toBe(false);
  await page.screenshot({path:'test-results/customer-tutorial-complete.png'});
+ await guide.getByRole('button',{name:'자유 체험으로 이어가기',exact:true}).click();
+ await expect(guide).toHaveCount(0);
+ await page.getByRole('button',{name:'튜토리얼 모드',exact:true}).click();
+ await expect(guide).toContainText('1 / 6');await expect(next).toBeDisabled();
+ await guide.getByRole('checkbox').check();await next.click();
+ await expect(next).toBeEnabled();
  await page.getByRole('button',{name:'체험 종료',exact:true}).click();await page.getByRole('button',{name:'고객 데이터 튜토리얼 시작'}).click();
  await expect(guide).toContainText('1 / 6');await expect(next).toBeDisabled();
 });

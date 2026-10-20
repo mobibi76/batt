@@ -130,4 +130,54 @@ async function sample(){catalog.sample=[];const profile=await fixtureSession('op
  await snap('sample','values','원본·사용값과 보완 표시 확인',[[p.locator('.sample-data-view .sample-value-grid'),'행별 원자료와 사용값, 결측·시험 보완 표시를 대조합니다. 보라색 시험 보완값을 실제 측정값으로 해석하지 않습니다.'],[button('출처·날짜'),'해당 파일의 출처와 날짜 설명으로 이동합니다.']],'같은 셀의 원자료와 보완값을 구분한 상태로 체험합니다. 이 캡처의 제공값 표시도 전부 합성 예시입니다.','고객 체험 화면의 합성 재현 · 제공값 표시도 가상 값');await button('원본 테이블 전체 보기').click();
  await snap('sample','columns','원래 컬럼명과 전체 데이터 값 조회',[[p.getByLabel('원자료 선택'),'충방전 기록 또는 PoC 2~4번째 자료를 선택합니다. 품질 기준 설명인 첫 탭은 제외합니다.'],[p.locator('.source-table-scroll'),'원래 컬럼 순서와 값을 확인합니다. 빈칸은 결측으로 유지하며 가로 스크롤로 나머지 항목을 봅니다.'],[button('다음 자료'),'이전·다음 자료로 모든 데이터 행을 조회합니다.']],'엑셀 모양이나 A·B 열 문자가 아닌 컬럼명과 값으로 조회합니다. 예시는 합성 자료입니다.','고객 원자료 없음 · 컬럼 조회의 합성 예시');await button('출처·날짜').click();
  await snap('sample','source','출처 확인 후 원래 업무로 복귀',[[p.locator('.sample-data-view'),'파일명·메타정보 날짜·제공일 미확인 여부를 확인합니다. 자료 제공 날짜가 확인되지 않으면 임의로 확정하지 않습니다.'],[p.locator('.sample-data-view').getByRole('button',{name:'업무로 돌아가기',exact:true}),'확인을 마치면 업무로 돌아가기를 누릅니다. 이전 작업 선택과 계산 결과는 유지됩니다.']],'체험 중 팩·검사·승인은 운영 기록과 분리되며 체험을 종료하면 폐기됩니다.','고객 체험 화면의 합성 재현 · 고객 원본·측정값 없음');}
-try{const groups={access,work,twin,research,members,sample};for(const [name,run] of Object.entries(groups)){if(!process.argv[2]||process.argv[2]==='--audit-help'||process.argv[2]===name)await run();}}catch(e){if(p)await p.screenshot({path:fileURLToPath(new URL('.local/manual-capture-error.png',root))});throw e;}finally{if(audit)await writeFile(new URL('.local/manual-help-audit.json',root),JSON.stringify(helpAuditResults,null,2));await browser.close();}
+async function tutorial(){
+ catalog.tutorial=[];
+ const note='고객 체험 화면의 합성 재현 · 고객 원본·측정값 없음';
+ await button('업무로 돌아가기').click();await button('체험 종료').click();
+ await snap('tutorial','entry','고객 데이터 체험에서 시작하기',[
+  [button('고객 데이터 튜토리얼 시작'),'승인된 계정으로 로그인한 뒤 화면 아래 ‘고객 데이터 체험’에서 이 선택 화면으로 들어옵니다. ‘고객 데이터 튜토리얼 시작’을 누르면 생산의 첫 단계부터 안내합니다.'],
+  [button('보완값 포함 업무 체험'),'먼저 자유롭게 체험해도 됩니다. 고객 데이터 체험 안에서는 생산·품질·연구 옆의 ‘튜토리얼 모드’ 버튼으로 안내를 시작할 수 있습니다. 일반 운영과 공개 가상 체험에는 이 버튼이 없습니다.']
+ ],'튜토리얼은 고객 자료 확인부터 시작합니다. 실습용 보완값은 실제 측정값과 구분합니다.',note);
+ await button('고객 데이터 튜토리얼 시작').click();
+ const guide=p.getByRole('region',{name:'고객 데이터 튜토리얼'}),next=guide.getByRole('button',{name:'다음 실습',exact:true});
+ await snap('tutorial','start','첫 단계 안내를 보고 다음 실습으로 이동하기',[
+  [button('튜토리얼 모드'),'고객 데이터 체험 중 안내를 처음부터 다시 보려면 상단의 ‘튜토리얼 모드’를 누릅니다. 같은 업무 체험에서 만든 팩과 검사 기록은 유지됩니다. 보완 전 원자료 검토에서 누르면 새 업무 체험으로 전환됩니다.'],
+  [guide.getByRole('checkbox'),'자료를 확인한 뒤 ‘안내에 따라 화면을 살펴봤습니다’에 체크합니다. 자료 확인·품질 확인·작업 순서 확인 단계는 이 확인란을 사용합니다.'],
+  [next,'‘다음 실습’을 누르면 다음 작업 화면으로 이동합니다. 다른 화면으로 이동했다면 ‘실습 화면으로’를 눌러 현재 단계로 돌아옵니다.'],
+ ],'자료 확인 → 팩 만들기 → 검사 기록 → 품질 확인 → 셀 조합 비교 → 작업 순서와 시간 확인 순서로 진행합니다.',note);
+ await guide.getByRole('checkbox').check();await next.click();
+ await snap('tutorial','condition','다음 단계로 넘어가는 조건 확인하기',[
+  [guide.getByRole('status'),'팩 만들기는 팩 1개 이상, 검사 기록은 1건 이상 저장, 셀 조합 비교는 비교 실행이 필요합니다. 기존 체험 결과가 있다면 해당 조건은 이미 충족될 수 있습니다.'],
+  [next,'조건을 충족하면 ‘다음 실습’을 누를 수 있습니다. 다음 단계로 넘어갈 수 있어도 전체 공정 완료나 최종 품질 승인을 받은 것은 아닙니다.'],
+  [button('튜토리얼 접기'),'‘튜토리얼 접기’는 안내 영역만 접습니다. 체험이나 안내를 끝내지 않으며, ‘튜토리얼 펼치기’로 다시 볼 수 있습니다.']
+ ],'안내 아래에 표시되는 작업을 마친 뒤 다음 실습으로 이동합니다.',note);
+ await button('조합 추천').click();await step(p,'8셀 추천 조합');
+ await p.getByRole('button',{name:'조합 검토 · 확정'}).first().click();
+ await p.getByLabel('팩 일련번호').fill('TUTORIAL-MANUAL');
+ await p.getByLabel('조합 검토 사유',{exact:true}).fill('매뉴얼용 합성 자료 실습');
+ await button('확인 및 팩 구성').click();await next.click();
+ await p.getByRole('row').filter({hasText:'TUTORIAL-MANUAL'}).getByRole('button',{name:'상세 조회'}).click();
+ await prepareInspection(p,true);await p.getByRole('textbox',{name:'검사 메모',exact:true}).fill('매뉴얼용 시험 검사');
+ await button('검사 결과 저장').click();await button('닫기').click();await next.click();
+ await guide.getByRole('checkbox').check();await next.click();
+ await button('현재 측정·판정 자료 가져오기').click();await step(p,'2. 비교 조건');
+ await p.getByRole('checkbox',{name:'합성·시험 보완값 포함',exact:true}).check();
+ await button('알고리즘 비교 실행').click();await expect(next).toBeEnabled();await next.click();
+ await guide.getByRole('checkbox').check();await button('실습 마무리').click();
+ await snap('tutorial','finish','실습을 마치고 자유 체험으로 이어가기',[
+  [button('자유 체험으로 이어가기'),'마지막 단계의 ‘실습 마무리’를 누르면 이 결과 안내가 열립니다. ‘자유 체험으로 이어가기’는 튜토리얼 안내만 끝내고, 같은 체험의 팩·검사 기록은 유지합니다.'],
+  [button('처음부터 다시 살펴보기'),'안내만 첫 단계로 돌아갑니다. 만든 팩과 검사 기록을 지우거나 새로 시작하는 버튼은 아닙니다.'],
+  [guide.getByRole('link',{name:'연구 DOCS',exact:true}),'생산·품질·연구 DOCS에서 각 작업의 자세한 절차를 볼 수 있습니다. 매뉴얼을 닫으면 체험 화면으로 돌아옵니다.']
+ ],'안내를 마쳐도 실습 결과는 실제 운영에 저장되지 않습니다.',note);
+ await button('자유 체험으로 이어가기').click();
+ await snap('tutorial','exit','체험 결과를 지우고 종료하기',[
+  [button('체험 종료'),'화면 아래 ‘체험 종료’를 누르면 실습 중 바꾼 내용과 만든 팩·검사·승인 기록이 삭제되고 고객 데이터 체험 선택 화면으로 돌아갑니다. 고객 원본과 실제 운영 기록은 바뀌지 않습니다.'],
+  [button('튜토리얼 모드'),'체험을 유지하면서 안내를 다시 보려면 상단 ‘튜토리얼 모드’를 누릅니다. ‘체험 종료’와 다른 기능입니다.']
+ ],'체험을 종료한 뒤 선택 화면의 제목 위 홈 아이콘을 누르면 실제 운영 화면으로 돌아갑니다.',note);
+ await button('체험 종료').click();
+ await snap('tutorial','home','체험 선택 화면에서 운영 화면으로 돌아가기',[
+  [button('운영 홈으로 돌아가기'),'제목 위 홈 아이콘을 누르면 실제 운영 화면으로 돌아갑니다. 실습 결과가 운영 기록으로 옮겨지는 것은 아닙니다.'],
+  [button('고객 데이터 튜토리얼 시작'),'새 실습을 시작할 수 있습니다. 종료한 체험에서 만들었던 팩과 검사 기록은 다시 나타나지 않습니다.']
+ ],'체험 종료와 운영 화면 복귀가 완료됩니다. 실습 결과는 체험 종료·새로고침 후 유지되지 않습니다.',note);
+}
+try{const groups={access,work,twin,research,members,sample};for(const [name,run] of Object.entries(groups)){if(!process.argv[2]||process.argv[2]==='--audit-help'||process.argv[2]===name){await run();if(name==='sample')await tutorial();}}}catch(e){if(p)await p.screenshot({path:fileURLToPath(new URL('.local/manual-capture-error.png',root))});throw e;}finally{if(audit)await writeFile(new URL('.local/manual-help-audit.json',root),JSON.stringify(helpAuditResults,null,2));await browser.close();}

@@ -23,8 +23,15 @@ for(const width of [1440,900,768,390,320])test('integrated task geometry at '+wi
   expect(Math.abs(tabs!.x-panel!.x)).toBeLessThanOrEqual(1);
  }
  const exit=await page.getByRole('button',{name:'로그아웃',exact:true}).boundingBox();expect(exit.y+exit.height).toBeLessThanOrEqual(720);
- const groups=await page.locator('.visible-task-tabs:visible, .choice-chips:visible, .upload-actions:visible, .console-task-actions:visible').evaluateAll(es=>es.map(e=>[...e.children].filter(c=>c.getBoundingClientRect().width>0).map(c=>c.getBoundingClientRect().width)));
+ const groups=await page.locator('.visible-task-tabs:visible, .choice-chips:visible, .upload-actions:visible').evaluateAll(es=>es.map(e=>[...e.children].filter(c=>c.getBoundingClientRect().width>0).map(c=>c.getBoundingClientRect().width)));
  for(const widths of groups)if(widths.length>1)expect(Math.max(...widths)-Math.min(...widths)).toBeLessThanOrEqual(1);
+ // Footer links fit their text; verify spacing and hit area instead of equal widths.
+ const footer=await page.locator('.console-task-actions button:visible').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();const range=document.createRange();range.selectNodeContents(e);return {x:r.x,y:r.y,right:r.right,width:r.width,height:r.height,textWidth:range.getBoundingClientRect().width};}));
+ for(const [i,button] of footer.entries()){
+  expect(button.height).toBeGreaterThanOrEqual(44);
+  expect(button.width-button.textWidth).toBeLessThanOrEqual(4);
+  if(i&&button.y===footer[i-1].y)expect(Math.abs(button.x-footer[i-1].right-24)).toBeLessThanOrEqual(1);
+ }
  if(name==='셀 데이터'){const boxes=await page.locator('.upload-actions > *').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {top:r.top,height:r.height};}));expect(boxes).toHaveLength(2);expect(boxes[0]).toEqual(boxes[1]);await step(page,'셀 재고');await expect(page.getByPlaceholder('셀 ID 또는 LOT 검색')).toBeVisible();}
  }
 });

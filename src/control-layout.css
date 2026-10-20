@@ -29,7 +29,7 @@ button, .file-button, .twin-import, .choice-chip span {
   width: 100%;
   min-width: 0;
 }
-:is(.console-mode, .console-tabs, .console-task-actions, .upload-actions) > :is(button, .file-button) {
+:is(.console-mode, .console-tabs, .upload-actions) > :is(button, .file-button) {
   flex: 1 1 0;
   min-width: 0;
 }
@@ -102,8 +102,18 @@ button, .file-button, .twin-import, .choice-chip span {
 .studio-panel .editor-actions > button {
   padding-inline: var(--space-4);
 }
-.console-task-actions {
-  width: calc(var(--control-width) * 2 + var(--space-8));
+.operations-console .console-footer .console-task-actions {
+  width: auto;
+  min-width: 0;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-24);
+}
+.operations-console .console-footer .console-task-actions > button {
+  flex: 0 0 auto;
+  width: auto;
+  padding-inline: 0;
+  white-space: nowrap;
 }
 .studio-command-bar .mode-switch {
   display: grid;
@@ -112,18 +122,6 @@ button, .file-button, .twin-import, .choice-chip span {
 @media(max-width:899px) {
   .studio-command-bar .studio-commands {
     flex: 0 0 100%;
-  }
-}
-/* Allocate compact footer space by control count so words remain readable. */
-@media(max-width:700px) {
-  .console-footer .console-task-actions {
-    flex: 2;
-  }
-  .console-footer .console-task-actions:has(> :nth-child(3)) {
-    flex: 3;
-  }
-  .console-footer .console-task-actions:has(> :nth-child(4)) {
-    flex: 4;
   }
 }
 @media(max-width:700px) {
@@ -205,21 +203,6 @@ button, .file-button, .twin-import, .choice-chip span {
 @media(max-width:700px) {
   .visible-task-tabs:has(> :nth-child(4)):not(:has(> :nth-child(5))) {
     grid-template-columns: repeat(2,minmax(0,1fr));
-  }
-  .operations-console .console-footer .console-task-actions {
-    flex: 2 1 0;
-    width: auto;
-    min-width: 0;
-    gap: var(--space-4);
-  }
-  .operations-console .console-footer .console-task-actions:has(> :nth-child(3)) {
-    flex-grow: 3;
-  }
-  .operations-console .console-footer .console-task-actions:has(> :nth-child(4)) {
-    flex-grow: 4;
-  }
-  .operations-console .console-footer button {
-    padding-inline: var(--space-4);
   }
 }
 .research-scope summary {

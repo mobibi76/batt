@@ -148,17 +148,6 @@
     flex-wrap: nowrap;
     gap: var(--space-4);
   }
-  .console-footer .console-task-actions {
-    flex: 1;
-    min-width: 0;
-    gap: var(--space-4);
-  }
-  .console-footer .console-task-actions button {
-    flex: 1;
-    min-width: 0;
-    padding-inline: var(--space-4);
-    font-size: var(--type-caption-size);
-  }
 }
 .source-tables {
   display: flex;

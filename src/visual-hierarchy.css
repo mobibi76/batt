@@ -33,7 +33,7 @@
   background: var(--color-surface-accent);
   color: var(--color-brand);
   border-color: var(--color-brand);
-  box-shadow: inset 3px 0 var(--color-brand);
+  box-shadow: inset var(--border-accent-width) 0 var(--color-brand);
   font-weight: var(--weight-bold);
 }
 .choice-field .choice-chip input:disabled + span {

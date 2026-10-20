@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {navigate,step} from './workspace';
 import {prepareInspection} from './inspection';
+test.use({hasTouch:true});
 test('customer tutorial connects production quality and research without persistent writes',async({page})=>{
  const id='33333333-3333-4333-8333-333333333333';let revoked=false,holdNextRead=false;let releaseRead:(()=>void)|undefined;const writes:string[]=[];
  const profile={id,role:'operator',status:'approved',process_stages:['assembly','aging','final']};
@@ -17,8 +18,8 @@ test('customer tutorial connects production quality and research without persist
  const guide=page.getByRole('region',{name:'고객 데이터 튜토리얼'});
  const next=guide.getByRole('button',{name:'다음 실습',exact:true});
  await expect(next).toBeDisabled();
- for(const width of [320,390,768,900,1366,1440]){
-  await page.setViewportSize({width,height:width===320?480:768});
+ for(const [width,height] of [[320,480],[390,768],[768,1024],[1024,768],[800,1280],[1280,800],[834,1194],[1194,834],[900,768],[1366,768],[1440,768]]){
+  await page.setViewportSize({width,height});
   await expect(guide).toBeVisible();
   await page.screenshot({path:`test-results/tutorial-${width}.png`});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

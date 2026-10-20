@@ -2,7 +2,7 @@
    Illustration/overlay tokens retain distinct original artwork colours. */
 :root {
   --size-task-min-height: 240px;
-  --size-designer-min-height: 360px;
+  --size-designer-min-height: var(--size-scene-min-height);
   --size-scene-min-height: 360px;
   /* Semantic colour and contextual palettes */
   --color-manual-brand: #536777;
@@ -84,14 +84,12 @@
   --type-heading-tracking: -.02em;
   --type-data-tracking: 0;
   --weight-regular: 400;
-  --tracking-minus-1_2: -1.2px;
   --weight-bold: 700;
-  --tracking-minus-_45: -.45px;
   --weight-semibold: 600;
   --tracking-2: 2px;
   --weight-heavy: 800;
   --tracking-1: 1px;
-  --font-size-7: 7px;
+  --type-logo-mark-size: 7px;
   --tracking-1_7: 1.7px;
   --weight-medium: 500;
   --tracking-minus-1_5: -1.5px;
@@ -124,7 +122,7 @@
   --space-48: 48px;
   --space-64: 64px;
   /* Surface geometry and elevation */
-  --shadow-sidebar-nav-button-active-box-shadow: inset 3px 0 var(--color-sidebar-accent);
+  --shadow-sidebar-nav-button-active-box-shadow: inset var(--border-accent-width) 0 var(--color-sidebar-accent);
   --radius-round: 50%;
   --radius-small: 4px;
   --radius-control: 6px;
@@ -134,14 +132,22 @@
   --border-width: 1px;
   --border-strong-width: 2px;
   --border-accent-width: 3px;
-  --shadow-raised: 0 2px 3px #102d2510;
-  --shadow-overlay: 0 16px 64px #08281944;
-  --shadow-scene-expanded: 0 0 0 12px #20392e55;
+  --shadow-raised: 0 var(--space-2) var(--border-accent-width) #102d2510;
+  --shadow-overlay: 0 var(--space-16) var(--space-64) #08281944;
+  --shadow-scene-expanded: 0 0 0 var(--space-12) #20392e55;
   /* Component geometry and data visualisation */
   --size-manual-print-image: 105mm;
   --size-manual-panel: 680px;
   --size-manual-index: 280px;
-  --size-approval-decision: 320px;
+  --size-manual-index-compact: 220px;
+  --size-detail-panel: 320px;
+  --size-detail-panel-compact: 280px;
+  --size-detail-panel-wide: 360px;
+  --size-studio-inspector: 24rem;
+  --size-studio-inspector-compact: 21rem;
+  --control-narrow-width: 128px;
+  --control-narrow-choice-width: 88px;
+  --size-approval-decision: var(--size-detail-panel);
   --size-decision-max: 800px;
   --control-width: 160px;
   --control-choice-width: 112px;
@@ -162,21 +168,17 @@
   --size-icon-18: 18px;
   --size-icon-17: 17px;
   --size-icon-48: 48px;
-  --size-icon-19: 19px;
-  --size-icon-14: 14px;
   --size-icon-16: 16px;
   --size-icon-15: 15px;
   --size-icon-24: 24px;
   --size-icon-13: 13px;
   --size-icon-21: 21px;
-  --size-icon-22: 22px;
-  --size-icon-11: 11px;
   --chart-area-opacity: 0.24;
   --control-line-height: 20px;
   --panel-padding-inline: var(--space-24);
   --twin-library-width: 232px;
   --twin-viewport-height: 490px;
-  --twin-viewport-mobile-height: 360px;
+  --twin-viewport-compact-height: var(--size-scene-min-height);
   --twin-card-min-width: 155px;
   --chart-histogram-bar-height: 68px;
   --chart-histogram-bar-min: 2px;
@@ -184,8 +186,6 @@
 /* Keep the established login artwork and palette independent of workbench accents. */
 .auth-page {
   --color-ink-secondary: #6f8064;
-  --color-ink-muted: #607367;
-  --color-ink-faint: #637569;
   --color-brand: #137b60;
   --color-brand-hover: #0c684e;
   --color-border: #e4eae5;

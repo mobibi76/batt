@@ -32,13 +32,13 @@ for(const width of [1366,390]){test.describe(`업무 재개 ${width}px`,()=>{
   await page.getByRole('button',{name:'공정 승인함',exact:true}).click();
   if(await page.getByRole('button',{name:'제출본 검토',exact:true}).first().isVisible())await page.getByRole('button',{name:'제출본 검토',exact:true}).first().click();
   await expect(page.locator('.approval-detail h2')).toHaveText('검토 중인 배치');
-  await choose(page,'체험 역할','demo-reviewer');if(width<800)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();
+  await choose(page,'체험 역할','demo-reviewer');if(width<=960)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();
   await page.getByLabel('검토 의견').fill('연결 순서 확인 완료, 태그 추가 확인 중');
   await page.getByRole('button',{name:'승인 목록으로',exact:true}).click();await page.getByRole('row').filter({hasText:'다른 배치'}).getByRole('button',{name:'제출본 검토',exact:true}).click();
-  if(width<800)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();
+  if(width<=960)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();
   await expect(page.getByLabel('검토 의견')).toHaveValue('');
   await page.getByRole('button',{name:'승인 목록으로',exact:true}).click();await page.getByRole('row').filter({hasText:'검토 중인 배치'}).getByRole('button',{name:'제출본 검토',exact:true}).click();
-  if(width<800)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();
+  if(width<=960)await page.getByRole('button',{name:'근거 확인 후 최종 판단',exact:true}).click();
   await expect(page.getByLabel('검토 의견')).toHaveValue('연결 순서 확인 완료, 태그 추가 확인 중');
   await page.screenshot({path:`test-results/continuity-quality-${width}.png`});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

@@ -56,7 +56,7 @@ export default function OperationsConsole(p:Props){
   const at=signals.filter(s=>signalStage(s)===step.id),bad=at.filter(s=>s.failed).length,waiting=at.filter(s=>s.state!=='approved').length;
   return [d.id,{title:`${i+1}. ${d.name}`,detail:step.id==='grading'?`등록 ${p.cells}셀`:step.id==='storage'?`사용 가능 ${p.available}셀`:bad?`불합격 ${bad}팩 · 확인 필요`:step.id==='assembly'&&!at.length?'8셀 조합 준비':step.id==='final'&&pending?`승인 대기 ${pending}팩`:waiting?`다음 작업 ${waiting}팩`:at.length?`검사 완료 ${at.length}팩`:'대기 없음',tone:bad?'attention':waiting?'waiting':'quiet'}];
  }));
- function selectStage(id:string){setSelectedStage(layout.plan?.stations[id]?.stage??id);setChosenId('');setWorkQuery('');setExpanded(false);p.onOpen('overview');if(matchMedia('(max-width:800px)').matches)requestAnimationFrame(()=>panelRef.current?.scrollIntoView({block:'start',behavior:'smooth'}));}
+ function selectStage(id:string){setSelectedStage(layout.plan?.stations[id]?.stage??id);setChosenId('');setWorkQuery('');setExpanded(false);p.onOpen('overview');if(matchMedia('(max-width:960px)').matches)requestAnimationFrame(()=>panelRef.current?.scrollIntoView({block:'start',behavior:'smooth'}));}
  function selectPack(s:PackSignal){setChosenId(s.pack.id);setSelectedStage(signalStage(s));setWorkQuery('');}
  function switchMode(mode:WorkMode){p.onMode(mode);setExpanded(false);}
  function openCells(focus:string){setFieldCellFocus(focus);p.onOpen('cells');}

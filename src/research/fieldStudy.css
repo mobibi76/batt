@@ -21,7 +21,7 @@
 }
 .console-task-body .research-body.field-study-workspace {
   display: grid;
-  grid-template-columns: minmax(0,1fr) 320px;
+  grid-template-columns: minmax(0,1fr) var(--size-detail-panel);
   gap: 0;
   padding: 0;
   flex: 1;
@@ -300,7 +300,7 @@
 }
 @media(max-width:1100px) {
   .console-task-body .research-body.field-study-workspace {
-    grid-template-columns: minmax(0,1fr) 280px
+    grid-template-columns: minmax(0,1fr) var(--size-detail-panel-compact)
   }
   .field-distributions {
     grid-template-columns: 1fr
@@ -312,7 +312,7 @@
     max-height: 50px
   }
 }
-@media(max-width:800px) {
+@media(max-width:960px) {
   .field-mobile-tabs {
     display: flex;
     flex: none;
@@ -458,7 +458,7 @@
 .field-detail>h3 {
   margin: 0 0 var(--space-8)
 }
-@media(max-width:800px) {
+@media(max-width:960px) {
   .research-lab>.visible-task-tabs button {
     font-size: var(--type-caption-size);
     padding: var(--space-4) var(--space-2);
@@ -519,7 +519,7 @@
 .decision-preview-chart {min-width:0;border:var(--border-width) solid var(--color-border);border-radius:var(--radius-control);padding:var(--space-12);background:var(--color-surface-subtle)}
 .decision-preview-chart small {color:var(--color-ink-muted)}
 .decision-empty-axis,.decision-empty-link {display:grid;place-items:center;min-height:72px;margin-top:var(--space-12);color:var(--color-ink-muted);font-size:var(--type-caption-size)}
-.decision-empty-axis {border-left:var(--border-width) solid var(--color-border);border-bottom:var(--border-width) solid var(--color-border);background:repeating-linear-gradient(to top,transparent 0,transparent 24px,var(--color-border) 25px)}
+.decision-empty-axis {border-left:var(--border-width) solid var(--color-border);border-bottom:var(--border-width) solid var(--color-border);background:repeating-linear-gradient(to top,transparent 0,transparent var(--space-24),var(--color-border) calc(var(--space-24) + var(--border-width)))}
 .decision-empty-axis span,.decision-empty-link span {background:var(--color-surface-subtle);padding:var(--space-4) var(--space-8)}
 .decision-empty-link {border:var(--border-width) dashed var(--color-border);border-radius:var(--radius-control)}
 .decision-flow {display:flex;list-style:none;padding:0;margin:var(--space-16) 0;gap:var(--space-8);flex-wrap:wrap}

@@ -1,5 +1,5 @@
 .twin-studio {
-  --studio-inspector-width: 24rem;
+  --studio-inspector-width: var(--size-studio-inspector);
   height: 100%;
   min-height: 0;
   display: grid;
@@ -160,7 +160,7 @@
 }
 @media(max-width:1199px) {
   .twin-studio {
-    --studio-inspector-width: 21rem;
+    --studio-inspector-width: var(--size-studio-inspector-compact);
   }
   .studio-command-bar {
     flex-wrap: wrap;

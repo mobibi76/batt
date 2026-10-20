@@ -8,10 +8,10 @@ for(const width of [1440,900,768,390,320])test('integrated task geometry at '+wi
  await page.setViewportSize({width,height:720});await page.goto('/batt/');await page.getByRole('button',{name:'사용 권한 신청',exact:true}).click();await expect(page.getByLabel('이름',{exact:true})).toBeVisible();await page.getByRole('button',{name:'가상 데이터로 공정 체험'}).click();await page.getByRole('button',{name:'셀 검사·재고',exact:true}).click();await page.getByRole('button',{name:'예시 셀로 다음 단계'}).click();await page.getByRole('button',{name:'생산 홈',exact:true}).click();
  for(const name of ['운영 현황','셀 데이터','셀 매칭','팩 · 검사이력','품질 리포트','알고리즘 검증','공정 관리','품질·공정 승인함','사용자 관리']){
  await navigate(page,name);await expect(page.locator('.operations-console')).toBeVisible();await expect(page.locator('.sidebar')).toHaveCount(0);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight)).toBe(true);
- if(name==='운영 현황'&&width>800) await expect(page.locator('.floor-return')).toBeHidden();
+ if(name==='운영 현황'&&width>960) await expect(page.locator('.floor-return')).toBeHidden();
  if(name==='셀 데이터') {
   const expand=page.locator('.workspace-expand');
-  if(width<=800) await expect(expand).toBeHidden();
+  if(width<=960) await expect(expand).toBeHidden();
   else {
    await expect(expand).toBeVisible();
    const heading=await page.locator('.console-task-heading').boundingBox();

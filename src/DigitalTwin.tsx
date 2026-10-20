@@ -25,7 +25,7 @@ export default function DigitalTwin({mode,userId,canEdit,initialLayout,onSubmitA
  const result=calculation.result,coverage=dataCoverage(layout),gate=publicationError(layout);
  function commit(next:Layout){if(!canEdit)return false;try{setLayout(validateLayout(next));setRemoved(null);setMessage('설계 변경됨 · 저장하거나 새 승인 요청을 제출하세요.');return true;}catch(e){setMessage((e as Error).message);return false;}}
  function patchStation(patch:Partial<NonNullable<Layout['plan']>['stations'][string]>){if(plan&&station)commit({...layout,plan:{...plan,stations:{...plan.stations,[selected]:{...station,...patch}}}});}
- function resetInspector(reveal=true){requestAnimationFrame(()=>{inspectorRef.current?.scrollTo({top:0});if(reveal&&window.innerWidth<=800){const inspector=inspectorRef.current,workspace=inspector?.closest<HTMLElement>('.process-designer');if(inspector&&workspace)workspace.scrollTo({top:workspace.scrollTop+inspector.getBoundingClientRect().top-workspace.getBoundingClientRect().top});}});}
+ function resetInspector(reveal=true){requestAnimationFrame(()=>{inspectorRef.current?.scrollTo({top:0});if(reveal&&window.matchMedia('(max-width:960px)').matches){const inspector=inspectorRef.current,workspace=inspector?.closest<HTMLElement>('.process-designer');if(inspector&&workspace)workspace.scrollTo({top:workspace.scrollTop+inspector.getBoundingClientRect().top-workspace.getBoundingClientRect().top});}});}
  useEffect(()=>{setEditing(false);resetInspector(false);},[mode]);
  function showEquipment(view:'edit'|'order'|'add'){setEquipmentView(view);resetInspector();}
  function selectDevice(id:string){setSelected(id);setEquipmentView('edit');if(mode==='design'&&panel==='approval')setPanel('equipment');setExpanded(false);resetInspector();}

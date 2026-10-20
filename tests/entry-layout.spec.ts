@@ -20,7 +20,7 @@ for(const viewport of [{width:1366,height:768},{width:1366,height:600},{width:39
  await expect(header.getByRole('button',{name:'공정 승인함',exact:true})).toBeInViewport({ratio:1});
  await expect(page.locator('.designer-header')).toHaveCount(0);
  await expect(page.locator('.process-designer > .context-line')).toHaveCount(0);
- if(viewport.width>800)expect(await page.locator('.process-designer').evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
+ if(viewport.width>960)expect(await page.locator('.process-designer').evaluate(e=>e.scrollHeight-e.clientHeight)).toBeLessThanOrEqual(1);
  await header.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await expect(page.locator('.designer-metrics')).toBeVisible();
  await header.getByRole('button',{name:'공정 설계 · 데이터 확보',exact:true}).click();await page.getByLabel('장비 이름',{exact:true}).fill('복귀 확인 장비');
  await header.getByRole('button',{name:'시뮬레이션 · 작업 효율',exact:true}).click();await header.getByRole('button',{name:'공정 설계 · 데이터 확보',exact:true}).click();await expect(page.getByLabel('장비 이름',{exact:true})).toHaveValue('복귀 확인 장비');

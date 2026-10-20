@@ -27,7 +27,7 @@
 .manual-dimmer { position:absolute; inset:0; background:var(--color-manual-dimmer); }
 .has-spotlight .manual-dimmer { background:transparent; }
 .manual-spotlight { position:fixed; left:var(--guide-x); top:var(--guide-y); width:var(--guide-w); height:var(--guide-h); border:var(--border-strong-width) solid var(--color-manual-accent); border-radius:var(--radius-dialog); box-shadow:0 0 0 var(--space-2) var(--color-manual-paper),0 0 0 100vmax var(--color-manual-dimmer); pointer-events:none; }
-.manual-explanation { position:absolute; bottom:var(--space-8); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-paper); border:var(--border-width) solid var(--color-border-strong); border-radius:var(--radius-control); padding:var(--space-16); border-radius:var(--radius-dialog); box-shadow:var(--shadow-overlay); }
+.manual-explanation { position:absolute; bottom:var(--space-8); left:50%; transform:translateX(-50%); width:min(calc(100% - var(--space-16)),var(--size-manual-panel)); max-height:calc(100dvh - var(--space-16)); overflow:auto; background:var(--color-manual-paper); border:var(--border-width) solid var(--color-border-strong); padding:var(--space-16); border-radius:var(--radius-dialog); box-shadow:var(--shadow-overlay); }
 .panel-top-center .manual-explanation,.panel-top-left .manual-explanation,.panel-top-right .manual-explanation { top:var(--space-8); bottom:auto; }
 .panel-top-left .manual-explanation,.panel-bottom-left .manual-explanation { left:var(--space-8); transform:none; }
 .panel-top-right .manual-explanation,.panel-bottom-right .manual-explanation { left:auto; right:var(--space-8); transform:none; }

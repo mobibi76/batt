@@ -252,7 +252,7 @@
 .operations-console .pack-process button[aria-pressed=true] {
   border-color: var(--color-brand);
   background: var(--color-surface-accent);
-  box-shadow: inset 3px 0 var(--color-brand);
+  box-shadow: inset var(--border-accent-width) 0 var(--color-brand);
 }
 @media(max-width:700px) {
   .pack-process ol {
@@ -299,7 +299,7 @@
 .cell-mobile-label {
   display: none;
 }
-@media(max-width:600px) {
+@container cell-inventory (max-width:680px) {
   .cell-inventory table,.cell-inventory tbody {
     display: block;
     width: 100%;
@@ -342,5 +342,6 @@
   }
 }
 .cell-inventory {
+  container: cell-inventory / inline-size;
   position: relative;
 }

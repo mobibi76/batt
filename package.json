@@ -11,7 +11,7 @@
     "test:e2e": "playwright test",
     "preview": "vite preview --host 127.0.0.1",
     "capture:manual": "node --experimental-strip-types scripts/capture-manual.mts",
-    "check:design": "node scripts/check-design.mjs"
+    "check:design": "node --test scripts/inline-style-audit.test.mjs && node scripts/check-design.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.0.0",

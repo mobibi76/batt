@@ -45,13 +45,11 @@ h1,h2,h3,p {
 }
 h1 {
   font-size: var(--type-title-size);
-  letter-spacing: var(--tracking-minus-1_2);
   margin-bottom: var(--space-8);
   font-weight: var(--weight-bold)
 }
 h2 {
   font-size: var(--type-section-size);
-  letter-spacing: var(--tracking-minus-_45);
   margin-bottom: var(--space-6)
 }
 h3 {
@@ -151,7 +149,7 @@ small {
 }
 .brand-sub {
   display: block;
-  font-size: var(--font-size-7);
+  font-size: var(--type-logo-mark-size);
   letter-spacing: var(--tracking-1_7);
   margin-top: 0;
   color: var(--color-sidebar-muted)
@@ -1703,14 +1701,6 @@ textarea {
   width: var(--size-icon-48);
   height: var(--size-icon-48);
 }
-.icon-19 {
-  width: var(--size-icon-19);
-  height: var(--size-icon-19);
-}
-.icon-14 {
-  width: var(--size-icon-14);
-  height: var(--size-icon-14);
-}
 .icon-16 {
   width: var(--size-icon-16);
   height: var(--size-icon-16);
@@ -1796,14 +1786,6 @@ textarea {
 .icon-21 {
   width: var(--size-icon-21);
   height: var(--size-icon-21);
-}
-.icon-22 {
-  width: var(--size-icon-22);
-  height: var(--size-icon-22);
-}
-.icon-11 {
-  width: var(--size-icon-11);
-  height: var(--size-icon-11);
 }
 .chart-gradient-start {
   stop-opacity: var(--chart-area-opacity);

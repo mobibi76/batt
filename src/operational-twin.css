@@ -25,7 +25,7 @@
 .operations-console.floor-console .console-mode button[aria-pressed=true] {
   background: transparent;
   color: var(--color-brand);
-  box-shadow: inset 0 -2px var(--color-brand);
+  box-shadow: inset 0 calc(-1 * var(--border-strong-width)) var(--color-brand);
 }
 .operations-console.floor-console .console-tabs {
   flex-wrap: wrap;
@@ -46,7 +46,7 @@
 .operations-console.floor-console .console-tabs button[aria-pressed=true] {
   background: none;
   color: var(--color-ink);
-  box-shadow: inset 0 -2px var(--color-brand);
+  box-shadow: inset 0 calc(-1 * var(--border-strong-width)) var(--color-brand);
 }
 .floor-console > .console-content {
   overflow: hidden;
@@ -56,7 +56,7 @@
 }
 .operational-workspace {
   display: grid;
-  grid-template-columns: minmax(0,1fr) 360px;
+  grid-template-columns: minmax(0,1fr) var(--size-detail-panel-wide);
   height: 100%;
   min-height: 0;
   gap: 0;
@@ -354,7 +354,7 @@
 }
 @media(max-width:1100px) {
   .operational-workspace {
-    grid-template-columns: minmax(0,1fr) 320px;
+    grid-template-columns: minmax(0,1fr) var(--size-detail-panel);
   }
   .floor-context {
     padding: var(--space-16);
@@ -372,7 +372,7 @@
     font-size: var(--type-caption-size);
   }
 }
-@media(max-width:800px) {
+@media(max-width:960px) {
   .floor-console .console-header > strong small {
     display: none;
   }

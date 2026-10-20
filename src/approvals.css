@@ -190,7 +190,7 @@
   white-space: normal;
   max-width: 100%;
 }
-@media(max-width:800px) {
+@media(max-width:960px) {
   .confirmation-summary {
     grid-template-columns: minmax(0,1fr);
   }
@@ -289,7 +289,7 @@
   padding: var(--space-4) var(--space-8);
   font-size: var(--type-caption-size);
 }
-@media(max-width:800px) {
+@media(max-width:960px) {
   .approval-review-tabs {
     display: flex;
     flex-shrink: 0;
@@ -340,7 +340,7 @@
   order: 2;
   width: 100%;
 }
-@media(max-width:800px) and (max-height:600px) {
+@media(max-width:960px) and (max-height:600px) {
   .operations-console:has(.approval-detail) {
     grid-template-rows: auto auto minmax(0,1fr);
   }
@@ -362,7 +362,7 @@
 .approval-decision-fields > label {
   min-height: calc(var(--control-height) + var(--space-20));
 }
-@media(max-width:800px) and (max-height:600px) {
+@media(max-width:960px) and (max-height:600px) {
   .approval-toolbar .approval-actions > button {
     padding: var(--space-4);
     width: auto;
@@ -394,7 +394,7 @@
   padding: var(--space-8);
   gap: var(--space-8);
 }
-@media(max-width:800px) {
+@media(max-width:960px) {
   .approval-next {
     display: block;
     margin-top: var(--space-16);
@@ -402,12 +402,12 @@
   }
 }
 
-@media(max-width:800px) and (max-height:600px) {
+@media(max-width:960px) and (max-height:600px) {
   .approval-decision textarea { height: var(--control-height); }
 }
 
 /* At very short heights the submission header must scroll with its evidence. */
-@media(max-height:700px), (min-width:801px) and (max-width:1100px) {
+@media(max-height:700px), (min-width:961px) and (max-width:1100px) {
  .console-task-body:has(.approval-detail) { overflow:auto; }
  .approval-workspace:has(.approval-detail) { height:auto; min-height:100%; }
  .approval-workspace:has(.approval-detail) > .task-step-body { flex:none; }

@@ -1,5 +1,17 @@
 주성산업 MVP 운영·복구 절차 — 2026-10-15
 
+Data API 권한 변경 대응 — 2026-10-21
+- 202610210001_explicit_service_grants.sql은 백엔드 검증의 계정 설정·조회·정리에 필요한
+  service_role 권한을 명시한다. 기존 마이그레이션 이력은 수정하지 않는다.
+- 새 public 테이블에는 생성 마이그레이션 안에 필요한 역할별 GRANT, RLS, 정책을 함께 선언한다.
+  anon 및 authenticated에 일괄 CRUD 권한을 부여하거나 자동 기본 권한을 복원하지 않는다.
+- npm run test:db는 기본 테이블 권한이 없는 격리 DB에 전체 마이그레이션을 재생하고
+  tests/data-api-grants.sql로 사용자 조회, 백엔드 권한, 익명 차단, 직접 쓰기 차단을 확인한다.
+  새 public 테이블은 권한 검사 목록에도 추가해야 한다. 내부 전용 테이블은 별도 차단 검사를 둔다.
+- 운영 권한 확인: npx supabase db query --linked --project-ref asfrsorbzmqhnwnxlxar --file tests/data-api-grants.sql
+- 2026-10-21: npm ci 완료, test:db 및 test-literature-db 통과. 운영 기존 권한 검사 통과 후
+  202610210001 마이그레이션을 적용했다. 업무 데이터 변경이나 사용자 권한 확대는 없다.
+
 1. 운영 구성
 웹 GitHub Pages / DB·Auth Supabase / 계산 analyze-batch, match-cells.
 Linux IDC Docker 이관은 별도 후속 작업이다. 이 문서는 이관 완료 증명서가 아니다.

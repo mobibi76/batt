@@ -15,6 +15,8 @@ try {
  grant execute on function auth.uid() to anon,authenticated,service_role;`);
  for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.sql')).sort())await db.exec(await readFile(`supabase/migrations/${file}`,'utf8'));
  console.log('PASS: all migrations applied to clean PostgreSQL');
+ await db.exec(await readFile('tests/data-api-grants.sql','utf8'));
+ console.log('PASS: explicit Data API privileges without automatic table grants');
  const ids={operator:'10000000-0000-4000-8000-000000000001',reviewer:'10000000-0000-4000-8000-000000000002',pending:'10000000-0000-4000-8000-000000000003',admin:'10000000-0000-4000-8000-000000000004'};
  for(const [name,id] of Object.entries(ids))await db.query(`insert into auth.users(id,email) values($1,$2)`,[id,`${name}@example.invalid`]);
  await db.query(`update public.profiles set status='approved',role='operator',process_stages=array['assembly','aging','final'] where id=$1`,[ids.operator]);
